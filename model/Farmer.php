@@ -1,8 +1,8 @@
 <?php
-class Inventory {
+class Farmer {
     // DB stuff
     public $database_connection;
-    private $table = 'inventory';
+    private $table = 'farmer';
 
     // Client properties
     /* public $first_name;
@@ -20,7 +20,7 @@ class Inventory {
         $this->database_connection = $a_database_connection;
     }
 
-    // Get all inventory
+    // Get all farmer
     public function getAllInventory()
     {
         // Create query

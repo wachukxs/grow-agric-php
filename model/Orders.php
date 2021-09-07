@@ -60,16 +60,16 @@ class Orders {
     {
         // Create query
         $query = 'SELECT ' .
-        'inventory.name, ' .
-        'inventory.price, ' .
-        'inventory.`image`, ' .
-        'inventory.price * orders.quantity AS total, ' .
+        'farmer.name, ' .
+        'farmer.price, ' .
+        'farmer.`image`, ' .
+        'farmer.price * orders.quantity AS total, ' .
         'orders.time as time_of_order, ' .
         'orders.address, ' .
         'orders.customer_name, ' .
         'orders.quantity ' .
-        'FROM inventory ' .
-        'RIGHT OUTER JOIN orders ON inventory.id = orders.id_of_food ' .
+        'FROM farmer ' .
+        'RIGHT OUTER JOIN orders ON farmer.id = orders.id_of_food ' .
         'WHERE orders.id = ?';
         // $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ?';
 
@@ -127,16 +127,16 @@ class Orders {
         // Create query
         // $query = 'SELECT * FROM ' . $this->table;
         $query = 'SELECT ' .
-        'inventory.name, ' .
-        'inventory.price, ' .
-        'inventory.`image`, ' .
-        'inventory.price * orders.quantity AS total, ' .
+        'farmer.name, ' .
+        'farmer.price, ' .
+        'farmer.`image`, ' .
+        'farmer.price * orders.quantity AS total, ' .
         'orders.time as time_of_order, ' .
         'orders.address, ' .
         'orders.customer_name, ' .
         'orders.quantity ' .
-        'FROM inventory ' .
-        'RIGHT OUTER JOIN orders ON inventory.id = orders.id_of_food';
+        'FROM farmer ' .
+        'RIGHT OUTER JOIN orders ON farmer.id = orders.id_of_food';
         
         // Prepare statement
         $query_statement = $this->database_connection->prepare($query);

@@ -8,24 +8,24 @@ header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Ty
 
 // Resources
 include_once '../../config/Database.php';
-include_once '../../model/Inventory.php';
+include_once '../../model/Farmer.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
-// Instantiate food delivery Inventory object
-$inventory = new Inventory($a_database_connection);
+// Instantiate food delivery Farmer object
+$farmer = new Farmer($a_database_connection);
 
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
 if (isset($data->id)) { 
-    // Get ID [& set inventory id if id available]
+    // Get ID [& set farmer id if id available]
     $inventory_id = $data->id;
 
-    // Get the inventory [details]
-    $result = $inventory->getSingleInventoryByID($inventory_id);
+    // Get the farmer [details]
+    $result = $farmer->getSingleInventoryByID($inventory_id);
 
     // Get total number
     $total_number = $result->rowCount();
@@ -62,7 +62,7 @@ if (isset($data->id)) {
     } else {
         echo json_encode(
             array(
-                'message' => 'No such inventory in our records',
+                'message' => 'No such farmer in our records',
                 'response' => 'NOT OK',
                 'response_code' => http_response_code()
             )

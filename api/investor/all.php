@@ -7,22 +7,22 @@ header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Ty
 
 // Resources
 include_once '../../config/Database.php';
-include_once '../../model/Inventory.php';
+include_once '../../model/Farmer.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
-// Instantiate food delivery inventory object
-$inventory = new Inventory($a_database_connection);
+// Instantiate food delivery farmer object
+$farmer = new Farmer($a_database_connection);
 
-// food delivery inventory query
-$results = $inventory->getAllInventory();
+// food delivery farmer query
+$results = $farmer->getAllInventory();
 
 // Get total number
 $total_number = $results->rowCount();
 
-// Check the number of inventory gotten
+// Check the number of farmer gotten
 if ($total_number > 0) {
     $inventory_array = array();
     $inventory_array['response_code'] = http_response_code(200);
@@ -51,10 +51,10 @@ if ($total_number > 0) {
     echo json_encode($inventory_array);
     
 } else {
-    // No inventory
+    // No farmer
     echo json_encode(
         array(
-            'message' => 'No inventory available',
+            'message' => 'No farmer available',
             'response' => 'OK',
             'response_code' => http_response_code()
         )
