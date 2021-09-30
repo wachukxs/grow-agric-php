@@ -1,5 +1,5 @@
 <?php
-    require __DIR__ . "/vendor/autoload.php";
+    require __DIR__ . "/../vendor/autoload.php";
 
     $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
     $dotenv->safeLoad();
