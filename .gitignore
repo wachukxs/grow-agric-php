@@ -3,3 +3,7 @@
 install-composer.sh
 
 /vendor
+
+/assets/PDFs
+
+.DS_Store

@@ -8,62 +8,67 @@ header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Ty
 
 // Resources
 include_once '../../config/Database.php';
-include_once '../../model/Orders.php';
+include_once '../../model/Farmer.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
-// Instantiate food-delivery order object
-$order = new Orders($a_database_connection);
+// Instantiate new farmer object
+$farmer = new Farmer($a_database_connection);
 
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-if (isset($data->customer_name, $data->quantity, $data->address, $data->id_of_food)
+// echo log tracing
+echo 'Trying to sign up farmer';
+
+if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->password)
     &&
-    !empty($data->customer_name)
+    !empty($data->lastname)
     &&
-    !empty($data->quantity)
+    !empty($data->firstname)
     &&
-    !empty($data->address)
+    !empty($data->email)
     &&
-    !empty($data->id_of_food)
+    !empty($data->phonenumber)
+    &&
+    !empty($data->password)
 ) { // if good data was provided
-    // Create the order [details]
-    $result = $order->createOrder($data->customer_name, $data->quantity, $data->address, $data->id_of_food);
+    // Create the farmer [details]
+    $result = $farmer->createFarmer($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->password);
     if ($result) {
-        // Get the order [details]
-        $order_result = $order->getSingleOrderByID($result);
+        // Get the farmer [details]
+        $order_result = $farmer->getSingleFarmerByID($result);
         // returns an array, $row is an array
         $row = $order_result->fetch(PDO::FETCH_ASSOC);
 
         extract($row);
 
         // Create array
-        $order_details_arr = array(
-            'customer_name' => $customer_name,
-            'quantity' => $quantity,
-            'address' => $address,
-            'price' => $price,
-            'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
-            'time_of_order' => $time_of_order,
-            'total' => $total,
-            'name' => $name
+        $farmer_details_arr = array(
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'email' => $email,
+            'phonenumber' => $phonenumber,
+            // 'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
+            // 'time_of_order' => $time_of_order,
+            // 'total' => $total,
+            // 'name' => $name
         );
 
         echo json_encode(
             array(
-                'message' => 'Order created',
+                'message' => 'Farmer created',
                 'response' => 'OK',
                 'response_code' => http_response_code(),
-                'order_details' => $order_details_arr
+                'order_details' => $farmer_details_arr
             )
         );
     } else {
         echo json_encode(
             array(
-                'message' => 'Order not created',
+                'message' => 'Farmer not created',
                 'response' => 'OK',
                 'response_code' => http_response_code()
             )
