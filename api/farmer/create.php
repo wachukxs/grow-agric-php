@@ -8,7 +8,9 @@ $allowed_domains = [
     'https://grow-agric.netlify.app',
     'http://localhost:4005',
 ];
-echo 'Checking origin:' . $origin . ' for CORS access';
+// output to debug console/output
+file_put_contents('php://stderr', print_r('Checking origin:' . $origin . ' for CORS access', TRUE)); // or var_export($foo, true)
+
 if (in_array($origin, $allowed_domains)) {
     header('Access-Control-Allow-Origin: ' . $origin);
 }
