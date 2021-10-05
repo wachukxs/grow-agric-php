@@ -12,10 +12,10 @@ $allowed_domains = [
 file_put_contents('php://stderr', print_r('Checking origin ' . $origin . ' for CORS access', TRUE)); // or var_export($foo, true)
 
 if (in_array($origin, $allowed_domains)) {
-    file_put_contents('php://stderr', print_r('Valid CORS access for ' . $origin, TRUE));
+    file_put_contents('php://stderr', print_r('Valid CORS access for ' . $origin . "\n", TRUE));
     header('Access-Control-Allow-Origin: ' . $origin);
 } else {
-    file_put_contents('php://stderr', print_r('Invalid CORS access for ' . $origin, TRUE));
+    file_put_contents('php://stderr', print_r('Invalid CORS access for ' . $origin . "\n", TRUE));
 }
 // header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
