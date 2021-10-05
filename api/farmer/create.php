@@ -1,14 +1,14 @@
 <?php
 
 // Headers
-
+// https://stackoverflow.com/a/17098221
 $origin = $_SERVER['HTTP_ORIGIN'];
 $allowed_domains = [
     'https://farmers.growagric.com',
     'https://grow-agric.netlify.app',
     'http://localhost:4005',
 ];
-
+echo 'Checking origin:' . $origin . ' for CORS access';
 if (in_array($origin, $allowed_domains)) {
     header('Access-Control-Allow-Origin: ' . $origin);
 }
