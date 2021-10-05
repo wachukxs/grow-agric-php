@@ -1,7 +1,18 @@
 <?php
 
 // Headers
-header('Access-Control-Allow-Origin: *'); // https://farmers.growagric.com
+
+$origin = $_SERVER['HTTP_ORIGIN'];
+$allowed_domains = [
+    'https://farmers.growagric.com',
+    'https://grow-agric.netlify.app',
+    'http://localhost:4005',
+];
+
+if (in_array($origin, $allowed_domains)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+// header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
 header('Content-Type: application/json');
 header('Content-Control-Allow-Methods: POST');
