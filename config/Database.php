@@ -1,7 +1,7 @@
 <?php
     require __DIR__ . "/../vendor/autoload.php"; // https://stackoverflow.com/a/44623787/9259701
 
-    $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
+    $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/.."); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
     $dotenv->safeLoad();
 
     class Database {
@@ -15,12 +15,14 @@
         public function connect() // must be public [& not __construct, cause it'll return a Database data type not PDO], else we can't call it elsewhere
         {
             # should this block be in a constructor method or sth?
-            if (getenv("CURR_ENV") === "production") {
+            if (getenv("CURR_ENV") == "production") {
+                // echo 'Using prod database connection' . "\n";
                 $this->database_host = getenv("GROW_AGRIC_HOST_NAME");
                 $this->database_name = getenv("GROW_AGRIC_DATABASE_NAME_PROD"); // eventually dynamically set to prod/test
                 $this->database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME");
                 $this->database_password = getenv("GROW_AGRIC_DATABASE_PASSWORD");
             } else {
+                // echo 'Using local database connection' . "\n";
                 $this->database_host = getenv("GROW_AGRIC_HOST_NAME_LOCAL"); // getenv("GROW_AGRIC_HOST_NAME");
                 $this->database_name = getenv("GROW_AGRIC_DATABASE_NAME_TEST"); // eventually dynamically set to prod/test
                 $this->database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME_TEST");
@@ -34,10 +36,11 @@
                 $this->database_username, $this->database_password);
 
                 $this->database_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                echo 'Connection successful';
+                // echo 'Connection successful' . "\n";
             } catch (PDOException $e) {
-                echo 'Connection Error:' . $e->getMessage();
+                // echo 'Connection Error:' . $e->getMessage() . "\n";
             } catch (Throwable $th) {
+                // echo $th->getMessage() . "\n";
                 throw $th;
             }
 

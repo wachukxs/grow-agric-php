@@ -121,14 +121,23 @@ class Farmer {
         $stmt->bindParam(':_password', $p);
         $stmt->bindParam(':phone_number', $ph);
 
-        $r = $stmt->execute();
+        
 
-        if ($r) {
-            return $this->database_connection->lastInsertId();
-            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-        } else {
-            return false;
+        try {
+            $r = $stmt->execute(); // returns true/false
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                // echo $this->database_connection->errorInfo();
+                return $this->database_connection->errorInfo(); // false;
+            }
+        } catch (\PDOException $err) {
+            return $err->getMessage();
+            // throw $th;
         }
+
+        
     }
 
     // getSingleFarmerByID
