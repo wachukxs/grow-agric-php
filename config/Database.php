@@ -32,14 +32,14 @@
                 $this->database_name = getenv("GROW_AGRIC_DATABASE_NAME_PROD"); // eventually dynamically set to prod/test
                 $this->database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME");
                 $this->database_password = getenv("GROW_AGRIC_DATABASE_PASSWORD");
-                $this->$database_port = '3306'; // re-assign if in prod
+                $this->database_port = '3306'; // re-assign if in prod
             } else {
                 file_put_contents('php://stderr', print_r('Using local database connection' . "\n", TRUE));
                 $this->database_host = getenv("GROW_AGRIC_HOST_NAME_LOCAL"); // getenv("GROW_AGRIC_HOST_NAME");
                 $this->database_name = getenv("GROW_AGRIC_DATABASE_NAME_TEST"); // eventually dynamically set to prod/test
                 $this->database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME_TEST");
                 $this->database_password = getenv("GROW_AGRIC_DATABASE_PASSWORD_TEST");
-                $this->$database_port = '8889';
+                $this->database_port = '8889';
             }
             
 
