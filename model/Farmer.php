@@ -105,6 +105,7 @@ class Farmer {
             phonenumber = :phone_number
         ';
 
+        // Prepare the query statement
         $stmt = $this->database_connection->prepare($query);
 
         // Ensure safe data
@@ -138,6 +139,34 @@ class Farmer {
         }
 
         
+    }
+
+    // getSingleFarmerByID
+    public function loginFarmerByEmailAndPassword($_email, $_password)
+    {
+        // Create query
+        $query = 'SELECT * FROM ' . $this->table . '
+            WHERE
+            email = :_email
+            AND
+            password = :_password
+        ';
+
+        // Prepare statement
+        $query_statement = $this->database_connection->prepare($query);
+
+        $e = htmlspecialchars(strip_tags($_email));
+        $p = htmlspecialchars(strip_tags($_password));
+
+        // Execute query statement
+        $query_statement->bindParam(':_email', $e);
+        $query_statement->bindParam(':_password', $p);
+
+        // Execute query statement
+        $query_statement->execute();
+
+        return $query_statement;
+
     }
 
     // getSingleFarmerByID

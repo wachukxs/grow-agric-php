@@ -37,29 +37,21 @@ $farmer = new Farmer($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-// echo log tracing => look into loggin in php
-file_put_contents('php://stderr', print_r('Trying to sign up farmer' . "\n", TRUE));
+file_put_contents('php://stderr', print_r('Trying to log in farmer' . "\n", TRUE));
 
-if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->password)
-    &&
-    !empty($data->lastname)
-    &&
-    !empty($data->firstname)
+if (isset($data->email, $data->password)
     &&
     !empty($data->email)
     &&
-    !empty($data->phonenumber)
-    &&
     !empty($data->password)
-) { // if good data was provided
-    // Create the farmer [details]
-    $result = $farmer->createFarmer($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->password);
+) { 
+    // try to check their credentials
+    $result = $farmer->loginFarmerByEmailAndPassword($data->email, $data->password);
+
     if ($result) { // check that $result is an int
-        // Get the farmer [details]
-        $order_result = $farmer->getSingleFarmerByID($result);
 
         // returns an array, $row is an array
-        $row = $order_result->fetch(PDO::FETCH_ASSOC);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
 
         if (is_array($row)) { // gettype($row) == "array"
             // check if $row is array (means transaction was successful)
@@ -72,15 +64,11 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
                 'email' => $email,
                 'phonenumber' => $phonenumber,
                 'id' => $id,
-                // 'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
-                // 'time_of_order' => $time_of_order,
-                // 'total' => $total,
-                // 'name' => $name
             );
 
             echo json_encode(
                 array(
-                    'message' => 'Farmer created',
+                    'message' => 'Farmer logged in',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
                     'farmer_details' => $farmer_details_arr
@@ -89,7 +77,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
         } else { // $row is bool
             echo json_encode(
                 array(
-                    'message' => 'Farmer not created',
+                    'message' => 'Farmer not logged',
                     'response' => 'NOT OK',
                     'response_code' => http_response_code(301),
                     'message_details' => $result
@@ -103,13 +91,14 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
          */
         echo json_encode(
             array(
-                'message' => 'Farmer not created ' . gettype($result),
+                'message' => 'Farmer not logged in ' . gettype($result),
                 'response' => 'OK',
                 'response_code' => http_response_code(),
                 'message_details' => $result, // "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '0115335593' for key 'phonenumber'"
             )
         );
     }
+
 } else { // if bad or empty data was provided
     echo json_encode(
         array(
@@ -119,5 +108,4 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
         )
     );
 }
-
 ?>
