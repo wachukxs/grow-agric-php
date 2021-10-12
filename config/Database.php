@@ -4,16 +4,6 @@
     $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/.."); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
     $dotenv->safeLoad();
 
-    /**
-     * having issues connecting to remote sql:
-     * from local: SQLSTATE[HY000] [2002] Operation timed out
-     * 
-     * 
-     * from heroku:
-     * PHP Warning:  Undefined variable $database_port in /app/config/Database.php on line 25
-     * WARNING: [pool www] child 146, script '/app/api/farmer/create.php' (request: "OPTIONS /api/farmer/create.php") execution timed out (30.467144 sec), terminating
-     * Connection Error:SQLSTATE[HY000] [2002] Operation now in progress
-     */
     class Database {
         // Database parameters
         private $database_host;

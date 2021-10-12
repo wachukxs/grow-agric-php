@@ -38,7 +38,7 @@ $farmer = new Farmer($a_database_connection);
 $data = json_decode(file_get_contents('php://input'));
 
 // echo log tracing => look into loggin in php
-file_put_contents('php://stderr', print_r('Trying to sign up farmer' . "\n", TRUE));
+file_put_contents('php://stderr', print_r('Trying to update farmer details1' . "\n", TRUE));
 
 if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->password)
     &&
@@ -53,43 +53,42 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
     !empty($data->password)
 ) { // if good data was provided
     // Create the farmer [details]
-    $result = $farmer->createFarmer($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->password);
+    $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->password);
     if ($result) { // check that $result is an int
         // Get the farmer [details]
         $order_result = $farmer->getSingleFarmerByID($result);
-
+// ??
         // returns an array, $row is an array
         $row = $order_result->fetch(PDO::FETCH_ASSOC);
 
+        extract($row);
+
+        // Create array
+        $farmer_details_arr = array(
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'email' => $email,
+            'phonenumber' => $phonenumber,
+            'id' => $id,
+            // 'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
+            // 'time_of_order' => $time_of_order,
+            'maritalstatus' => $maritalstatus,
+            'highesteducationallevel' => $highesteducationallevel
+        );
+
         if (is_array($row)) { // gettype($row) == "array"
-            // check if $row is array (means transaction was successful)
-            extract($row);
-
-            // Create array
-            $farmer_details_arr = array(
-                'firstname' => $firstname,
-                'lastname' => $lastname,
-                'email' => $email,
-                'phonenumber' => $phonenumber,
-                'id' => $id,
-                // 'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
-                // 'time_of_order' => $time_of_order,
-                // 'total' => $total,
-                // 'name' => $name
-            );
-
             echo json_encode(
                 array(
-                    'message' => 'Farmer created',
+                    'message' => 'Farmer details updated',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
-                    'farmer_details' => $farmer_details_arr
+                    // 'farmer_details' => $farmer_details_arr // we could just set on the front end. less network load
                 )
             );
         } else { // $row is bool
             echo json_encode(
                 array(
-                    'message' => 'Farmer not created',
+                    'message' => 'Farmer details not updated',
                     'response' => 'NOT OK',
                     'response_code' => http_response_code(301),
                     'message_details' => $result
@@ -98,6 +97,8 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
         }
         
     } else {
+        file_put_contents('php://stderr', print_r('Farmer not created' . "\n", TRUE));
+        http_response_code(400);
         /**
          * $farmer->getSingleFarmerByID($result)->fetch(PDO::FETCH_ASSOC) is false if there was an error
          */
@@ -105,17 +106,20 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
             array(
                 'message' => 'Farmer not created ' . gettype($result),
                 'response' => 'NOT OK',
-                'response_code' => http_response_code(400),
+                'response_code' => http_response_code(),
                 'message_details' => $result, // "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '0115335593' for key 'phonenumber'"
             )
         );
     }
 } else { // if bad or empty data was provided
+    file_put_contents('php://stderr', print_r('Bad data provided' . "\n", TRUE));
+    header("HTTP/1.0 400 Bad Request"); // http_response_code(501); // 
+    file_put_contents('php://stderr', print_r('Sending ' . http_response_code() . "\n", TRUE));
     echo json_encode(
         array(
             'message' => 'Bad data provided',
             'response' => 'NOT OK',
-            'response_code' => http_response_code(406)
+            'response_code' => http_response_code()
         )
     );
 }
