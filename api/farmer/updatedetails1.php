@@ -39,8 +39,9 @@ $data = json_decode(file_get_contents('php://input'));
 
 // echo log tracing => look into loggin in php
 file_put_contents('php://stderr', print_r('Trying to update farmer details1' . "\n", TRUE));
+file_put_contents('php://stderr', print_r('farmer id is ' . $data->id . "\n", TRUE));
 
-if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->password)
+if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->id)
     &&
     !empty($data->lastname)
     &&
@@ -50,10 +51,16 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
     &&
     !empty($data->phonenumber)
     &&
-    !empty($data->password)
+    !empty($data->age)
+    &&
+    !empty($data->maritalstatus)
+    &&
+    !empty($data->highesteducationallevel)
+    &&
+    !empty($data->id)
 ) { // if good data was provided
     // Create the farmer [details]
-    $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->password);
+    $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->id);
     if ($result) { // check that $result is an int
         // Get the farmer [details]
         $order_result = $farmer->getSingleFarmerByID($result);
@@ -62,6 +69,8 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
         $row = $order_result->fetch(PDO::FETCH_ASSOC);
 
         extract($row);
+
+        file_put_contents('php://stderr', print_r('Farmer updated' . "\n", TRUE));
 
         // Create array
         $farmer_details_arr = array(
@@ -97,14 +106,14 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
         }
         
     } else {
-        file_put_contents('php://stderr', print_r('Farmer not created' . "\n", TRUE));
+        file_put_contents('php://stderr', print_r('Farmer not updated' . "\n", TRUE));
         http_response_code(400);
         /**
          * $farmer->getSingleFarmerByID($result)->fetch(PDO::FETCH_ASSOC) is false if there was an error
          */
         echo json_encode(
             array(
-                'message' => 'Farmer not created ' . gettype($result),
+                'message' => 'Farmer not updated ' . gettype($result),
                 'response' => 'NOT OK',
                 'response_code' => http_response_code(),
                 'message_details' => $result, // "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '0115335593' for key 'phonenumber'"
