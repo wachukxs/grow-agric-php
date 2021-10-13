@@ -41,9 +41,9 @@ $data = json_decode(file_get_contents('php://input'));
 
 // echo log tracing => look into loggin in php
 file_put_contents('php://stderr', print_r('Trying to update farmer details1' . "\n", TRUE));
-file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->id . "\n", TRUE));
+file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->farmerid . "\n", TRUE));
 
-if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->id)
+if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->farmerid)
     &&
     !empty($data->lastname)
     &&
@@ -59,12 +59,12 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
     &&
     !empty($data->highesteducationallevel)
     &&
-    !empty($data->id)
+    !empty($data->farmerid)
 ) { // if good data was provided
     try {
         // Update the farmer [details]
         file_put_contents('php://stderr', print_r('Good data was provided' . "\n", TRUE));
-        $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->id);
+        $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->farmerid);
         if ($result) { // check that $result is an int
             // Get the farmer [details]
             file_put_contents('php://stderr', print_r('Good result too' . "\n", TRUE));

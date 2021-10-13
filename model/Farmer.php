@@ -201,7 +201,7 @@ class Farmer {
     }
 
     // getSingleFarmerByID
-    public function updateFarmerProfile1ByID($firstname, $lastname, $email, $phonenumber, $age, $maritalstatus, $highesteducationallevel, $id)
+    public function updateFarmerProfile1ByID($firstname, $lastname, $email, $phonenumber, $age, $maritalstatus, $highesteducationallevel, $farmerid)
     {
         try {
             // Create query
@@ -215,7 +215,7 @@ class Farmer {
                 maritalstatus = :maritalstatus,
                 highesteducationallevel = :highesteducationallevel
                 WHERE
-                id = :id
+                id = :farmerid
             ';
 
             // Prepare statement
@@ -238,7 +238,7 @@ class Farmer {
             $stmt->bindParam(':age', $a);
             $stmt->bindParam(':maritalstatus', $ms);
             $stmt->bindParam(':highesteducationallevel', $hel);
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':farmerid', $farmerid);
 
             // Execute query statement
             if ($stmt->execute()) {
@@ -249,7 +249,7 @@ class Farmer {
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Farmer.php Error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Farmer.php->updateFarmerProfile1ByID error: ' . $err->getMessage() . "\n", TRUE));
         }
 
     }

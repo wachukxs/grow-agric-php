@@ -71,7 +71,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
                 'lastname' => $lastname,
                 'email' => $email,
                 'phonenumber' => $phonenumber,
-                'id' => $id,
+                'id' => $id, // should rename to farmer_id later
                 // 'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
                 // 'time_of_order' => $time_of_order,
                 // 'total' => $total,
