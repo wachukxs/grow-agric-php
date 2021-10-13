@@ -203,46 +203,53 @@ class Farmer {
     // getSingleFarmerByID
     public function updateFarmerProfile1ByID($firstname, $lastname, $email, $phonenumber, $age, $maritalstatus, $highesteducationallevel, $id)
     {
-        // Create query
-        $query = 'UPDATE ' . $this->table . ' 
-            SET 
-            firstname = :firstname,
-            lastname = :lastname,
-            email = :email,
-            phonenumber = :phonenumber,
-            age = :age,
-            maritalstatus = :maritalstatus,
-            highesteducationallevel = :highesteducationallevel
-            WHERE
-            id = :id
-        ';
+        try {
+            // Create query
+            $query = 'UPDATE ' . $this->table . ' 
+                SET 
+                firstname = :firstname,
+                lastname = :lastname,
+                email = :email,
+                phonenumber = :phonenumber,
+                age = :age,
+                maritalstatus = :maritalstatus,
+                highesteducationallevel = :highesteducationallevel
+                WHERE
+                id = :id
+            ';
 
-        // Prepare statement
-        $stmt = $this->database_connection->prepare($query);
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
 
-        // Ensure safe data
-        $fn = htmlspecialchars(strip_tags($firstname));
-        $ln = htmlspecialchars(strip_tags($lastname));
-        $e = htmlspecialchars(strip_tags($email));
-        $pn = htmlspecialchars(strip_tags($phonenumber));
-        $a = htmlspecialchars(strip_tags($age));
-        $ms = htmlspecialchars(strip_tags($maritalstatus));
-        $hel = htmlspecialchars(strip_tags($highesteducationallevel));
+            // Ensure safe data
+            $fn = htmlspecialchars(strip_tags($firstname));
+            $ln = htmlspecialchars(strip_tags($lastname));
+            $e = htmlspecialchars(strip_tags($email));
+            $pn = htmlspecialchars(strip_tags($phonenumber));
+            $a = htmlspecialchars(strip_tags($age));
+            $ms = htmlspecialchars(strip_tags($maritalstatus));
+            $hel = htmlspecialchars(strip_tags($highesteducationallevel));
 
-        // Bind parameters to prepared stmt
-        $stmt->bindParam(':firstname', $fn);
-        $stmt->bindParam(':lastname', $ln);
-        $stmt->bindParam(':email', $e);
-        $stmt->bindParam(':phonenumber', $pn);
-        $stmt->bindParam(':age', $a);
-        $stmt->bindParam(':maritalstatus', $ms);
-        $stmt->bindParam(':highesteducationallevel', $hel);
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':firstname', $fn);
+            $stmt->bindParam(':lastname', $ln);
+            $stmt->bindParam(':email', $e);
+            $stmt->bindParam(':phonenumber', $pn);
+            $stmt->bindParam(':age', $a);
+            $stmt->bindParam(':maritalstatus', $ms);
+            $stmt->bindParam(':highesteducationallevel', $hel);
+            $stmt->bindParam(':id', $id);
 
-        // Execute query statement
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            return false;
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed update query' . "\n", TRUE));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farmer.php Error: ' . $err->getMessage() . "\n", TRUE));
         }
 
     }
