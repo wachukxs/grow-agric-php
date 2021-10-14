@@ -33,8 +33,8 @@ class Farm {
         $stmt = $this->database_connection->prepare($query);
 
         // Ensure safe data
-        $cf = htmlspecialchars(strip_tags(implode(", ", $challengesfaced))); // conver the array to strings
-        $fi = htmlspecialchars(strip_tags(implode(", ", $farmeditems)));
+        $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced))); // convert the array to strings
+        $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
         $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
         $fcl = htmlspecialchars(strip_tags($farmcountylocation));
         $hin = htmlspecialchars(strip_tags($haveinsurance));
@@ -136,7 +136,7 @@ class Farm {
                 farmcitytownlocation = :farmcitytownlocation,
                 farmcountylocation = :farmcountylocation,
                 farmeditems = :farmeditems,
-                haveinsurance = :haveinsurance
+                haveinsurance = :haveinsurance,
                 insurer = :insurer,
                 numberofemployees = :numberofemployees,
                 otherchallengesfaced = :otherchallengesfaced,
@@ -150,13 +150,13 @@ class Farm {
             $stmt = $this->database_connection->prepare($query);
 
             // Ensure safe data
-            $cf = htmlspecialchars(strip_tags($challengesfaced));
+            $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced)));
             $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
             $fcl = htmlspecialchars(strip_tags($farmcountylocation));
-            $fi = htmlspecialchars(strip_tags($farmeditems));
+            $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
             $hin = htmlspecialchars(strip_tags($haveinsurance));
             $in = htmlspecialchars(strip_tags($insurer));
-            $noe = htmlspecialchars(strip_tags($numberofemployees));
+            $noe = htmlspecialchars(strip_tags($numberofemployees)); // no need for intval
             $ocf = htmlspecialchars(strip_tags($otherchallengesfaced));
             $ofi = htmlspecialchars(strip_tags($otherfarmeditems));
             $yf = htmlspecialchars(strip_tags($yearsfarming));
@@ -186,6 +186,7 @@ class Farm {
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
             file_put_contents('php://stderr', print_r('Farm.php->updateFarmByID error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
         }
 
     }

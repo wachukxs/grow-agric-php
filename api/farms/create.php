@@ -50,7 +50,7 @@ file_put_contents('php://stderr', print_r('Trying to add/update farm' . "\n", TR
             $result;
             if (isset($data->farms[$i]->id)) { // this if block should come before the for loop
                 // Update the farm [details]
-                $result = $farm->updateFarmByID($data->farms[$i]->challengesfaced, $farmcitytownlocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $id);
+                $result = $farm->updateFarmByID($data->farms[$i]->challengesfaced, $data->farms[$i]->farmcitytownlocation, $data->farms[$i]->farmcountylocation, $data->farms[$i]->farmeditems, $data->farms[$i]->haveinsurance, $data->farms[$i]->insurer, $data->farms[$i]->numberofemployees, $data->farms[$i]->otherchallengesfaced, $data->farms[$i]->otherfarmeditems, $data->farms[$i]->yearsfarming, $data->farms[$i]->id);
             } else { // create a new farm entry
                 // $data->farms[$i];
                 $result = $farm->createFarm($data->farms[$i]->challengesfaced, $data->farms[$i]->farmcitytownlocation, $data->farms[$i]->farmcountylocation, $data->farms[$i]->farmeditems, $data->farms[$i]->haveinsurance, $data->farms[$i]->insurer, $data->farms[$i]->numberofemployees, $data->farms[$i]->otherchallengesfaced, $data->farms[$i]->otherfarmeditems, $data->farms[$i]->yearsfarming, $data->farmerid);
@@ -95,7 +95,7 @@ file_put_contents('php://stderr', print_r('Trying to add/update farm' . "\n", TR
                         'message' => 'Farm created/updated',
                         'response' => 'OK',
                         'response_code' => http_response_code(),
-                        'farm_details' => $row // $farm_details_arr // will fail now cause of "global varialbe"
+                        'farm_details' => $row
                     )
                 );
     
@@ -106,10 +106,10 @@ file_put_contents('php://stderr', print_r('Trying to add/update farm' . "\n", TR
             // http_response_code(400);
             echo json_encode(
                 array(
-                    'message' => 'Farmer not created',
+                    'message' => 'Farm details not created/updated',
                     'response' => 'NOT OK',
                     'response_code' => http_response_code(),
-                    'message_details' => $result, // "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '0115335593' for key 'phonenumber'"
+                    'message_details' => $result, //
                 )
             );
         }
@@ -123,7 +123,7 @@ file_put_contents('php://stderr', print_r('Trying to add/update farm' . "\n", TR
                 'message' => 'Farm not created/updated',
                 'response' => 'NOT OK',
                 'response_code' => http_response_code(),
-                'message_details' => $result, // "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '0115335593' for key 'phonenumber'"
+                'message_details' => $result, //
             )
         );
     }
