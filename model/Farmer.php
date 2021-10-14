@@ -96,35 +96,34 @@ class Farmer {
 
     // Create new order, an entry
     public function createFarmer($first_name, $last_name, $_email, $phone_number, $_password) {
-        $query = 'INSERT INTO ' . $this->table . '
-            SET
-            firstname = :first_name,
-            lastname = :last_name,
-            email = :_email,
-            password = :_password,
-            phonenumber = :phone_number
-        ';
-
-        // Prepare the query statement
-        $stmt = $this->database_connection->prepare($query);
-
-        // Ensure safe data
-        $fn = htmlspecialchars(strip_tags($first_name));
-        $ln = htmlspecialchars(strip_tags($last_name));
-        $e = htmlspecialchars(strip_tags($_email));
-        $ph = htmlspecialchars(strip_tags($phone_number));
-        $p = htmlspecialchars(strip_tags($_password));
-
-        // Bind parameters to prepared stmt
-        $stmt->bindParam(':first_name', $fn);
-        $stmt->bindParam(':last_name', $ln);
-        $stmt->bindParam(':_email', $e);
-        $stmt->bindParam(':_password', $p);
-        $stmt->bindParam(':phone_number', $ph);
-
         
-
         try {
+            $query = 'INSERT INTO ' . $this->table . '
+                SET
+                firstname = :first_name,
+                lastname = :last_name,
+                email = :_email,
+                password = :_password,
+                phonenumber = :phone_number
+            ';
+
+            // Prepare the query statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fn = htmlspecialchars(strip_tags($first_name));
+            $ln = htmlspecialchars(strip_tags($last_name));
+            $e = htmlspecialchars(strip_tags($_email));
+            $ph = htmlspecialchars(strip_tags($phone_number));
+            $p = htmlspecialchars(strip_tags($_password));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':first_name', $fn);
+            $stmt->bindParam(':last_name', $ln);
+            $stmt->bindParam(':_email', $e);
+            $stmt->bindParam(':_password', $p);
+            $stmt->bindParam(':phone_number', $ph);
+            
             $r = $stmt->execute(); // returns true/false
             if ($r) {
                 return $this->database_connection->lastInsertId();
@@ -134,7 +133,8 @@ class Farmer {
                 return $this->database_connection->errorInfo(); // false;
             }
         } catch (\PDOException $err) {
-            return $err->getMessage();
+            file_put_contents('php://stderr', print_r('ERROR Trying to sign up farmer: ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); // false;
             // throw $th;
         }
 

@@ -91,7 +91,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
                 array(
                     'message' => 'Farmer not created',
                     'response' => 'NOT OK',
-                    'response_code' => http_response_code(301),
+                    'response_code' => http_response_code(),
                     'message_details' => $result
                 )
             );
@@ -105,7 +105,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
             array(
                 'message' => 'Farmer not created ' . gettype($result),
                 'response' => 'NOT OK',
-                'response_code' => http_response_code(400),
+                'response_code' => http_response_code(),
                 'message_details' => $result, // "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '0115335593' for key 'phonenumber'"
             )
         );
@@ -115,7 +115,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
         array(
             'message' => 'Bad data provided',
             'response' => 'NOT OK',
-            'response_code' => http_response_code(406)
+            'response_code' => http_response_code()
         )
     );
 }
