@@ -110,7 +110,7 @@ class Farm {
         // 'FROM farmers ' .
         // 'RIGHT OUTER JOIN orders ON farmer.id = orders.id_of_food ' .
         // 'WHERE farmers.id = ?';
-        $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ?';
+        $query = 'SELECT * FROM ' . $this->table . ' WHERE farmerid = ?';
 
         // Prepare statement
         $query_statement = $this->database_connection->prepare($query);

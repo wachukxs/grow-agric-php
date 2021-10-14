@@ -144,28 +144,34 @@ class Farmer {
     // getSingleFarmerByID
     public function loginFarmerByEmailAndPassword($_email, $_password)
     {
-        // Create query
-        $query = 'SELECT * FROM ' . $this->table . '
-            WHERE
-            email = :_email
-            AND
-            password = :_password
-        ';
+        try {
+            // Create query
+            $query = 'SELECT *, "" AS password FROM ' . $this->table . '
+                WHERE
+                email = :_email
+                AND
+                password = :_password
+            ';
 
-        // Prepare statement
-        $query_statement = $this->database_connection->prepare($query);
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
 
-        $e = htmlspecialchars(strip_tags($_email));
-        $p = htmlspecialchars(strip_tags($_password));
+            $e = htmlspecialchars(strip_tags($_email));
+            $p = htmlspecialchars(strip_tags($_password));
 
-        // Execute query statement
-        $query_statement->bindParam(':_email', $e);
-        $query_statement->bindParam(':_password', $p);
+            // Execute query statement
+            $query_statement->bindParam(':_email', $e);
+            $query_statement->bindParam(':_password', $p);
 
-        // Execute query statement
-        $query_statement->execute();
+            // Execute query statement
+            $query_statement->execute();
 
-        return $query_statement;
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Farm.php->createFarm error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
 
     }
 
