@@ -207,7 +207,7 @@ class Farmer {
     }
 
     // getSingleFarmerByID
-    public function updateFarmerProfile1ByID($firstname, $lastname, $email, $phonenumber, $age, $maritalstatus, $highesteducationallevel, $farmerid)
+    public function updateFarmerProfile1ByID($firstname, $lastname, $email, $phonenumber, $age, $maritalstatus, $highesteducationallevel, $yearsofexperience, $farmerid)
     {
         try {
             // Create query
@@ -219,7 +219,8 @@ class Farmer {
                 phonenumber = :phonenumber,
                 age = :age,
                 maritalstatus = :maritalstatus,
-                highesteducationallevel = :highesteducationallevel
+                highesteducationallevel = :highesteducationallevel,
+                yearsofexperience =:yearsofexperience
                 WHERE
                 id = :farmerid
             ';
@@ -235,6 +236,7 @@ class Farmer {
             $a = htmlspecialchars(strip_tags($age));
             $ms = htmlspecialchars(strip_tags($maritalstatus));
             $hel = htmlspecialchars(strip_tags($highesteducationallevel));
+            $yoe = htmlspecialchars(strip_tags($yearsofexperience));
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':firstname', $fn);
@@ -244,6 +246,7 @@ class Farmer {
             $stmt->bindParam(':age', $a);
             $stmt->bindParam(':maritalstatus', $ms);
             $stmt->bindParam(':highesteducationallevel', $hel);
+            $stmt->bindParam(':yearsofexperience', $yoe);
             $stmt->bindParam(':farmerid', $farmerid);
 
             // Execute query statement

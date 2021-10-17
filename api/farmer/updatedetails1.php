@@ -43,7 +43,7 @@ $data = json_decode(file_get_contents('php://input'));
 file_put_contents('php://stderr', print_r('Trying to update farmer details1' . "\n", TRUE));
 file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->farmerid . "\n", TRUE));
 
-if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->farmerid)
+if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->farmerid)
     &&
     !empty($data->lastname)
     &&
@@ -59,12 +59,14 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
     &&
     !empty($data->highesteducationallevel)
     &&
+    !empty($data->yearsofexperience)
+    &&
     !empty($data->farmerid)
 ) { // if good data was provided
     try {
         // Update the farmer [details]
         file_put_contents('php://stderr', print_r('Good data was provided' . "\n", TRUE));
-        $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->farmerid);
+        $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->farmerid);
         if ($result) { // check that $result is an int
             // Get the farmer [details]
             file_put_contents('php://stderr', print_r('Good result too' . "\n", TRUE));
@@ -85,7 +87,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
                 'phonenumber' => $phonenumber,
                 'id' => $id,
                 // 'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
-                // 'time_of_order' => $time_of_order,
+                'yearsofexperience' => $yearsofexperience,
                 'maritalstatus' => $maritalstatus,
                 'highesteducationallevel' => $highesteducationallevel
             );

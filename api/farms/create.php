@@ -70,7 +70,7 @@ file_put_contents('php://stderr', print_r('Trying to add/update farm' . "\n", TR
             $farms_result = $farm->getAllFarmsByFarmerID($data->farmerid);
     
             // returns an array, $row is an array
-            $row = $farms_result->fetch(PDO::FETCH_ASSOC);
+            $row = $farms_result->fetchAll(PDO::FETCH_ASSOC);
     
             if (is_array($row)) { // gettype($row) == "array"
                 // check if $row is array (means transaction was successful)
@@ -95,7 +95,7 @@ file_put_contents('php://stderr', print_r('Trying to add/update farm' . "\n", TR
                         'message' => 'Farm created/updated',
                         'response' => 'OK',
                         'response_code' => http_response_code(),
-                        'farm_details' => $row
+                        'farms' => $row
                     )
                 );
     
