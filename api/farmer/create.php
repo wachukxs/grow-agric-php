@@ -2,7 +2,7 @@
 
 // Headers
 // https://stackoverflow.com/a/17098221
-$origin = $_SERVER['HTTP_ORIGIN'];
+$origin = $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : NULL;
 $allowed_domains = [
     'https://farmers.growagric.com',
     'https://grow-agric.netlify.app',

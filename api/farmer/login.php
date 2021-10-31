@@ -2,7 +2,7 @@
 
 // Headers
 // https://stackoverflow.com/a/17098221
-$origin = $_SERVER['HTTP_ORIGIN'];
+$origin = $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : NULL;
 $allowed_domains = [
     'https://farmers.growagric.com',
     'https://grow-agric.netlify.app',
@@ -92,7 +92,7 @@ if (isset($data->email, $data->password)
                     'message' => 'Farmer not logged',
                     'response' => 'NOT OK',
                     'response_code' => http_response_code(301),
-                    'message_details' => $result1
+                    'message_details' => 'Ususally incorrect password'
                 )
             );
         }
