@@ -6,3 +6,8 @@ Watch me build great stuff.
 * Sign up a farmer.
 * Login a farmer.
 * ...
+
+
+### TODOs
+
+1. include a repititions in a file and include it, eg. when we set header config for api endpoints

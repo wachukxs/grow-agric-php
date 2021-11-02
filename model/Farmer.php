@@ -263,4 +263,46 @@ class Farmer {
 
     }
 
+
+    public function addToWaitingList($fullname, $email, $farmeditems) {
+        try {
+            $query = 'INSERT INTO waiting_list' . '
+                SET
+                fullname = :full_name,
+                farmeditems = :farmed_items,
+                email = :_email
+            ';
+
+            // Prepare the query statement
+            $stmt = $this->database_connection->prepare($query);
+
+            file_put_contents('php://stderr', print_r('Seeing farmed items ' . "\n", TRUE));
+
+            file_put_contents('php://stderr', print_r($farmeditems));
+
+            // Ensure safe data
+            $fn = htmlspecialchars(strip_tags($fullname));
+            $fi = htmlspecialchars(strip_tags($farmeditems)); // implode(',', get_object_vars($farmeditems))
+            $e = htmlspecialchars(strip_tags($email));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':full_name', $fn);
+            $stmt->bindParam(':farmed_items', $fi);
+            $stmt->bindParam(':_email', $e);
+            
+            $r = $stmt->execute(); // returns true/false
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                // echo $this->database_connection->errorInfo();
+                return $this->database_connection->errorInfo(); // false;
+            }
+        } catch (\PDOException $err) {
+            file_put_contents('php://stderr', print_r('ERROR Trying to add farmer to wait list: ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); // false;
+            // throw $th;
+        }
+    }
+
 }
