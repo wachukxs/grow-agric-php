@@ -305,4 +305,58 @@ class Farmer {
         }
     }
 
+    public function addLearningData($courseid, $currentpage, $readendtime, $readstarttime, $totalpages, $farmerid) {
+        try {
+            $query = 'INSERT INTO learning_info' . '
+                SET
+                course_id = :courseid,
+                currentpage = :currentpage,
+                totalpages = :totalpages,
+                start = :_starttime,
+                end = :_endtime,
+                farmerid = :farmerid
+            ';
+
+            // Prepare the query statement
+            $stmt = $this->database_connection->prepare($query);
+
+            file_put_contents('php://stderr', print_r('Inserting learning data' . "\n", TRUE));
+
+            // Ensure safe data
+            $cid = htmlspecialchars(strip_tags($courseid));
+            $cp = htmlspecialchars(strip_tags($currentpage));
+            $tp = htmlspecialchars(strip_tags($totalpages));
+            // https://www.php.net/manual/en/class.datetime.php
+            // https://www.php.net/manual/en/class.datetime.php#99309
+            $date1 = new DateTime($readstarttime);
+            // $date->setTimestamp($readstarttime);
+            $st = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s'))); // $date->format('Y-m-d H:i:s')
+            // $date->setTimestamp($readendtime);
+            $date2 = new DateTime($readendtime);
+            $et = htmlspecialchars(strip_tags($date2->format('Y-m-d H:i:s'))); // $date->format('Y-m-d H:i:s')
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':courseid', $cid);
+            $stmt->bindParam(':currentpage', $cp);
+            $stmt->bindParam(':totalpages', $tp);
+            $stmt->bindParam(':_starttime', $st);
+            $stmt->bindParam(':_endtime', $et);
+            $stmt->bindParam(':farmerid', $fid);
+            
+            $r = $stmt->execute(); // returns true/false
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                // echo $this->database_connection->errorInfo();
+                return $this->database_connection->errorInfo(); // false;
+            }
+        } catch (\PDOException $err) {
+            file_put_contents('php://stderr', print_r('ERROR Trying to insert farmer learing data: ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); // false;
+            // throw $th;
+        }
+    }
+
 }

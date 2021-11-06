@@ -38,25 +38,38 @@ $data = json_decode(file_get_contents('php://input'));
 
 file_put_contents('php://stderr', print_r("Trying to add farmer to wait list\n", TRUE));
 
-if (isset($data->fullname, $data->email, $data->farmeditems)
+if (isset($data->courseid, $data->currentpage, $data->readendtime, $data->readstarttime, $data->totalpages, $data->farmerid)
     &&
-    !empty($data->fullname)
+    !empty($data->courseid)
     &&
-    !empty($data->farmeditems)
+    !empty($data->currentpage)
     &&
-    !empty($data->email)
+    !empty($data->readendtime)
+    &&
+    !empty($data->readstarttime)
+    &&
+    !empty($data->totalpages)
+    &&
+    !empty($data->farmerid)
 ) {
-    $result = $farmer->addToWaitingList($data->fullname, $data->email, $data->farmeditems);
+    $result = $farmer->addLearningData($data->courseid, $data->currentpage, $data->readendtime, $data->readstarttime, $data->totalpages, $data->farmerid);
+
     echo json_encode(
         array(
-            'message' => 'Farmer added to wait list',
+            'message' => 'Farmer learning info updated',
             'response' => 'OK',
             'response_code' => http_response_code(),
             'message_details' => $result
         )
     );
 } else {
-    # code...
+    echo json_encode(
+        array(
+            'message' => 'Farmer learning NOT info updated',
+            'response' => 'NOT OK',
+            'response_code' => http_response_code(),
+            'message_details' => NULL
+        )
+    );
 }
-
 ?>
