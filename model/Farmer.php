@@ -194,7 +194,7 @@ class Farmer {
             $e = htmlspecialchars(strip_tags($_email));
 
             file_put_contents('php://stderr', print_r('Farm.php->getFarmerByEmail fetching ...: ' . "\n", TRUE));
-            file_put_contents('../../logs/api.log', 'Farm.php->getFarmerByEmail fetching ...: ' . "\n", FILE_APPEND | LOCK_EX);
+            // file_put_contents('../../logs/api.log', 'Farm.php->getFarmerByEmail fetching ...: ' . "\n", FILE_APPEND | LOCK_EX);
 
             // Execute query statement
             $query_statement->bindParam(':_email', $e);
@@ -205,7 +205,7 @@ class Farmer {
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('../../logs/api.log', 'Farm.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
+            // file_put_contents('../../logs/api.log', 'Farm.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
             file_put_contents('php://stderr', print_r('Farm.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
@@ -390,14 +390,17 @@ class Farmer {
                 return $this->database_connection->errorInfo(); // false;
             }
         } catch (\PDOException $err) {
-            file_put_contents('php://stderr', print_r('ERROR Trying to insert farmer learing data: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('ERROR in addLearningData(): ' . $err->getMessage() . "\n", TRUE));
             return $err->getMessage(); // false;
             // throw $th;
         }
     }
 
 
-    public function getLearningOverviewInfo() {
+    // use https://www.w3schools.com/sql/func_mysql_extract.asp to imporve sql queries, for calculating miutes, hours
+
+
+    public function getLearningOverviewInfo($farmerid) {
         try {
             // https://www.tutorialspoint.com/how-to-sum-time-in-mysql-by-converting-into-seconds
             // 
@@ -406,7 +409,75 @@ class Farmer {
             // SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as sum_time FROM learning_info [get hours]
 
             // SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as total_learning_hours, SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))/60 as total_learning_minutes FROM learning_info
-        } catch (\Throwable $th) {
+
+            $query = 'SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as total_learning_hours, SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))/60 as total_learning_minutes FROM learning_info WHERE farmerid = ?';
+            // SELECT COUNT(DISTINCT course_id) AS completed_learning FROM `learning_info` WHERE currentpage = totalpages AND farmerid = 1
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->bindParam(1, $farmerid);
+
+            // Execute query statement
+            $query_statement->execute();
+
+        return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getLearningOverviewInfo(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); // false;
+            //throw $th;
+        }
+    }
+
+
+    public function getLearningProgressInfo($farmerid) {
+        try {
+  
+            // https://stackoverflow.com/a/1775272/9259701
+            // TODO: mix with learning_courses, total values should be same with number of courses we have
+            $query = 'SELECT (SELECT COUNT(DISTINCT course_id) FROM `learning_info` WHERE currentpage = totalpages AND farmerid = ?) AS completed_learning, (SELECT COUNT(DISTINCT course_id) FROM `learning_info` WHERE currentpage > 0 AND currentpage < totalpages AND farmerid = ?) AS in_progress_learning, ( SELECT COUNT(DISTINCT course_id) FROM `learning_info` WHERE currentpage = 0 AND farmerid = ?) AS not_started_learning';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->bindParam(1, $farmerid);
+            $query_statement->bindParam(2, $farmerid);
+            $query_statement->bindParam(3, $farmerid);
+
+            // Execute query statement
+            $query_statement->execute();
+
+        return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getCompletedLearningInfo(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); // false;
+            //throw $th;
+        }
+    }
+
+
+    public function getLearningChartDataInfo($farmerid) {
+        try {
+  
+            // https://www.w3schools.com/sql/func_mysql_date.asp
+            // Select distinct date, and sum it ...
+            $query = 'SELECT DATE(start) AS "date", TIME_TO_SEC(TIMEDIFF(`end`, `start`))/60 AS total_learning_minutes FROM `learning_info` WHERE farmerid = ?';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->bindParam(1, $farmerid);
+
+            // Execute query statement
+            $query_statement->execute();
+
+        return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getCompletedLearningInfo(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); // false;
             //throw $th;
         }
     }
