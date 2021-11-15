@@ -28,96 +28,88 @@ include_once '../../config/Database.php';
 include_once '../../model/Farmer.php';
 include_once '../../model/Farm.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
+    // Instantiate Database to get a connection
+    $database_connection = new Database();
+    $a_database_connection = $database_connection->connect();
 
-// Instantiate new farmer object
-$farmer = new Farmer($a_database_connection);
+    // Instantiate new farmer object
+    $farmer = new Farmer($a_database_connection);
 
-$farm = new Farm($a_database_connection);
+    $farm = new Farm($a_database_connection);
 
-// get data
-$data = json_decode(file_get_contents('php://input'));
+    // get data
+    $data = json_decode(file_get_contents('php://input'));
 
-file_put_contents('php://stderr', print_r('Trying to log in farmer' . "\n", TRUE));
+    file_put_contents('php://stderr', print_r('Trying to log in farmer' . "\n", TRUE));
 
-if (isset($data->email, $data->password)
-    &&
-    !empty($data->email)
-    &&
-    !empty($data->password)
-) { 
-    // try to check their credentials
-    $result1 = $farmer->loginFarmerByEmailAndPassword($data->email, $data->password);
-
-    if ($result1) { // check that $result1 is an int
+    if (
+        isset($data->email, $data->password)
+        &&
+        !empty($data->email)
+        &&
+        !empty($data->password)
+    ) {
+        // try to check their credentials
+        $result1 = $farmer->getFarmerByEmail($data->email);
+        file_put_contents('php://stderr', print_r($result1, TRUE));
+        file_put_contents('php://stderr', print_r(gettype($result1), TRUE));
 
         // returns an array, $row1 is an array
         $row1 = $result1->fetch(PDO::FETCH_ASSOC);
 
-        if (is_array($row1)) { // gettype($row1) == "array"
-            // check if $row1 is array (means transaction was successful)
-            // extract($row1); // uhmm, no need to extract
-            file_put_contents('php://stderr', print_r($row1, TRUE));
+        if (is_array($row1)) { // gettype($row1) == "array" // check if $row1 is array (means transaction was successful)
+            if ($row1["password"] === $data->password) {
+                // delete password
+                unset($row1["password"]);
 
-            // fetch the farms associated with the farmer
-            $result2 = $farm->getAllFarmsByFarmerID($row1["id"]);
-            $row2 = $result2->fetchAll(PDO::FETCH_ASSOC); // should check if $row2 is an array too, or some form of validation
+                file_put_contents('php://stderr', print_r($row1, TRUE));
 
-            // Create array, if we extract
-            // $farmer_details_arr = array(
-            //     'firstname' => $row1["firstname"],
-            //     'lastname' => $row1["lastname"],
-            //     'email' => $row1["email"],
-            //     'phonenumber' => $row1["phonenumber"],
-            //     'id' => $row1["id"],
-            //     'farms' => $row2
-            // );
+                // fetch the farms associated with the farmer
+                $result2 = $farm->getAllFarmsByFarmerID($row1["id"]);
+                $row2 = $result2->fetchAll(PDO::FETCH_ASSOC); // should check if $row2 is an array too, or some form of validation
 
-            $farmer_details_arr = $row1;
-            $farmer_details_arr["farms"] = $row2;
+                $farmer_details_arr = $row1;
+                $farmer_details_arr["farms"] = $row2;
 
-            echo json_encode(
-                array(
-                    'message' => 'Farmer logged in',
-                    'response' => 'OK',
-                    'response_code' => http_response_code(),
-                    'farmer_details' => $farmer_details_arr
-                )
-            );
+                echo json_encode(
+                    array(
+                        'message' => 'Farmer logged in',
+                        'response' => 'OK',
+                        'response_code' => http_response_code(),
+                        'farmer_details' => $farmer_details_arr
+                    )
+                );
+            } else {
+                echo json_encode(
+                    array(
+                        'message' => 'Farmer not logged',
+                        'response' => 'NOT OK',
+                        'response_code' => http_response_code(403),
+                        'message_details' => 'Incorrect password'
+                    )
+                );
+            }
         } else { // $row1 is bool
             echo json_encode(
                 array(
                     'message' => 'Farmer not logged',
                     'response' => 'NOT OK',
-                    'response_code' => http_response_code(301),
-                    'message_details' => 'Ususally incorrect password'
+                    'response_code' => http_response_code(401),
+                    'message_details' => 'Account not found'
                 )
             );
         }
-        
-    } else {
-        /**
-         * $farmer->getSingleFarmerByID($result1)->fetch(PDO::FETCH_ASSOC) is false if there was an error
-         */
+    } else { // if bad or empty data was provided
+
+        file_put_contents('php://stderr', print_r('Trying to log in farmer, Bad data provided' . "\n", TRUE));
+
         echo json_encode(
             array(
-                'message' => 'Farmer not logged in ' . gettype($result1),
-                'response' => 'OK',
-                'response_code' => http_response_code(),
-                'message_details' => $result1, // "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '0115335593' for key 'phonenumber'"
+                'message' => 'Bad data provided',
+                'response' => 'NOT OK',
+                'response_code' => http_response_code(400)
             )
         );
     }
-
-} else { // if bad or empty data was provided
-    echo json_encode(
-        array(
-            'message' => 'Bad data provided',
-            'response' => 'NOT OK',
-            'response_code' => http_response_code()
-        )
-    );
 }
-?>

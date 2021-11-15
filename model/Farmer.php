@@ -141,7 +141,10 @@ class Farmer {
         
     }
 
-    // getSingleFarmerByID
+    /**
+     * @depreciated
+     */
+    // getSingleFarmerByEmailAndPassword
     public function loginFarmerByEmailAndPassword($_email, $_password)
     {
         try {
@@ -170,6 +173,40 @@ class Farmer {
         } catch (\Throwable $err) {
             //throw $err;
             file_put_contents('php://stderr', print_r('Farm.php->createFarm error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+
+    }
+
+    // getSingleFarmerByEmail
+    public function getFarmerByEmail($_email)
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM ' . $this->table . '
+                WHERE
+                email = :_email
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $e = htmlspecialchars(strip_tags($_email));
+
+            file_put_contents('php://stderr', print_r('Farm.php->getFarmerByEmail fetching ...: ' . "\n", TRUE));
+            file_put_contents('../../logs/api.log', 'Farm.php->getFarmerByEmail fetching ...: ' . "\n", FILE_APPEND | LOCK_EX);
+
+            // Execute query statement
+            $query_statement->bindParam(':_email', $e);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('../../logs/api.log', 'Farm.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', print_r('Farm.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
 
@@ -356,6 +393,21 @@ class Farmer {
             file_put_contents('php://stderr', print_r('ERROR Trying to insert farmer learing data: ' . $err->getMessage() . "\n", TRUE));
             return $err->getMessage(); // false;
             // throw $th;
+        }
+    }
+
+
+    public function getLearningOverviewInfo() {
+        try {
+            // https://www.tutorialspoint.com/how-to-sum-time-in-mysql-by-converting-into-seconds
+            // 
+            // SELECT TIMEDIFF(`end`, `start`) FROM learning_info
+            // SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))) as sum_time FROM learning_info
+            // SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as sum_time FROM learning_info [get hours]
+
+            // SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as total_learning_hours, SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))/60 as total_learning_minutes FROM learning_info
+        } catch (\Throwable $th) {
+            //throw $th;
         }
     }
 

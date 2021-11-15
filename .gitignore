@@ -7,3 +7,5 @@ install-composer.sh
 /assets/PDFs
 
 .DS_Store
+
+/logs
