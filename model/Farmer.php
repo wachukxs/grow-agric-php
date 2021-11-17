@@ -135,7 +135,7 @@ class Farmer {
         } catch (\PDOException $err) {
             file_put_contents('php://stderr', print_r('ERROR Trying to sign up farmer: ' . $err->getMessage() . "\n", TRUE));
             return $err->getMessage(); // false;
-            // throw $th;
+            // throw $err;
         }
 
         
@@ -474,12 +474,121 @@ class Farmer {
             // Execute query statement
             $query_statement->execute();
 
-        return $query_statement;
+            return $query_statement;
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('ERROR in getCompletedLearningInfo(): ' . $err->getMessage() . "\n", TRUE));
             return $err->getMessage(); // false;
             //throw $th;
         }
+    }
+
+
+    public function saveCourseForFarmer($courseid, $farmerid)
+    {
+
+        try {
+            // Create query
+            $query = 'INSERT INTO ' . 'saved_learnings' . '
+                SET
+                course_id = :_courseid,
+                farmerid = :_farmerid
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $ci = htmlspecialchars(strip_tags($courseid));
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(':_courseid', $ci);
+            $query_statement->bindParam(':_farmerid', $fi);
+
+            // Execute query statement
+            if ($query_statement->execute()) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('ERROR in saveCourseForFarmer(): ' . $err->getMessage() . "\n", TRUE));
+            return false; // $err->getMessage(); 
+        }
+
+    }
+
+
+    public function deleteSavedCourseForFarmer($courseid, $farmerid)
+    {
+
+        try {
+            // Create query
+            $query = 'DELETE FROM saved_learnings 
+                WHERE
+                course_id = ?
+                AND
+                farmerid = ?
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $ci = htmlspecialchars(strip_tags($courseid));
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $ci);
+            $query_statement->bindParam(2, $fi);
+
+            // Execute query statement
+            if ($query_statement->execute()) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('ERROR in deleteSavedCourseForFarmer(): ' . $err->getMessage() . "\n", TRUE));
+            return false; // $err->getMessage(); 
+        }
+
+    }
+
+
+    public function getSavedCoursesForFarmer($farmerid)
+    {
+
+        try {
+            // Create query
+            $query = 'SELECT * FROM saved_learnings 
+                WHERE
+                farmerid = ?
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $fi);
+
+            $query_statement->execute();
+
+            return $query_statement;
+
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('ERROR in deleteSavedCourseForFarmer(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); 
+        }
+
     }
 
 }

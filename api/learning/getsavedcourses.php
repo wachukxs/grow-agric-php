@@ -20,7 +20,7 @@ if (isset($origin) && in_array($origin, $allowed_domains)) {
 // header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
 header('Content-Type: application/json');
-header('Content-Control-Allow-Methods: GET'); // does this work ?
+header('Content-Control-Allow-Methods: GET');
 header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With');
 
 // Resources
@@ -31,7 +31,7 @@ include_once '../../model/Farmer.php';
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
-// Instantiate Farmer object
+// Instantiate Course object
 $farmer = new Farmer($a_database_connection);
 
 // get data
@@ -41,26 +41,15 @@ $data = json_decode(file_get_contents('php://input'));
  * check if $_GET["id"] is set
  * also check that that module id exist in db
  */
-// echo $_GET["farmerid"];
-// farmer id
-if (isset($_GET["farmerid"])) {
+// echo $_GET["id"];
+// course id ...(might later add course and module id, not necessary though)
+if (isset($_GET["id"])) {
     // Get the course [details]
 
-    $course_result = $farmer->getLearningOverviewInfo($_GET["farmerid"]);
-    $row1 = $course_result->fetch(PDO::FETCH_ASSOC);
+    $course_result = $farmer->getSavedCoursesForFarmer($_GET["farmerid"]);
+    $row1 = $course_result->fetchAll(PDO::FETCH_ASSOC);
 
-    $course_completion = $farmer->getLearningProgressInfo($_GET["farmerid"]);
-    $row2 = $course_completion->fetch(PDO::FETCH_ASSOC);
-
-    $course_chart_data = $farmer->getLearningChartDataInfo($_GET["farmerid"]);
-    $row2["learning_timeline"] = $course_chart_data->fetchAll(PDO::FETCH_ASSOC);
-
-    $saved_courses = $farmer->getSavedCoursesForFarmer($_GET["farmerid"]);
-    $row2["saved_courses"] = $saved_courses->fetchAll(PDO::FETCH_ASSOC);
-
-    $result = array_merge($row1, $row2);
-
-    echo json_encode($result);
+    echo json_encode($row1);
 } else {
     
 }
