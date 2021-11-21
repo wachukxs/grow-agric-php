@@ -436,7 +436,13 @@ class Farmer {
   
             // https://stackoverflow.com/a/1775272/9259701
             // TODO: mix with learning_courses, total values should be same with number of courses we have
-            $query = 'SELECT (SELECT COUNT(DISTINCT course_id) FROM `learning_info` WHERE currentpage = totalpages AND farmerid = ?) AS completed_learning, (SELECT COUNT(DISTINCT course_id) FROM `learning_info` WHERE currentpage > 0 AND currentpage < totalpages AND farmerid = ?) AS in_progress_learning, ( SELECT COUNT(DISTINCT course_id) FROM `learning_info` WHERE currentpage = 0 AND farmerid = ?) AS not_started_learning';
+            $query = 'SELECT 
+
+            (SELECT COUNT(DISTINCT course_id) FROM `learning_info` WHERE currentpage = totalpages AND farmerid = ?) AS completed_learning, 
+                       
+            (SELECT COUNT(DISTINCT `course_id`) FROM `learning_info` WHERE currentpage > 0 AND currentpage < totalpages AND farmerid = ? AND id NOT IN (SELECT course_id FROM learning_info WHERE currentpage = totalpages AND farmerid = ?)) AS in_progress_learning,
+                        
+            (SELECT COUNT(id) FROM learning_courses WHERE id NOT IN (SELECT DISTINCT(`course_id`) FROM `learning_info` WHERE farmerid = ?)) AS not_started_learning';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -445,6 +451,7 @@ class Farmer {
             $query_statement->bindParam(1, $farmerid);
             $query_statement->bindParam(2, $farmerid);
             $query_statement->bindParam(3, $farmerid);
+            $query_statement->bindParam(4, $farmerid);
 
             // Execute query statement
             $query_statement->execute();
@@ -463,7 +470,7 @@ class Farmer {
   
             // https://www.w3schools.com/sql/func_mysql_date.asp
             // Select distinct date, and sum it ...
-            $query = 'SELECT DATE(start) AS "date", TIME_TO_SEC(TIMEDIFF(`end`, `start`))/60 AS total_learning_minutes FROM `learning_info` WHERE farmerid = ?';
+            $query = 'SELECT DATE(start) AS "date", SUM( TIME_TO_SEC(TIMEDIFF(`end`, `start`))/60 ) AS total_learning_minutes FROM `learning_info` WHERE farmerid = ? GROUP BY DATE(start)';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
