@@ -25,8 +25,8 @@ header('Content-Control-Allow-Methods: POST');
 header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With');
 
 // Resources
-include_once '../../config/Database.php';
-include_once '../../model/Records.php';
+include_once '../../../../config/Database.php';
+include_once '../../../../model/Records.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
@@ -38,14 +38,7 @@ $records = new Records($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-// record_type ==> "Inputs"
-
-// : "Isinya"
-// : "Chicken"
-// : "dsfa\n\nsadfjk\nsajflsadlk"
-// : "424"
-// : Fri Nov 19 2021 00:00:00 GMT+0300 (East Africa Time) {}
-// : "2342"
+// record_type ==> "Feeds"
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (
@@ -60,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
-            $result = $records->createInputRecord($value->farm_id, $value->chicken_supplier, $value->input_type, $value->notes, $value->price, $value->purchase_date, $value->quantity, $value->farmerid);
+            $result = $records->createFeedsInputRecord($value->farm_id, $value->feed_supplier, $value->feed_type, $value->input_type, $value->notes, $value->price, $value->purchase_date, $value->quantity, $value->farmerid);
         
             // returns an int [last insert id], $result is an int
 
