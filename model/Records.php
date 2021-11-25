@@ -211,8 +211,6 @@ class Records {
             return $stmt;
         }
 
-        // addFarmerLabourRecord
-
         // Create new farmer employee, an entry
         public function addFarmerLabourRecord($emp_id, $salary, $notes, $payment_date, $farmerid) {
 
@@ -234,7 +232,7 @@ class Records {
 
             $date1 = new DateTime($payment_date);
             $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-            
+
             $ei = htmlspecialchars(strip_tags($emp_id));
 
             // Bind parameters to prepared stmt
@@ -258,6 +256,80 @@ class Records {
         public function getAllFarmerLabourRecords($farmerid) {
 
             $query = 'SELECT * FROM input_records_labour
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        }
+
+        // Create new farmer employee, an entry
+        public function addFarmerMedicineInputRecord($medicine_type, $medicine_supplier, $type, $vet_name, $purchase_date, $notes, $price, $farmid, $farmerid) {
+
+            $query = 'INSERT INTO input_records_medicines 
+                SET
+                medicine_type = :_medicine_type,
+                medicine_supplier = :_medicine_supplier,
+                type = :_type,
+                vet_name = :_vet_name,
+                notes = :_notes,
+                purchase_date = :_purchase_date,
+                price = :_price,
+                farmid = :_farmid,
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $fid = htmlspecialchars(strip_tags($farmid));
+            $ms = htmlspecialchars(strip_tags($medicine_supplier));
+            $n = htmlspecialchars(strip_tags($notes));
+            $mt = htmlspecialchars(strip_tags($medicine_type));
+            $t = htmlspecialchars(strip_tags($type));
+            $vn = htmlspecialchars(strip_tags($vet_name));
+
+            $date1 = new DateTime($purchase_date);
+            $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+            
+            $p = htmlspecialchars(strip_tags($price));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_medicine_type', $mt);
+            $stmt->bindParam(':_notes', $n);
+            $stmt->bindParam(':_medicine_supplier', $ms);
+            $stmt->bindParam(':_purchase_date', $pd);
+            $stmt->bindParam(':_type', $t);
+            $stmt->bindParam(':_price', $p);
+            $stmt->bindParam(':_farmid', $fid);
+            $stmt->bindParam(':_vet_name', $vn);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        }
+
+
+        public function getAllFarmerMedicineInputRecords($farmerid) {
+
+            $query = 'SELECT * FROM input_records_medicines
                 WHERE
                 farmerid = :_farmerid
             ';
