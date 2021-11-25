@@ -27,6 +27,7 @@ header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Ty
 include_once '../../config/Database.php';
 include_once '../../model/Farmer.php';
 include_once '../../model/Farm.php';
+include_once '../../model/Records.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
     // Instantiate Database to get a connection
@@ -37,6 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
     $farmer = new Farmer($a_database_connection);
 
     $farm = new Farm($a_database_connection);
+
+    $records = new Records($a_database_connection);
 
     // get data
     $data = json_decode(file_get_contents('php://input'));
@@ -69,8 +72,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                 $result2 = $farm->getAllFarmsByFarmerID($row1["id"]);
                 $row2 = $result2->fetchAll(PDO::FETCH_ASSOC); // should check if $row2 is an array too, or some form of validation
 
+                $result3 = $records->getAllFarmerEmployees($row1["id"]);
+                $row3 = $result3->fetchAll(PDO::FETCH_ASSOC);
+
                 $farmer_details_arr = $row1;
                 $farmer_details_arr["farms"] = $row2;
+                $farmer_details_arr["employees"] = $row3;
 
                 echo json_encode(
                     array(

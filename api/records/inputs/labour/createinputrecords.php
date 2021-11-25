@@ -21,7 +21,7 @@ if (isset($origin) && in_array($origin, $allowed_domains)) {
 // header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
 header('Content-Type: application/json');
-header('Content-Control-Allow-Methods: GET');
+header('Content-Control-Allow-Methods: POST');
 header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With');
 
 // Resources
@@ -38,22 +38,52 @@ $records = new Records($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-file_put_contents('php://stderr', print_r('829239\\n', TRUE));
-/**
- * check if $_GET["id"] is set
- * also check that that module id exist in db
- */
-// echo $_GET["id"];
-// course id ...(might later add course and module id, not necessary though)
-if (isset($_GET["farmerid"])) {
-    // Get the course [details]
+// record_type ==> "Feeds"
 
-    $course_result = $records->getAllFeedsInputRecords($_GET["farmerid"]);
-    $row1["feeds_inputs"] = $course_result->fetchAll(PDO::FETCH_ASSOC);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (
+        $data
+        &&
+        isset($data[0])
+        &&
+        !empty($data)
+    ) {
+    
 
-    echo json_encode($row1);
+        $result_array = array();
+        foreach ($data as &$value) {
+            // insert the record [details]
+            // $emp_id, $salary, $notes, $payment_date, $farmerid
+            $result = $records->addFarmerLabourRecord($value->employee_id, $value->salary, $value->notes, $value->paymentdate, $value->farmerid);
+        
+            // returns an int [last insert id], $result is an int
+
+            file_put_contents('php://stderr', print_r('[]][==== ++' . gettype($result), TRUE));
+            
+            file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
+
+            array_push($result_array, $result);
+            
+        }
+        
+        echo json_encode(
+            array(
+                'message' => 'Good request, no errors',
+                'response' => 'OK',
+                'response_code' => http_response_code(),
+                'save_details' => $result_array
+            )
+        );
+    
+    } else {
+        echo json_encode(
+            array(
+                'message' => 'Bad data provided',
+                'response' => 'NOT OK',
+                'response_code' => http_response_code(400)
+            )
+        );
+    }
 } else {
-    file_put_contents('php://stderr', print_r('[]][==== ++ NOOOO Farmer id \\n', TRUE));
+    file_put_contents('php://stderr', print_r('Woow 3', TRUE));
 }
-
-?>

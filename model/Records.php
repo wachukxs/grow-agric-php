@@ -160,4 +160,119 @@ class Records {
             return $stmt;
         }
 
+
+        // Create new farmer employee, an entry
+        public function createNewFarmerEmployee($emp_fullname, $farmerid) {
+
+            $query = 'INSERT INTO farmer_employees 
+                SET
+                employeefullname = :_emp_fullname,
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $ef = htmlspecialchars(strip_tags($emp_fullname));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_emp_fullname', $ef);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        }
+
+
+        public function getAllFarmerEmployees($farmerid) {
+
+            $query = 'SELECT * FROM farmer_employees
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        }
+
+        // addFarmerLabourRecord
+
+        // Create new farmer employee, an entry
+        public function addFarmerLabourRecord($emp_id, $salary, $notes, $payment_date, $farmerid) {
+
+            $query = 'INSERT INTO input_records_labour 
+                SET
+                employee_id = :_emp_id,
+                salary = :_salary,
+                notes = :_notes,
+                payment_date = :_payment_date,
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $s = htmlspecialchars(strip_tags($salary));
+            $n = htmlspecialchars(strip_tags($notes));
+
+            $date1 = new DateTime($payment_date);
+            $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+            
+            $ei = htmlspecialchars(strip_tags($emp_id));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_salary', $s);
+            $stmt->bindParam(':_notes', $n);
+            $stmt->bindParam(':_emp_id', $ei);
+            $stmt->bindParam(':_payment_date', $pd);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        }
+
+
+        public function getAllFarmerLabourRecords($farmerid) {
+
+            $query = 'SELECT * FROM input_records_labour
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        }
+
 }
