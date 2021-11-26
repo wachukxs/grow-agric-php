@@ -693,4 +693,71 @@ class Records
             return false;
         }
     }
+
+
+    public function getAllFarmerOtherIncomeOrExpenseInputRecords($farmerid)
+    {
+        $query = 'SELECT * FROM input_records_income_expenses
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function addFarmerOtherIncomeOrExpenseInputRecord($notes, $source, $_date, $amount, $type, $farmid, $farmerid)
+    {
+        $query = 'INSERT INTO input_records_income_expenses 
+            SET
+            source = :_source,
+            date = :_date,
+            amount = :_amount,
+            notes = :_notes,
+            type = :_type,
+            farmid = :_farmid,
+            farmerid = :_farmerid
+        ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $fid = htmlspecialchars(strip_tags($farmid));
+        $a = htmlspecialchars(strip_tags($amount));
+        $s = htmlspecialchars(strip_tags($source));
+
+        $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
+        $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+        $t = htmlspecialchars(strip_tags($type));
+        $n = htmlspecialchars(strip_tags($notes));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_source', $s);
+        $stmt->bindParam(':_notes', $n);
+        $stmt->bindParam(':_amount', $a);
+        $stmt->bindParam(':_type', $t);
+        $stmt->bindParam(':_farmid', $fid);
+        $stmt->bindParam(':_date', $d);
+
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
+        }
+    }
 }
