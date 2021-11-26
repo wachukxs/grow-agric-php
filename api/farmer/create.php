@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                         'lastname' => $lastname,
                         'email' => $email,
                         'phonenumber' => $phonenumber,
-                        'id' => $result, // should rename to farmer_id later
+                        'id' => $id, // should rename to farmer_id later
                         // 'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
                         // 'time_of_order' => $time_of_order,
                         // 'total' => $total,
