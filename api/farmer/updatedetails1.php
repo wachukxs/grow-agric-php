@@ -41,9 +41,9 @@ $data = json_decode(file_get_contents('php://input'));
 
 // echo log tracing => look into loggin in php
 file_put_contents('php://stderr', print_r('Trying to update farmer details1' . "\n", TRUE));
-file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->farmerid . "\n", TRUE));
+file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->id . "\n", TRUE));
 
-if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->farmerid)
+if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->id)
     &&
     !empty($data->lastname)
     &&
@@ -61,12 +61,12 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
     &&
     !empty($data->yearsofexperience)
     &&
-    !empty($data->farmerid)
+    !empty($data->id)
 ) { // if good data was provided
     try {
         // Update the farmer [details]
         file_put_contents('php://stderr', print_r('Good data was provided' . "\n", TRUE));
-        $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->farmerid);
+        $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->id);
         if ($result) { // check that $result is an int
             // Get the farmer [details]
             file_put_contents('php://stderr', print_r('Good result too' . "\n", TRUE));
