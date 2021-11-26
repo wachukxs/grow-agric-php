@@ -273,7 +273,7 @@ class Records {
             return $stmt;
         }
 
-        // Create new farmer employee, an entry
+        // Create new administered medicine, an entry
         public function addFarmerMedicineInputRecord($medicine_type, $medicine_supplier, $type, $vet_name, $purchase_date, $notes, $price, $farmid, $farmerid) {
 
             $query = 'INSERT INTO input_records_medicines 
@@ -330,6 +330,204 @@ class Records {
         public function getAllFarmerMedicineInputRecords($farmerid) {
 
             $query = 'SELECT * FROM input_records_medicines
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        }
+
+
+        // Create new brooding, an entry
+        public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid) {
+
+            $query = 'INSERT INTO input_records_brooding 
+                SET
+                amount_spent = :_amount_spent,
+                brooding_date = :_brooding_date,
+                notes = :_notes,
+                brooding_item_quantity = :_brooding_item_quantity,
+                brooding_item = :_brooding_item,
+                farmid = :_farmid,
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $fid = htmlspecialchars(strip_tags($farmid));
+            $as = htmlspecialchars(strip_tags($amount_spent));
+            $n = htmlspecialchars(strip_tags($notes));
+            $biq = htmlspecialchars(strip_tags($brooding_item_quantity));
+            $bi = htmlspecialchars(strip_tags($brooding_item));
+
+            $date1 = new DateTime($brooding_date);
+            $bd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+            
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_amount_spent', $as);
+            $stmt->bindParam(':_notes', $n);
+            $stmt->bindParam(':_brooding_item_quantity', $biq);
+            $stmt->bindParam(':_brooding_date', $bd);
+            $stmt->bindParam(':_brooding_item', $bi);
+            $stmt->bindParam(':_farmid', $fid);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        }
+
+
+        public function getAllFarmerBroodingInputRecords($farmerid) {
+
+            $query = 'SELECT * FROM input_records_brooding
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        }
+
+
+        public function addFarmerCustomerInputRecord($customer_fullname, $customer_phone, $customer_county_location, $farmid, $farmerid) {
+
+            $query = 'INSERT INTO sales_farmer_customer 
+                SET
+                customer_fullname = :_customer_fullname,
+                customer_phone = :_customer_phone,
+                customer_county_location = :_customer_county_location,
+                farmid = :_farmid,
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $fid = htmlspecialchars(strip_tags($farmid));
+            $cf = htmlspecialchars(strip_tags($customer_fullname));
+            $cp = htmlspecialchars(strip_tags($customer_phone));
+            $ccl = htmlspecialchars(strip_tags($customer_county_location));
+            
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_customer_fullname', $cf);
+            $stmt->bindParam(':_customer_phone', $cp);
+            $stmt->bindParam(':_customer_county_location', $ccl);
+            $stmt->bindParam(':_farmid', $fid);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        }
+
+
+        public function getAllFarmerCustomerInputRecords($farmerid) {
+
+            $query = 'SELECT * FROM sales_farmer_customer
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        }
+
+
+
+
+
+        public function addFarmerSaleInputRecord($customer_id, $solditem, $sale_date, $quantity, $price, $farmid, $farmerid) {
+
+            $query = 'INSERT INTO sales_farmer_sales 
+                SET
+                customer_id = :_customer_id,
+                sale_date = :_sale_date,
+                solditem = :_solditem,
+                quantity = :_quantity,
+                price = :_price,
+                farmid = :_farmid,
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $fid = htmlspecialchars(strip_tags($farmid));
+            $ci = htmlspecialchars(strip_tags($customer_id));
+            $si = htmlspecialchars(strip_tags($solditem));
+
+            $date1 = new DateTime($sale_date); // Seems this isn't doing timezone conversion and is not accurate
+            $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+            $q = htmlspecialchars(strip_tags($quantity));
+            $p = htmlspecialchars(strip_tags($price));
+            
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_customer_id', $ci);
+            $stmt->bindParam(':_sale_date', $sd);
+            $stmt->bindParam(':_quantity', $q);
+            $stmt->bindParam(':_price', $p);
+            $stmt->bindParam(':_farmid', $fid);
+            $stmt->bindParam(':_solditem', $si);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        }
+
+
+        public function getAllFarmerSalesInputRecords($farmerid) {
+
+            $query = 'SELECT * FROM sales_farmer_sales
                 WHERE
                 farmerid = :_farmerid
             ';
