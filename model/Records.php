@@ -1,22 +1,24 @@
 <?php
 
-class Records {
-        // DB stuff
-        public $database_connection;
-        private $table = 'inputs_records_chicken';
+class Records
+{
+    // DB stuff
+    public $database_connection;
+    private $table = 'inputs_records_chicken';
 
-        /**
-         * Constructor taking db as params
-         */
-        public function __construct($a_database_connection)
-        {
-            $this->database_connection = $a_database_connection;
-        }
+    /**
+     * Constructor taking db as params
+     */
+    public function __construct($a_database_connection)
+    {
+        $this->database_connection = $a_database_connection;
+    }
 
-        // Create new chicken input record, an entry
-        public function createChickenInputRecord($farmid, $chicken_supplier, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid) {
+    // Create new chicken input record, an entry
+    public function createChickenInputRecord($farmid, $chicken_supplier, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid)
+    {
 
-            $query = 'INSERT INTO inputs_records_chicken 
+        $query = 'INSERT INTO inputs_records_chicken 
                 SET
                 farm_id = :_farmid,
                 chicken_supplier = :_chickensupplier,
@@ -28,68 +30,70 @@ class Records {
                 quantity = :_quantity
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $frmid = htmlspecialchars(strip_tags($farmid));
-            $cs = htmlspecialchars(strip_tags($chicken_supplier));
-            $it = htmlspecialchars(strip_tags($input_type));
-            $n = htmlspecialchars(strip_tags($notes));
-            $p = htmlspecialchars(strip_tags($price));
+        // Ensure safe data
+        $frmid = htmlspecialchars(strip_tags($farmid));
+        $cs = htmlspecialchars(strip_tags($chicken_supplier));
+        $it = htmlspecialchars(strip_tags($input_type));
+        $n = htmlspecialchars(strip_tags($notes));
+        $p = htmlspecialchars(strip_tags($price));
 
-            $date1 = new DateTime($purchase_date); // Seems this isn't doing timezone conversion and is not accurate
-            $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-            $q = htmlspecialchars(strip_tags($quantity));
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        $date1 = new DateTime($purchase_date); // Seems this isn't doing timezone conversion and is not accurate
+        $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+        $q = htmlspecialchars(strip_tags($quantity));
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmid', $frmid);
-            $stmt->bindParam(':_chickensupplier', $cs);
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_inputtype', $it);
-            $stmt->bindParam(':_notes', $n);
-            $stmt->bindParam(':_price', $p);
-            $stmt->bindParam(':_purchasedate', $pd);
-            $stmt->bindParam(':_quantity', $q);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmid', $frmid);
+        $stmt->bindParam(':_chickensupplier', $cs);
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_inputtype', $it);
+        $stmt->bindParam(':_notes', $n);
+        $stmt->bindParam(':_price', $p);
+        $stmt->bindParam(':_purchasedate', $pd);
+        $stmt->bindParam(':_quantity', $q);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllChickenInputRecords($farmerid) {
+    public function getAllChickenInputRecords($farmerid)
+    {
 
-            // SELECT * FROM `inputs_records_chicken` WHERE `farmerid` = 1 AND input_type = 'Chicken'
-            $query = 'SELECT * FROM inputs_records_chicken
+        // SELECT * FROM `inputs_records_chicken` WHERE `farmerid` = 1 AND input_type = 'Chicken'
+        $query = 'SELECT * FROM inputs_records_chicken
                 WHERE
                 farmerid = :_farmerid
                 AND input_type = "Chicken"
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
-        }
+        return $stmt;
+    }
 
 
-        // Create new feeds input record, an entry
-        public function createFeedsInputRecord($farmid, $feed_supplier, $feed_type, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid) {
+    // Create new feeds input record, an entry
+    public function createFeedsInputRecord($farmid, $feed_supplier, $feed_type, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid)
+    {
 
-            $query = 'INSERT INTO inputs_records_feeds 
+        $query = 'INSERT INTO inputs_records_feeds 
                 SET
                 farm_id = :_farmid,
                 feed_supplier = :_feedsupplier,
@@ -102,119 +106,123 @@ class Records {
                 quantity = :_quantity
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $frmid = htmlspecialchars(strip_tags($farmid));
-            $cs = htmlspecialchars(strip_tags($feed_supplier));
-            $ft = htmlspecialchars(strip_tags($feed_type));
-            $it = htmlspecialchars(strip_tags($input_type));
-            $n = htmlspecialchars(strip_tags($notes));
-            $p = htmlspecialchars(strip_tags($price));
+        // Ensure safe data
+        $frmid = htmlspecialchars(strip_tags($farmid));
+        $cs = htmlspecialchars(strip_tags($feed_supplier));
+        $ft = htmlspecialchars(strip_tags($feed_type));
+        $it = htmlspecialchars(strip_tags($input_type));
+        $n = htmlspecialchars(strip_tags($notes));
+        $p = htmlspecialchars(strip_tags($price));
 
-            $date1 = new DateTime($purchase_date); // Seems this isn't doing timezone conversion and is not accurate
-            $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-            $q = htmlspecialchars(strip_tags($quantity));
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        $date1 = new DateTime($purchase_date); // Seems this isn't doing timezone conversion and is not accurate
+        $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+        $q = htmlspecialchars(strip_tags($quantity));
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmid', $frmid);
-            $stmt->bindParam(':_feedsupplier', $cs);
-            $stmt->bindParam(':_feedtype', $ft);
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_inputtype', $it);
-            $stmt->bindParam(':_notes', $n);
-            $stmt->bindParam(':_price', $p);
-            $stmt->bindParam(':_purchasedate', $pd);
-            $stmt->bindParam(':_quantity', $q);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmid', $frmid);
+        $stmt->bindParam(':_feedsupplier', $cs);
+        $stmt->bindParam(':_feedtype', $ft);
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_inputtype', $it);
+        $stmt->bindParam(':_notes', $n);
+        $stmt->bindParam(':_price', $p);
+        $stmt->bindParam(':_purchasedate', $pd);
+        $stmt->bindParam(':_quantity', $q);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllFeedsInputRecords($farmerid) {
+    public function getAllFeedsInputRecords($farmerid)
+    {
 
-            $query = 'SELECT * FROM inputs_records_feeds
+        $query = 'SELECT * FROM inputs_records_feeds
                 WHERE
                 farmerid = :_farmerid
                 AND input_type = "Feeds"
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
-        }
+        return $stmt;
+    }
 
 
-        // Create new farmer employee, an entry
-        public function createNewFarmerEmployee($emp_fullname, $farmerid) {
+    // Create new farmer employee, an entry
+    public function createNewFarmerEmployee($emp_fullname, $farmerid)
+    {
 
-            $query = 'INSERT INTO farmer_employees 
+        $query = 'INSERT INTO farmer_employees 
                 SET
                 employeefullname = :_emp_fullname,
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
-            $ef = htmlspecialchars(strip_tags($emp_fullname));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $ef = htmlspecialchars(strip_tags($emp_fullname));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_emp_fullname', $ef);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_emp_fullname', $ef);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllFarmerEmployees($farmerid) {
+    public function getAllFarmerEmployees($farmerid)
+    {
 
-            $query = 'SELECT * FROM farmer_employees
+        $query = 'SELECT * FROM farmer_employees
                 WHERE
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
-        }
+        return $stmt;
+    }
 
-        // Create new farmer employee, an entry
-        public function addFarmerLabourRecord($emp_id, $salary, $notes, $payment_date, $farmerid) {
+    // Create new farmer employee, an entry
+    public function addFarmerLabourRecord($emp_id, $salary, $notes, $payment_date, $farmerid)
+    {
 
-            $query = 'INSERT INTO input_records_labour 
+        $query = 'INSERT INTO input_records_labour 
                 SET
                 employee_id = :_emp_id,
                 salary = :_salary,
@@ -223,60 +231,62 @@ class Records {
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
-            $s = htmlspecialchars(strip_tags($salary));
-            $n = htmlspecialchars(strip_tags($notes));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $s = htmlspecialchars(strip_tags($salary));
+        $n = htmlspecialchars(strip_tags($notes));
 
-            $date1 = new DateTime($payment_date);
-            $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+        $date1 = new DateTime($payment_date);
+        $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-            $ei = htmlspecialchars(strip_tags($emp_id));
+        $ei = htmlspecialchars(strip_tags($emp_id));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_salary', $s);
-            $stmt->bindParam(':_notes', $n);
-            $stmt->bindParam(':_emp_id', $ei);
-            $stmt->bindParam(':_payment_date', $pd);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_salary', $s);
+        $stmt->bindParam(':_notes', $n);
+        $stmt->bindParam(':_emp_id', $ei);
+        $stmt->bindParam(':_payment_date', $pd);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllFarmerLabourRecords($farmerid) {
+    public function getAllFarmerLabourRecords($farmerid)
+    {
 
-            $query = 'SELECT * FROM input_records_labour
+        $query = 'SELECT * FROM input_records_labour
                 WHERE
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
-        }
+        return $stmt;
+    }
 
-        // Create new administered medicine, an entry
-        public function addFarmerMedicineInputRecord($medicine_type, $medicine_supplier, $type, $vet_name, $purchase_date, $notes, $price, $farmid, $farmerid) {
+    // Create new administered medicine, an entry
+    public function addFarmerMedicineInputRecord($medicine_type, $medicine_supplier, $type, $vet_name, $purchase_date, $notes, $price, $farmid, $farmerid)
+    {
 
-            $query = 'INSERT INTO input_records_medicines 
+        $query = 'INSERT INTO input_records_medicines 
                 SET
                 medicine_type = :_medicine_type,
                 medicine_supplier = :_medicine_supplier,
@@ -289,69 +299,71 @@ class Records {
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
-            $fid = htmlspecialchars(strip_tags($farmid));
-            $ms = htmlspecialchars(strip_tags($medicine_supplier));
-            $n = htmlspecialchars(strip_tags($notes));
-            $mt = htmlspecialchars(strip_tags($medicine_type));
-            $t = htmlspecialchars(strip_tags($type));
-            $vn = htmlspecialchars(strip_tags($vet_name));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $fid = htmlspecialchars(strip_tags($farmid));
+        $ms = htmlspecialchars(strip_tags($medicine_supplier));
+        $n = htmlspecialchars(strip_tags($notes));
+        $mt = htmlspecialchars(strip_tags($medicine_type));
+        $t = htmlspecialchars(strip_tags($type));
+        $vn = htmlspecialchars(strip_tags($vet_name));
 
-            $date1 = new DateTime($purchase_date);
-            $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-            
-            $p = htmlspecialchars(strip_tags($price));
+        $date1 = new DateTime($purchase_date);
+        $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_medicine_type', $mt);
-            $stmt->bindParam(':_notes', $n);
-            $stmt->bindParam(':_medicine_supplier', $ms);
-            $stmt->bindParam(':_purchase_date', $pd);
-            $stmt->bindParam(':_type', $t);
-            $stmt->bindParam(':_price', $p);
-            $stmt->bindParam(':_farmid', $fid);
-            $stmt->bindParam(':_vet_name', $vn);
+        $p = htmlspecialchars(strip_tags($price));
 
-            $r = $stmt->execute();
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_medicine_type', $mt);
+        $stmt->bindParam(':_notes', $n);
+        $stmt->bindParam(':_medicine_supplier', $ms);
+        $stmt->bindParam(':_purchase_date', $pd);
+        $stmt->bindParam(':_type', $t);
+        $stmt->bindParam(':_price', $p);
+        $stmt->bindParam(':_farmid', $fid);
+        $stmt->bindParam(':_vet_name', $vn);
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllFarmerMedicineInputRecords($farmerid) {
+    public function getAllFarmerMedicineInputRecords($farmerid)
+    {
 
-            $query = 'SELECT * FROM input_records_medicines
+        $query = 'SELECT * FROM input_records_medicines
                 WHERE
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
-        }
+        return $stmt;
+    }
 
 
-        // Create new brooding, an entry
-        public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid) {
+    // Create new brooding, an entry
+    public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid)
+    {
 
-            $query = 'INSERT INTO input_records_brooding 
+        $query = 'INSERT INTO input_records_brooding 
                 SET
                 amount_spent = :_amount_spent,
                 brooding_date = :_brooding_date,
@@ -362,63 +374,65 @@ class Records {
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
-            $fid = htmlspecialchars(strip_tags($farmid));
-            $as = htmlspecialchars(strip_tags($amount_spent));
-            $n = htmlspecialchars(strip_tags($notes));
-            $biq = htmlspecialchars(strip_tags($brooding_item_quantity));
-            $bi = htmlspecialchars(strip_tags($brooding_item));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $fid = htmlspecialchars(strip_tags($farmid));
+        $as = htmlspecialchars(strip_tags($amount_spent));
+        $n = htmlspecialchars(strip_tags($notes));
+        $biq = htmlspecialchars(strip_tags($brooding_item_quantity));
+        $bi = htmlspecialchars(strip_tags($brooding_item));
 
-            $date1 = new DateTime($brooding_date);
-            $bd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-            
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_amount_spent', $as);
-            $stmt->bindParam(':_notes', $n);
-            $stmt->bindParam(':_brooding_item_quantity', $biq);
-            $stmt->bindParam(':_brooding_date', $bd);
-            $stmt->bindParam(':_brooding_item', $bi);
-            $stmt->bindParam(':_farmid', $fid);
+        $date1 = new DateTime($brooding_date);
+        $bd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-            $r = $stmt->execute();
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_amount_spent', $as);
+        $stmt->bindParam(':_notes', $n);
+        $stmt->bindParam(':_brooding_item_quantity', $biq);
+        $stmt->bindParam(':_brooding_date', $bd);
+        $stmt->bindParam(':_brooding_item', $bi);
+        $stmt->bindParam(':_farmid', $fid);
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllFarmerBroodingInputRecords($farmerid) {
+    public function getAllFarmerBroodingInputRecords($farmerid)
+    {
 
-            $query = 'SELECT * FROM input_records_brooding
+        $query = 'SELECT * FROM input_records_brooding
                 WHERE
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
-        }
+        return $stmt;
+    }
 
 
-        public function addFarmerCustomerInputRecord($customer_fullname, $customer_phone, $customer_county_location, $farmid, $farmerid) {
+    public function addFarmerCustomerInputRecord($customer_fullname, $customer_phone, $customer_county_location, $farmid, $farmerid)
+    {
 
-            $query = 'INSERT INTO sales_farmer_customer 
+        $query = 'INSERT INTO sales_farmer_customer 
                 SET
                 customer_fullname = :_customer_fullname,
                 customer_phone = :_customer_phone,
@@ -427,60 +441,62 @@ class Records {
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
-            $fid = htmlspecialchars(strip_tags($farmid));
-            $cf = htmlspecialchars(strip_tags($customer_fullname));
-            $cp = htmlspecialchars(strip_tags($customer_phone));
-            $ccl = htmlspecialchars(strip_tags($customer_county_location));
-            
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_customer_fullname', $cf);
-            $stmt->bindParam(':_customer_phone', $cp);
-            $stmt->bindParam(':_customer_county_location', $ccl);
-            $stmt->bindParam(':_farmid', $fid);
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $fid = htmlspecialchars(strip_tags($farmid));
+        $cf = htmlspecialchars(strip_tags($customer_fullname));
+        $cp = htmlspecialchars(strip_tags($customer_phone));
+        $ccl = htmlspecialchars(strip_tags($customer_county_location));
 
-            $r = $stmt->execute();
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_customer_fullname', $cf);
+        $stmt->bindParam(':_customer_phone', $cp);
+        $stmt->bindParam(':_customer_county_location', $ccl);
+        $stmt->bindParam(':_farmid', $fid);
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllFarmerCustomerInputRecords($farmerid) {
+    public function getAllFarmerCustomerInputRecords($farmerid)
+    {
 
-            $query = 'SELECT * FROM sales_farmer_customer
+        $query = 'SELECT * FROM sales_farmer_customer
                 WHERE
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
-        }
-
-
+        return $stmt;
+    }
 
 
 
-        public function addFarmerSaleInputRecord($customer_id, $solditem, $sale_date, $quantity, $price, $farmid, $farmerid) {
 
-            $query = 'INSERT INTO sales_farmer_sales 
+
+    public function addFarmerSaleInputRecord($customer_id, $solditem, $sale_date, $quantity, $price, $farmid, $farmerid)
+    {
+
+        $query = 'INSERT INTO sales_farmer_sales 
                 SET
                 customer_id = :_customer_id,
                 sale_date = :_sale_date,
@@ -491,58 +507,190 @@ class Records {
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
-            $fid = htmlspecialchars(strip_tags($farmid));
-            $ci = htmlspecialchars(strip_tags($customer_id));
-            $si = htmlspecialchars(strip_tags($solditem));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $fid = htmlspecialchars(strip_tags($farmid));
+        $ci = htmlspecialchars(strip_tags($customer_id));
+        $si = htmlspecialchars(strip_tags($solditem));
 
-            $date1 = new DateTime($sale_date); // Seems this isn't doing timezone conversion and is not accurate
-            $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+        $date1 = new DateTime($sale_date); // Seems this isn't doing timezone conversion and is not accurate
+        $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-            $q = htmlspecialchars(strip_tags($quantity));
-            $p = htmlspecialchars(strip_tags($price));
-            
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_customer_id', $ci);
-            $stmt->bindParam(':_sale_date', $sd);
-            $stmt->bindParam(':_quantity', $q);
-            $stmt->bindParam(':_price', $p);
-            $stmt->bindParam(':_farmid', $fid);
-            $stmt->bindParam(':_solditem', $si);
+        $q = htmlspecialchars(strip_tags($quantity));
+        $p = htmlspecialchars(strip_tags($price));
 
-            $r = $stmt->execute();
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_customer_id', $ci);
+        $stmt->bindParam(':_sale_date', $sd);
+        $stmt->bindParam(':_quantity', $q);
+        $stmt->bindParam(':_price', $p);
+        $stmt->bindParam(':_farmid', $fid);
+        $stmt->bindParam(':_solditem', $si);
 
-            if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
-            } else {
-                return false;
-            }
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
 
-        public function getAllFarmerSalesInputRecords($farmerid) {
+    public function getAllFarmerSalesInputRecords($farmerid)
+    {
 
-            $query = 'SELECT * FROM sales_farmer_sales
+        $query = 'SELECT * FROM sales_farmer_sales
                 WHERE
                 farmerid = :_farmerid
             ';
 
-            $stmt = $this->database_connection->prepare($query);
+        $stmt = $this->database_connection->prepare($query);
 
-            // Ensure safe data
-            $fi = htmlspecialchars(strip_tags($farmerid));
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
 
-            // Bind parameters to prepared stmt
-            $stmt->bindParam(':_farmerid', $fi);
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
+        return $stmt;
+    }
+
+    public function getAllFarmerMortalitiesInputRecords($farmerid)
+    {
+        $query = 'SELECT * FROM input_records_mortalities
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function addFarmerMortalityInputRecord($reason, $_date, $openingbalance, $numberofdeaths, $closingbalance, $farmid, $farmerid)
+    {
+        $query = 'INSERT INTO input_records_mortalities 
+            SET
+            reason = :_reason,
+            date = :_date,
+            openingbalance = :_openingbalance,
+            numberofdeaths = :_numberofdeaths,
+            closingbalance = :_closingbalance,
+            farmid = :_farmid,
+            farmerid = :_farmerid
+        ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $fid = htmlspecialchars(strip_tags($farmid));
+        $r = htmlspecialchars(strip_tags($reason));
+        $ob = htmlspecialchars(strip_tags($openingbalance));
+
+        $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
+        $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+        $nod = htmlspecialchars(strip_tags($numberofdeaths));
+        $cb = htmlspecialchars(strip_tags($closingbalance));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_reason', $r);
+        $stmt->bindParam(':_openingbalance', $ob);
+        $stmt->bindParam(':_numberofdeaths', $nod);
+        $stmt->bindParam(':_closingbalance', $cb);
+        $stmt->bindParam(':_farmid', $fid);
+        $stmt->bindParam(':_date', $d);
+
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
         }
+    }
 
+    public function getAllFarmerDiseasesInputRecords($farmerid)
+    {
+        $query = 'SELECT * FROM input_records_diseases
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $disease, $vet_name, $farmid, $farmerid)
+    {
+        $query = 'INSERT INTO input_records_diseases 
+            SET
+            notes = :_notes,
+            date = :_date,
+            diagonsis = :_diagonsis,
+            disease = :_disease,
+            vet_name = :_vet_name,
+            farmid = :_farmid,
+            farmerid = :_farmerid
+        ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $fid = htmlspecialchars(strip_tags($farmid));
+        $n = htmlspecialchars(strip_tags($notes));
+        $d = htmlspecialchars(strip_tags($diagonsis));
+
+        $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
+        $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+        $dis = htmlspecialchars(strip_tags($disease));
+        $vn = htmlspecialchars(strip_tags($vet_name));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_notes', $n);
+        $stmt->bindParam(':_diagonsis', $d);
+        $stmt->bindParam(':_disease', $dis);
+        $stmt->bindParam(':_vet_name', $vn);
+        $stmt->bindParam(':_farmid', $fid);
+        $stmt->bindParam(':_date', $d);
+
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
+        }
+    }
 }
