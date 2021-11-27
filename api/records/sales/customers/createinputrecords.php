@@ -53,11 +53,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
-            $result = $records->addFarmerCustomerInputRecord($value->customer_fullname, $value->customer_telephonenumber, $value->customer_county_location, $value->farmid, $value->farmerid);
+            $result = $records->addFarmerCustomerInputRecord($value->customerfullname, $value->customerphone, $value->customercountylocation, $value->farmid, $value->farmerid);
         
             // returns an int [last insert id], $result is an int
 
-            file_put_contents('php://stderr', print_r('[]][==== ++' . gettype($result), TRUE));
+            file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
             
             file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
 

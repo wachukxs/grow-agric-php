@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
             // returns an int [last insert id], $result is an int
 
-            file_put_contents('php://stderr', print_r('[]][==== ++' . gettype($result), TRUE));
+            file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
             
             file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
 

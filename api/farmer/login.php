@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                 $result4 = $records->getAllFarmerCustomerInputRecords($row1["id"]);
                 $row4 = $result4->fetchAll(PDO::FETCH_ASSOC);
 
-                $farmer_details_arr = $row1;
+                $farmer_details_arr["personalInfo"] = $row1;
                 $farmer_details_arr["farms"] = $row2;
                 $farmer_details_arr["employees"] = $row3;
                 $farmer_details_arr["customers"] = $row4;

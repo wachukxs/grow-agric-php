@@ -53,7 +53,7 @@ if (isset($_GET["farmerid"])) {
 
     echo json_encode($row1);
 } else {
-    file_put_contents('php://stderr', print_r('[]][==== ++ NOOOO Farmer id \\n', TRUE));
+    file_put_contents('php://stderr', print_r(dirname(__FILE__) . ' NOOOO Farmer id \\n', TRUE));
 }
 
 ?>

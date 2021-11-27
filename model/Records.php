@@ -434,9 +434,9 @@ class Records
 
         $query = 'INSERT INTO sales_farmer_customer 
                 SET
-                customer_fullname = :_customer_fullname,
-                customer_phone = :_customer_phone,
-                customer_county_location = :_customer_county_location,
+                customerfullname = :_customer_fullname,
+                customerphone = :_customer_phone,
+                customercountylocation = :_customer_county_location,
                 farmid = :_farmid,
                 farmerid = :_farmerid
             ';

@@ -37,92 +37,128 @@ $farm = new Farm($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-// echo log tracing => look into loggin in php
-file_put_contents('php://stderr', print_r('Trying to add/update farm' . "\n", TRUE));
 
-try {
-    $result_array = array();
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // echo log tracing => look into loggin in php
+    file_put_contents('php://stderr', print_r('Trying to add/update farm with id: ' . $data->id . "\n", TRUE));
+    file_put_contents('php://stderr', print_r($data, TRUE));
 
-    foreach ($data as &$value) {
+    try {
 
-        $result;
-        if (isset($value->id)) { // this if block should come before the for loop
-            // Update the farm [details]
-            $result = $farm->updateFarmByID($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id);
-        } else { // create a new farm entry
-            // $value;
-            file_put_contents('../../logs/api.log', print_r($value, TRUE));
-            $result = $farm->createFarm($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid);
+        if (is_array($data)) {
+            $result_array = array();
+
+            foreach ($data as &$value) {
+
+                $result;
+                if (isset($value->id)) { // this if block should come before the for loop
+                    // Update the farm [details]
+                    $result = $farm->updateFarmByID($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id);
+                } else { // create a new farm entry
+                    // $value;
+                    // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
+                    // file_put_contents('../../logs/api.log', print_r($value, TRUE));
+                    $result = $farm->createFarm($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid);
+                }
+
+                if ($result) {
+                    // $result is 1 if we're good
+                    file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
+
+                    file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
+                    file_put_contents('php://stderr', print_r('Updated/created new farm record: ' . $result . "\n", TRUE));
+
+                    array_push($result_array, $result);
+                } else {
+                    file_put_contents('php://stderr', print_r('Did NOT Update/create new farm record: ' . $result . "\n", TRUE));
+                    // break from for loop, and set http_response_header // alternative, populate $result with true|false, and check after the loop
+                }
+            }
+
+
+            if ($result_array) { // check that $result is an int
+                // Get the farm [details]
+                $farms_result = $farm->getAllFarmsByFarmerID($data[0]->farmerid);
+
+                // returns an array, $row is an array
+                $row = $farms_result->fetchAll(PDO::FETCH_ASSOC);
+
+                if (is_array($row)) { // gettype($row) == "array"
+                    // check if $row is array (means transaction was successful)
+
+                    echo json_encode(
+                        array(
+                            'message' => 'Farm created/updated',
+                            'response' => 'OK',
+                            'response_code' => http_response_code(),
+                            'farms' => $row
+                        )
+                    );
+                }
+            } else {
+                // http_response_code(400);
+                echo json_encode(
+                    array(
+                        'message' => 'Farm details not created/updated',
+                        'response' => 'NOT OK',
+                        'response_code' => http_response_code(),
+                        'message_details' => $result, //
+                    )
+                );
+            }
+        } else { // not array, just pick farm details
+            $result;
+            if (isset($data->id)) { // this if block should come before the for loop
+                // Update the farm [details]
+                $result = $farm->updateFarmByID($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->id);
+            } else { // create a new farm entry
+                // $value;
+                // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
+                // file_put_contents('../../logs/api.log', print_r($data, TRUE));
+                $result = $farm->createFarm($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid);
+            }
+
+            if ($result) { // check that $result is an int
+                // Get the farm [details]
+                $farm_result = $farm->getSingleFarmByID($result);
+
+                // returns an array, $row is an array
+                $row = $farm_result->fetch(PDO::FETCH_ASSOC);
+
+                if (is_array($row)) { // gettype($row) == "array"
+                    // check if $row is array (means transaction was successful)
+
+                    echo json_encode(
+                        array(
+                            'message' => 'Farm created/updated',
+                            'response' => 'OK',
+                            'response_code' => http_response_code(),
+                            'farm' => $row
+                        )
+                    );
+                }
+            } else {
+                // http_response_code(400);
+                echo json_encode(
+                    array(
+                        'message' => 'Farm details not created/updated',
+                        'response' => 'NOT OK',
+                        'response_code' => http_response_code(),
+                        'message_details' => $result, //
+                    )
+                );
+            }
         }
-        if ($result) {
-            // $result is 1 if we're good
-            file_put_contents('php://stderr', print_r('[]][==== ++' . gettype($result), TRUE));
-
-            file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
-            file_put_contents('php://stderr', print_r('Updated/created new farm record: ' . $result . "\n", TRUE));
-
-            array_push($result_array, $result);
-        } else {
-            file_put_contents('php://stderr', print_r('Did NOT Update/create new farm record: ' . $result . "\n", TRUE));
-            // break from for loop, and set http_response_header // alternative, populate $result with true|false, and check after the loop
-        }
-    }
-
-
-    if ($result_array) { // check that $result is an int
-        // Get the farm [details]
-        $farms_result = $farm->getAllFarmsByFarmerID($data[0]->farmerid);
-
-        // returns an array, $row is an array
-        $row = $farms_result->fetchAll(PDO::FETCH_ASSOC);
-
-        if (is_array($row)) { // gettype($row) == "array"
-            // check if $row is array (means transaction was successful)
-            // extract($row);
-            // we should return all the farms of the farmer
-
-            // Create array
-            // $farm_details_arr = array(
-            //     'firstname' => $firstname,
-            //     'lastname' => $lastname,
-            //     'email' => $email,
-            //     'phonenumber' => $phonenumber,
-            //     'id' => $id,
-            //     'image' => 'https://' .  $_SERVER['HTTP_HOST'] . '/chuks/food_delivery/assets/images/' . rawurlencode($image), // https://www.php.net/manual/en/function.urlencode.php#56426
-            //     'time_of_order' => $time_of_order,
-            //     'total' => $total,
-            //     'name' => $name
-            // );
-
-            echo json_encode(
-                array(
-                    'message' => 'Farm created/updated',
-                    'response' => 'OK',
-                    'response_code' => http_response_code(),
-                    'farms' => $row
-                )
-            );
-        }
-    } else {
+    } catch (\Throwable $err) {
+        file_put_contents('php://stderr', print_r('Error while trying to add/update farm: ' . $err->getMessage() . "\n", TRUE));
         // http_response_code(400);
         echo json_encode(
             array(
-                'message' => 'Farm details not created/updated',
+                'message' => 'Farm not created/updated',
                 'response' => 'NOT OK',
                 'response_code' => http_response_code(),
-                'message_details' => $result, //
+                'message_details' => $err, //
             )
         );
     }
-} catch (\Throwable $err) {
-    file_put_contents('php://stderr', print_r('Error while trying to add/update farm: ' . $err->getMessage() . "\n", TRUE));
-    // http_response_code(400);
-    echo json_encode(
-        array(
-            'message' => 'Farm not created/updated',
-            'response' => 'NOT OK',
-            'response_code' => http_response_code(),
-            'message_details' => $err, //
-        )
-    );
 }

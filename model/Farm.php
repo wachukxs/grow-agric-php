@@ -12,6 +12,37 @@ class Farm {
         $this->database_connection = $a_database_connection;
     }
 
+
+    public function deleteFarm($farmid) {
+        try {
+            // Create query
+            $query = 'DELETE FROM farms 
+                WHERE
+                id = ?
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $i = htmlspecialchars(strip_tags($farmid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $i);
+
+            // Execute query statement
+            if ($query_statement->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('ERROR in deleteFarm(): ' . $err->getMessage() . "\n", TRUE));
+            return false; // $err->getMessage(); 
+        }
+    }
+
     // Create new order, an entry. DONE?
     public function createFarm($challengesfaced, $farmcitytownlocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $farmerid) {
         $query = 'INSERT INTO ' . $this->table . '
@@ -33,8 +64,16 @@ class Farm {
         $stmt = $this->database_connection->prepare($query);
 
         // Ensure safe data
-        $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced))); // convert the array to strings
-        $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
+        $cf = ''; // convert the array to strings
+        $fi = '';
+        if (is_array($challengesfaced) && is_array($farmeditems)) {
+            $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced))); // convert the array to strings
+            $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
+        } else { // they are strings
+            $cf = htmlspecialchars(strip_tags($challengesfaced)); // convert the array to strings
+            $fi = htmlspecialchars(strip_tags($farmeditems));
+        }
+        
         $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
         $fcl = htmlspecialchars(strip_tags($farmcountylocation));
         $hin = htmlspecialchars(strip_tags($haveinsurance));
@@ -150,10 +189,17 @@ class Farm {
             $stmt = $this->database_connection->prepare($query);
 
             // Ensure safe data
-            $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced)));
+            $cf = ''; // convert the array to strings
+            $fi = '';
+            if (is_array($challengesfaced) && is_array($farmeditems)) {
+                $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced))); // convert the array to strings
+                $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
+            } else { // they are strings
+                $cf = htmlspecialchars(strip_tags($challengesfaced)); // convert the array to strings
+                $fi = htmlspecialchars(strip_tags($farmeditems));
+            }
             $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
             $fcl = htmlspecialchars(strip_tags($farmcountylocation));
-            $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
             $hin = htmlspecialchars(strip_tags($haveinsurance));
             $in = htmlspecialchars(strip_tags($insurer));
             $noe = htmlspecialchars(strip_tags($numberofemployees)); // no need for intval
