@@ -48,8 +48,8 @@ file_put_contents('php://stderr', print_r('829239\\n', TRUE));
 if (isset($_GET["farmerid"])) {
     // Get the course [details]
 
-    $course_result = $records->getAllFarmerCustomerInputRecords($_GET["farmerid"]);
-    $row1["medicine_records"] = $course_result->fetchAll(PDO::FETCH_ASSOC);
+    $course_result = $records->getAllFarmerCustomers($_GET["farmerid"]);
+    $row1["customers"] = $course_result->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($row1);
 } else {

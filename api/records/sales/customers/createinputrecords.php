@@ -59,20 +59,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
             
-            file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
+            file_put_contents('php://stderr', print_r("\n\n[] resutl ==> " . $result, TRUE));
 
             array_push($result_array, $result);
             
         }
+
+        if (!empty($result_array)) {
+            $result4 = $records->getAllFarmerCustomers($data[0]->farmerid);
+            $row4 = $result4->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode(
+                array(
+                    'message' => 'Good request, no errors',
+                    'response' => 'OK',
+                    'response_code' => http_response_code(),
+                    'customers' => $row4
+                )
+            );
+        } else {
+            echo json_encode(
+                array(
+                    'message' => 'Something went wrong, operation did not complete',
+                    'response' => 'NOT OK',
+                    'response_code' => http_response_code(400)
+                )
+            );
+        }
         
-        echo json_encode(
-            array(
-                'message' => 'Good request, no errors',
-                'response' => 'OK',
-                'response_code' => http_response_code(),
-                'save_details' => $result_array
-            )
-        );
     
     } else {
         echo json_encode(

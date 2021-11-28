@@ -49,7 +49,7 @@ if (isset($_GET["farmerid"])) {
     // Get the course [details]
 
     $mortality_result = $records->getAllFarmerMortalitiesInputRecords($_GET["farmerid"]);
-    $row1["mortality_records"] = $mortality_result->fetchAll(PDO::FETCH_ASSOC);
+    $row1["mortalities"] = $mortality_result->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($row1);
 } else {

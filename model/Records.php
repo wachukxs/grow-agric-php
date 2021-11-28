@@ -468,7 +468,7 @@ class Records
     }
 
 
-    public function getAllFarmerCustomerInputRecords($farmerid)
+    public function getAllFarmerCustomers($farmerid)
     {
 
         $query = 'SELECT * FROM sales_farmer_customer
