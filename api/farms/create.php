@@ -40,7 +40,7 @@ $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // echo log tracing => look into loggin in php
-    file_put_contents('php://stderr', print_r('Trying to add/update farm with id: ' . $data->id . "\n", TRUE));
+    file_put_contents('php://stderr', print_r('Trying to add/update farm with id: ' . (isset($value->id) ? $data->id : NULL) . "\n", TRUE));
     file_put_contents('php://stderr', print_r($data, TRUE));
 
     try {
@@ -120,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($result) { // check that $result is an int
                 // Get the farm [details]
-                $farm_result = $farm->getSingleFarmByID($result);
+                $farm_result = $farm->getSingleFarmByID((isset($data->id)? $data->id : $result)); // we need to check if there was an id, so we don't use $result which will be true|1 if there was an id, and that would select what we don't want.
 
                 // returns an array, $row is an array
                 $row = $farm_result->fetch(PDO::FETCH_ASSOC);
