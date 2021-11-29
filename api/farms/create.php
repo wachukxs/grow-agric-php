@@ -108,19 +108,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else { // not array, just pick farm details
             $result;
-            if (isset($data->id)) { // this if block should come before the for loop
+            if (isset($data->id) && !empty($data->id)) { // this if block should come before the for loop
                 // Update the farm [details]
+                
                 $result = $farm->updateFarmByID($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->id);
+
+                file_put_contents('php://stderr', print_r("\n\n\n\n\n\n running updateFarmByID:" . $result, TRUE));
             } else { // create a new farm entry
                 // $value;
                 // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
-                // file_put_contents('../../logs/api.log', print_r($data, TRUE));
+                
                 $result = $farm->createFarm($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid);
-            }
 
+                file_put_contents('php://stderr', print_r("\n\n\n\n\n\n else createFarm:" . $result, TRUE));
+            }
+            file_put_contents('php://stderr', print_r('\n\n\n\n\n\n result:' . $result, TRUE));
             if ($result) { // check that $result is an int
                 // Get the farm [details]
-                $farm_result = $farm->getSingleFarmByID((isset($data->id)? $data->id : $result)); // we need to check if there was an id, so we don't use $result which will be true|1 if there was an id, and that would select what we don't want.
+                
+                $farm_result = $farm->getSingleFarmByID( isset($data->id) && !empty($data->id) ? $data->id : $result); // we need to check if there was an id, so we don't use $result which will be true|1 if there was an id, and that would select what we don't want.
 
                 // returns an array, $row is an array
                 $row = $farm_result->fetch(PDO::FETCH_ASSOC);

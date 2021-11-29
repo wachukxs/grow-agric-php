@@ -100,9 +100,11 @@ class Farm {
         try {
             $r = $stmt->execute(); // returns true/false
             if ($r) {
+                file_put_contents('php://stderr', print_r("\n\n\n\n\n\n\n\n\n\n\n\n" . 'last insert id' . $this->database_connection->lastInsertId() . "\n", TRUE));
                 return $this->database_connection->lastInsertId();
                 // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
             } else {
+                file_put_contents('php://stderr', print_r('Farm.php->createFarm error: ' . $this->database_connection->errorInfo() . "\n", TRUE));
                 // echo $this->database_connection->errorInfo();
                 return $this->database_connection->errorInfo(); // false;
             }
