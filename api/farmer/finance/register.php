@@ -59,20 +59,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $data->broodingcost, 
         $data->vaccinesused, $data->medicinesused, $data->projectedsales);
 
-        if ($result) {
-            echo json_encode(
-                array(
-                    'message' => 'Good request, no errors',
-                    'response' => 'OK',
-                    'response_code' => http_response_code(),
-                    'order_details' => $result
-                )
-            );
-        } else {
+        if ($result instanceof Throwable) {
+            
             http_response_code(400);
             echo json_encode(
                 array(
                     'message' => 'Badd request, there are errors',
+                    'response' => 'OK',
+                    'response_code' => http_response_code(),
+                    'message_details' => $result->getMessage()
+                )
+            );
+        } else {
+            echo json_encode(
+                array(
+                    'message' => 'Good request, no errors',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
                     'order_details' => $result
@@ -88,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'message' => 'Badd request, there are errors',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
-                    'order_details' => $result
+                    'order_details' => $data
                 )
             );
     }
