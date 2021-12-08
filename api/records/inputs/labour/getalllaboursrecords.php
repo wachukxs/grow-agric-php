@@ -44,12 +44,11 @@ file_put_contents('php://stderr', print_r('829239\\n', TRUE));
  * also check that that module id exist in db
  */
 // echo $_GET["id"];
-// course id ...(might later add course and module id, not necessary though)
 if (isset($_GET["farmerid"])) {
     // Get the course [details]
 
-    $course_result = $records->getAllFarmerLabourRecords($_GET["farmerid"]);
-    $row1["labour_records"] = $course_result->fetchAll(PDO::FETCH_ASSOC);
+    $labour_result = $records->getAllFarmerLabourRecords($_GET["farmerid"]);
+    $row1["labour_records"] = $labour_result->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($row1);
 } else {

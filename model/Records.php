@@ -72,7 +72,8 @@ class Records
         $query = 'SELECT * FROM inputs_records_chicken
                 WHERE
                 farmerid = :_farmerid
-                AND input_type = "Chicken"
+                AND 
+                input_type = "Chicken"
             ';
 
         $stmt = $this->database_connection->prepare($query);
@@ -149,7 +150,8 @@ class Records
         $query = 'SELECT * FROM inputs_records_feeds
                 WHERE
                 farmerid = :_farmerid
-                AND input_type = "Feeds"
+                AND 
+                input_type = "Feeds"
             ';
 
         $stmt = $this->database_connection->prepare($query);
@@ -212,6 +214,31 @@ class Records
 
         // Bind parameters to prepared stmt
         $stmt->bindParam(':_farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function getSingleFarmerEmployee($farmerid, $employeeid)
+    {
+
+        $query = 'SELECT * FROM farmer_employees
+                WHERE
+                farmerid = :_farmerid
+                AND
+                id = :_employeeid
+            ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+        $ei = htmlspecialchars(strip_tags($employeeid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+        $stmt->bindParam(':_employeeid', $ei);
 
         $r = $stmt->execute();
 
