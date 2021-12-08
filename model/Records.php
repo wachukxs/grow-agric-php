@@ -677,6 +677,7 @@ class Records
 
     public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $disease, $vet_name, $farmid, $farmerid)
     {
+        // date can be auto filled in db though
         $query = 'INSERT INTO input_records_diseases 
             SET
             notes = :_notes,
@@ -694,7 +695,7 @@ class Records
         $fi = htmlspecialchars(strip_tags($farmerid));
         $fid = htmlspecialchars(strip_tags($farmid));
         $n = htmlspecialchars(strip_tags($notes));
-        $d = htmlspecialchars(strip_tags($diagonsis));
+        $dia = htmlspecialchars(strip_tags($diagonsis));
 
         $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
         $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -705,7 +706,7 @@ class Records
         // Bind parameters to prepared stmt
         $stmt->bindParam(':_farmerid', $fi);
         $stmt->bindParam(':_notes', $n);
-        $stmt->bindParam(':_diagonsis', $d);
+        $stmt->bindParam(':_diagonsis', $dia);
         $stmt->bindParam(':_disease', $dis);
         $stmt->bindParam(':_vet_name', $vn);
         $stmt->bindParam(':_farmid', $fid);
