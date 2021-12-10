@@ -1,10 +1,7 @@
 <?php
 
 // Headers
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-header('Content-Control-Allow-Methods: POST');
-header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With');
+include_once '../../config/globals/header.php';
 
 // Resources
 include_once '../../config/Database.php';
