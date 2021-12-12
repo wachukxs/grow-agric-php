@@ -27,5 +27,5 @@ if (isset($origin) && in_array($origin, $allowed_domains)) {
 // header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
 header('Content-Type: application/json');
-header('Content-Control-Allow-Methods: POST');
+header('Content-Control-Allow-Methods: POST, GET');
 header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With');
