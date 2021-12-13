@@ -6,6 +6,8 @@ class Admin
     // DB stuff
     public $database_connection;
 
+    public $table = 'admins';
+
     /**
      * Constructor taking db as params
      */
@@ -37,5 +39,33 @@ class Admin
         $query_statement->execute();
 
         return $query_statement;
+    }
+
+
+    public function getAdminByEmail($_email){
+        try {
+            // Create query
+            $query = 'SELECT * FROM ' . $this->table . '
+                WHERE
+                email = :_email
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $e = htmlspecialchars(strip_tags($_email));
+
+            // Execute query statement
+            $query_statement->bindParam(':_email', $e);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Farm.php->createFarm error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
     }
 }
