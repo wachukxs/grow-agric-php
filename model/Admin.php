@@ -42,7 +42,7 @@ class Admin
     }
 
 
-    public function getAdminByEmail($_email){
+    public function getAdminByEmail(string $_email){
         try {
             // Create query
             $query = 'SELECT * FROM ' . $this->table . '
@@ -64,7 +64,69 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Farm.php->createFarm error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAdminByEmail error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllFinanceApplications()
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM `finance_applications`
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFinanceApplications error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+
+    public function getAllFarms()
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM `farms`
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFinanceApplications error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+
+    public function getAllFarmers()
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM `farmers`
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmers error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

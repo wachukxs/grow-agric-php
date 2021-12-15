@@ -20,8 +20,19 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     
     try {
 
-        $result = $admin->getReviewInfo();
-        $row = $result->fetch(PDO::FETCH_ASSOC); // not fetchAll
+        $row = array();
+
+        $result1 = $admin->getReviewInfo();
+        $row["summary"] = $result1->fetch(PDO::FETCH_ASSOC); // not fetchAll
+
+        $result2 = $admin->getAllFinanceApplications();
+        $row["finance_applications"] = $result2->fetchAll(PDO::FETCH_ASSOC);
+
+        $result3 = $admin->getAllFarms();
+        $row["farms"] = $result3->fetchAll(PDO::FETCH_ASSOC);
+
+        $result4 = $admin->getAllFarmers();
+        $row["farmers"] = $result4->fetchAll(PDO::FETCH_ASSOC);
 
         http_response_code();
         echo json_encode($row);
