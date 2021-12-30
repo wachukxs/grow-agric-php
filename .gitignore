@@ -9,3 +9,5 @@ install-composer.sh
 .DS_Store
 
 /logs
+
+*.pdf

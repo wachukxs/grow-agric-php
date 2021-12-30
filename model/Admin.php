@@ -31,7 +31,7 @@ class Admin
                 (SELECT COUNT(*) FROM farms) AS no_farms,
                 
                 (SELECT COUNT(*) FROM waiting_list) AS no_waiting_list';
-        
+
         // Prepare statement
         $query_statement = $this->database_connection->prepare($query);
 
@@ -42,7 +42,8 @@ class Admin
     }
 
 
-    public function getAdminByEmail(string $_email){
+    public function getAdminByEmail(string $_email)
+    {
         try {
             // Create query
             $query = 'SELECT * FROM ' . $this->table . '
@@ -127,6 +128,102 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('Admin.php->getAllFarmers error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getModule($id)
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM learning_modules
+                WHERE
+                id = :_id
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $i = htmlspecialchars(strip_tags($id));
+
+            // Execute query statement
+            $query_statement->bindParam(':_id', $i);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Admin.php->getModule error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function addNewModule($name, $description,)
+    {
+        $query = 'INSERT INTO learning_modules
+            SET
+            name = :name,
+            description = :description
+        ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $n = htmlspecialchars(strip_tags($name));
+        $d = htmlspecialchars(strip_tags($description));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':name', $n);
+        $stmt->bindParam(':description', $d);
+
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $this->database_connection->lastInsertId();
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
+        }
+    }
+
+    public function getAllModules()
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM `learning_modules`
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllModules error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllCourses()
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM `learning_courses`
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllCourses error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

@@ -34,6 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $result4 = $admin->getAllFarmers();
         $row["farmers"] = $result4->fetchAll(PDO::FETCH_ASSOC);
 
+        $result5 = $admin->getAllCourses();
+        $row["courses"] = $result5->fetchAll(PDO::FETCH_ASSOC);
+
+        $result6 = $admin->getAllModules();
+        $row["modules"] = $result6->fetchAll(PDO::FETCH_ASSOC);
+ 
         http_response_code();
         echo json_encode($row);
         
