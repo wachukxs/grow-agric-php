@@ -65,9 +65,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $upload = ftp_put($ftp, $destination_file, $target_path, FTP_BINARY);
 
+        $url = substr_replace($destination_file, "https://" . getenv("GROW_AGRIC_HOST_NAME"), 0, strlen(explode('/', $destination_file)[0])); // not tryna hardcode
+
         if ($upload) {
             unlink($target_path);
             file_put_contents('php://stderr', "Uploaded $target_path to" . getenv("GROW_AGRIC_HOST_NAME") . " as $destination_file" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+            file_put_contents('php://stderr', "URL is as $url" . "\n" . "\n", FILE_APPEND | LOCK_EX);
         } else {
             file_put_contents('php://stderr', "FTP upload has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
         }
