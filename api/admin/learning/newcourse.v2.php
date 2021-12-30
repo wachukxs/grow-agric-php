@@ -67,11 +67,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $url = substr_replace($destination_file, "https://" . getenv("GROW_AGRIC_HOST_NAME"), 0, strlen(explode('/', $destination_file)[0])); // not tryna hardcode
 
+        $pagecount = 1; // hard coding for now // 
+
         if ($upload) {
             unlink($target_path);
             file_put_contents('php://stderr', "Uploaded $target_path to" . getenv("GROW_AGRIC_HOST_NAME") . " as $destination_file" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
             file_put_contents('php://stderr', "URL is as $url" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+            file_put_contents('php://stderr', "no. of pages is as $pagecount" . "\n" . "\n", FILE_APPEND | LOCK_EX);
         } else {
             file_put_contents('php://stderr', "FTP upload has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
         }
