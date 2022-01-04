@@ -59,8 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         fwrite($file, $content);
         fclose($file);
 
-        // -
-
         $destination_file = getenv("SERVER_UPLOAD_PATH") . $new_file_name;
 
         $upload = ftp_put($ftp, $destination_file, $target_path, FTP_BINARY);

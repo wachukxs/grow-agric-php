@@ -788,4 +788,40 @@ class Records
             return false;
         }
     }
+
+
+    public function getFinanceApplicationStatus($farmerid) {
+        try {
+            // SELECT finance_applications.`farmerid`, finance_applications.`farmid`, finance_applications.`id`, finance_applications.created_on, finance_application_statuses.status FROM `finance_applications` RIGHT OUTER JOIN finance_application_statuses ON finance_applications.id = finance_application_statuses.finance_application_id WHERE farmerid = 1
+            $query = 'SELECT 
+            finance_applications.`farmerid`, 
+            finance_applications.`farmid`, 
+            finance_applications.`id`, 
+            finance_applications.created_on, 
+            finance_application_statuses.status 
+            FROM 
+            `finance_applications` 
+            RIGHT OUTER JOIN 
+            finance_application_statuses 
+            ON 
+            finance_applications.id = finance_application_statuses.finance_application_id 
+            WHERE farmerid = ?';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $fi);
+
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getFinanceApplicationStatus(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage();
+        }
+    }
 }

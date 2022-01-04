@@ -592,8 +592,8 @@ class Farmer {
 
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('ERROR in deleteSavedCourseForFarmer(): ' . $err->getMessage() . "\n", TRUE));
-            return $err->getMessage(); 
+            file_put_contents('php://stderr', print_r('ERROR in getSavedCoursesForFarmer(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage();
         }
 
     }
