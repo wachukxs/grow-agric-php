@@ -116,4 +116,69 @@ class Finance
             return $err;// ->getMessage();
         }
     }
+
+    public function updateFinanceRegistrationStatus($lastupdateby, $status, $finance_application_id) {
+        try {
+            // Create query
+            $query = 'UPDATE finance_application_statuses 
+                SET 
+                lastupdateby = :lastupdateby,
+                status = :status
+                WHERE
+                finance_application_id = :finance_application_id
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $lub = htmlspecialchars(strip_tags($lastupdateby));
+            $s = htmlspecialchars(strip_tags($status));
+            $faid = htmlspecialchars(strip_tags($finance_application_id));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':lastupdateby', $lub);
+            $stmt->bindParam(':status', $s);
+            $stmt->bindParam(':finance_application_id', $faid);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed updateFinanceRegistrationStatus query' . "\n", TRUE));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            
+        }
+    }
+
+    public function selectSingleFinanceRegistrationStatusByID($finance_application_id) {
+        try {
+            // Create query
+        $query = 'SELECT * 
+            FROM finance_applications 
+            RIGHT OUTER JOIN 
+            finance_application_statuses 
+            ON 
+            finance_applications.id = finance_application_statuses.finance_application_id
+            WHERE
+            finance_applications.id = ?
+            ';
+
+        // Prepare statement
+        $query_statement = $this->database_connection->prepare($query);
+
+        // Execute query statement
+        $query_statement->bindParam(1, $finance_application_id);
+
+        // Execute query statement
+        $query_statement->execute();
+
+        return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR running Finance.php -> selectSingleFinanceRegistrationStatusByID(): ' . $err->getMessage() . "\n", TRUE));
+            return $err;
+        }
+    }
 }

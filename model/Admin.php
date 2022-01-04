@@ -73,8 +73,13 @@ class Admin
     public function getAllFinanceApplications()
     {
         try {
-            // Create query
-            $query = 'SELECT * FROM `finance_applications`
+            // Create query // we need to specify every column we need, this just selects everything from both table
+            $query = 'SELECT *, finance_application_statuses.status 
+            FROM finance_applications 
+            RIGHT OUTER JOIN 
+            finance_application_statuses 
+            ON 
+            finance_applications.id = finance_application_statuses.finance_application_id
             ';
 
             // Prepare statement

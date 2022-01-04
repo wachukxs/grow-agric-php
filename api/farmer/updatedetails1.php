@@ -51,7 +51,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
         if ($result) { // check that $result is an int
             // Get the farmer [details]
             file_put_contents('php://stderr', print_r('Good result too' . "\n", TRUE));
-            $order_result = $farmer->getSingleFarmerByID($result);
+            $order_result = $farmer->getSingleFarmerByID($data->id);
             // ??
             // returns an array, $row is an array
             $row = $order_result->fetch(PDO::FETCH_ASSOC);

@@ -792,7 +792,6 @@ class Records
 
     public function getFinanceApplicationStatus($farmerid) {
         try {
-            // SELECT finance_applications.`farmerid`, finance_applications.`farmid`, finance_applications.`id`, finance_applications.created_on, finance_application_statuses.status FROM `finance_applications` RIGHT OUTER JOIN finance_application_statuses ON finance_applications.id = finance_application_statuses.finance_application_id WHERE farmerid = 1
             $query = 'SELECT 
             finance_applications.`farmerid`, 
             finance_applications.`farmid`, 
