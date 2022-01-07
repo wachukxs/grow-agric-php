@@ -31,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ) {
         $result = $admin->addNewModule($data->name, $data->description);
 
-        $module_result = $admin->getModule($result); // we need to check if there was an id, so we don't use $result which will be true|1 if there was an id, and that would select what we don't want.
+        $module_result = $admin->getModuleByID($result); // we need to check if there was an id, so we don't use $result which will be true|1 if there was an id, and that would select what we don't want.
 
-        // returns an array, $row is an array
+        // returns an object, $row is an object
         $row = $module_result->fetch(PDO::FETCH_ASSOC);
 
         echo json_encode(

@@ -137,7 +137,7 @@ class Admin
         }
     }
 
-    public function getModule($id)
+    public function getModuleByID($id)
     {
         try {
             // Create query
@@ -161,6 +161,34 @@ class Admin
         } catch (\Throwable $err) {
             //throw $err;
             file_put_contents('php://stderr', print_r('Admin.php->getModule error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getCourseByID($id)
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM learning_courses
+                WHERE
+                id = :_id
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $i = htmlspecialchars(strip_tags($id));
+
+            // Execute query statement
+            $query_statement->bindParam(':_id', $i);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Admin.php->getCourseByID error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -193,6 +221,48 @@ class Admin
         }
     }
 
+    public function addNewCourse($mediatype, $name, $description, $url, $moduleid)
+    {
+        try {
+            $query = 'INSERT INTO learning_courses
+                SET
+                name = :name,
+                mediatype = :mediatype,
+                description = :description,
+                url = :url,
+                moduleid = :moduleid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $n = htmlspecialchars(strip_tags($name));
+            $desc = htmlspecialchars(strip_tags($description));
+            $mt = htmlspecialchars(strip_tags($mediatype));
+            $u = htmlspecialchars(strip_tags($url));
+            $mid = htmlspecialchars(strip_tags($moduleid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':name', $n);
+            $stmt->bindParam(':description', $desc);
+            $stmt->bindParam(':mediatype', $mt);
+            $stmt->bindParam(':url', $u);
+            $stmt->bindParam(':moduleid', $mid);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllModules error: ' . $err->getMessage() . "\n", TRUE));
+            return $err;
+        }
+    }
+
     public function getAllModules()
     {
         try {
@@ -209,7 +279,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('Admin.php->getAllModules error: ' . $err->getMessage() . "\n", TRUE));
-            return false;
+            return $err;
         }
     }
 
@@ -229,7 +299,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('Admin.php->getAllCourses error: ' . $err->getMessage() . "\n", TRUE));
-            return false;
+            return $err;
         }
     }
 }

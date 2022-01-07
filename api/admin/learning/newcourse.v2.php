@@ -42,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             file_put_contents('php://stderr', "Connected to" . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
         }
 
-
         $ext = explode('/', mime_content_type($data->file))[1]; // https://stackoverflow.com/a/52463011/9259701
 
         file_put_contents('php://stderr', "\nfile ext is: " . $ext . "\n" . "\n", FILE_APPEND | LOCK_EX);
@@ -65,20 +64,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $url = substr_replace($destination_file, "https://" . getenv("GROW_AGRIC_HOST_NAME"), 0, strlen(explode('/', $destination_file)[0])); // not tryna hardcode
 
-        $pagecount = 1; // hard coding for now // 
-
         if ($upload) {
             unlink($target_path);
-            file_put_contents('php://stderr', "Uploaded $target_path to" . getenv("GROW_AGRIC_HOST_NAME") . " as $destination_file" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
-            file_put_contents('php://stderr', "URL is as $url" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            $courseid = $admin->addNewCourse($ext, ucwords($data->name), $data->description, $url, $data->moduleid);
 
-            file_put_contents('php://stderr', "no. of pages is as $pagecount" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            if ($courseid instanceof Throwable) {
+                http_response_code(400);
+                echo json_encode(
+                    array(
+                        'message' => 'Badd request, there are errors',
+                        'response' => 'NOT OK',
+                        'response_code' => http_response_code(),
+                        'message_details' => $courseid->getMessage()
+                    )
+                );
+            } else {
+                $course_result = $admin->getCourseByID($courseid); // we need to check if there was an id, so we don't use $result which will be true|1 if there was an id, and that would select what we don't want.
+
+                // returns an object, $row is an object
+                $row = $course_result->fetch(PDO::FETCH_ASSOC);
+
+                file_put_contents('php://stderr', "Uploaded $target_path to" . getenv("GROW_AGRIC_HOST_NAME") . " as $destination_file" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+                file_put_contents('php://stderr', "URL is as $url" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+                echo json_encode(
+                    array(
+                        'message' => 'Course added to module learning list',
+                        'response' => 'OK',
+                        'response_code' => http_response_code(),
+                        'course_details' => $row
+                    )
+                );
+            }
+            
+
+            
         } else {
             file_put_contents('php://stderr', "FTP upload has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+            http_response_code(400);
         }
 
-        http_response_code(200);
         
     } catch (\Throwable $err) {
         //throw $th;

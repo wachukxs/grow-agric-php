@@ -28,8 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     &&
     !empty($data->farmid)) {
 
-
-        
         $result =  $finance->newFinanceRegisteration($data->farmerid, $data->farmid, $data->farmbirdcapacity, 
         $data->currentfarmproduction, $data->averagemortalityrate, 
         $data->numberofchickensmoneyisfor, $data->numberofstaff, $data->preferredchickssupplier, 
@@ -45,12 +43,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(
                 array(
                     'message' => 'Badd request, there are errors',
-                    'response' => 'OK',
+                    'response' => 'NOT OK',
                     'response_code' => http_response_code(),
                     'message_details' => $result->getMessage()
                 )
             );
-        } else {
+        } else { // should have an extra else block to check if it's false
             echo json_encode(
                 array(
                     'message' => 'Good request, no errors',
@@ -64,14 +62,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } else {
         http_response_code(400);
-            echo json_encode(
-                array(
-                    'message' => 'Badd request, there are errors',
-                    'response' => 'OK',
-                    'response_code' => http_response_code(),
-                    'order_details' => $data
-                )
-            );
+        echo json_encode(
+            array(
+                'message' => 'Badd request, there are errors',
+                'response' => 'NOT OK',
+                'response_code' => http_response_code(),
+                'order_details' => $data
+            )
+        );
     }
     
 
