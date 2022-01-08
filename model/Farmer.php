@@ -75,7 +75,7 @@ class Farmer {
         $n = htmlspecialchars(strip_tags($name));
         $a = htmlspecialchars(strip_tags($available));
         $c = htmlspecialchars(strip_tags($category));
-        $p = htmlspecialchars(strip_tags($price));
+        $p = htmlspecialchars(strip_tags(str_replace(',', '', $price))); 
         $d = htmlspecialchars(strip_tags($description));
 
         // Bind parameters to prepared stmt

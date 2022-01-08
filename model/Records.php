@@ -37,11 +37,11 @@ class Records
         $cs = htmlspecialchars(strip_tags($chicken_supplier));
         $it = htmlspecialchars(strip_tags($input_type));
         $n = htmlspecialchars(strip_tags($notes));
-        $p = htmlspecialchars(strip_tags($price));
+        $p = htmlspecialchars(strip_tags(str_replace(',', '', $price)));
 
         $date1 = new DateTime($purchase_date); // Seems this isn't doing timezone conversion and is not accurate
         $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-        $q = htmlspecialchars(strip_tags($quantity));
+        $q = htmlspecialchars(strip_tags(str_replace(',', '', $quantity)));
         $fi = htmlspecialchars(strip_tags($farmerid));
 
         // Bind parameters to prepared stmt
@@ -115,11 +115,11 @@ class Records
         $ft = htmlspecialchars(strip_tags($feed_type));
         $it = htmlspecialchars(strip_tags($input_type));
         $n = htmlspecialchars(strip_tags($notes));
-        $p = htmlspecialchars(strip_tags($price));
+        $p = htmlspecialchars(strip_tags(str_replace(',', '', $price)));
 
         $date1 = new DateTime($purchase_date); // Seems this isn't doing timezone conversion and is not accurate
         $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-        $q = htmlspecialchars(strip_tags($quantity));
+        $q = htmlspecialchars(strip_tags(str_replace(',', '', $quantity)));
         $fi = htmlspecialchars(strip_tags($farmerid));
 
         // Bind parameters to prepared stmt
@@ -340,7 +340,7 @@ class Records
         $date1 = new DateTime($purchase_date);
         $pd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-        $p = htmlspecialchars(strip_tags($price));
+        $p = htmlspecialchars(strip_tags(str_replace(',', '', $price)));
 
         // Bind parameters to prepared stmt
         $stmt->bindParam(':_farmerid', $fi);
@@ -545,8 +545,8 @@ class Records
         $date1 = new DateTime($sale_date); // Seems this isn't doing timezone conversion and is not accurate
         $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-        $q = htmlspecialchars(strip_tags($quantity));
-        $p = htmlspecialchars(strip_tags($price));
+        $q = htmlspecialchars(strip_tags(str_replace(',', '', $quantity)));
+        $p = htmlspecialchars(strip_tags(str_replace(',', '', $price)));
 
         // Bind parameters to prepared stmt
         $stmt->bindParam(':_farmerid', $fi);
