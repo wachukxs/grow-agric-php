@@ -34,12 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $result;
                 if (isset($value->id)) { // this if block should come before the for loop
                     // Update the farm [details]
-                    $result = $farm->updateFarmByID($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id);
+                    $result = $farm->updateFarmByID($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id, $value->multiplechickenhouses);
                 } else { // create a new farm entry
                     // $value;
                     // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
                     // file_put_contents('../../logs/api.log', print_r($value, TRUE));
-                    $result = $farm->createFarm($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid);
+                    $result = $farm->createFarm($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid, $value->multiplechickenhouses);
                 }
 
                 if ($result) {
@@ -92,14 +92,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (isset($data->id) && !empty($data->id)) { // this if block should come before the for loop
                 // Update the farm [details]
                 
-                $result = $farm->updateFarmByID($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->id);
+                $result = $farm->updateFarmByID($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->id, $data->multiplechickenhouses);
 
                 file_put_contents('php://stderr', print_r("\n\n\n\n\n\n running updateFarmByID:" . $result, TRUE));
             } else { // create a new farm entry
                 // $value;
                 // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
                 
-                $result = $farm->createFarm($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid);
+                $result = $farm->createFarm($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid, $data->multiplechickenhouses);
 
                 file_put_contents('php://stderr', print_r("\n\n\n\n\n\n else createFarm:" . $result, TRUE));
             }

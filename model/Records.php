@@ -406,9 +406,9 @@ class Records
         // Ensure safe data
         $fi = htmlspecialchars(strip_tags($farmerid));
         $fid = htmlspecialchars(strip_tags($farmid));
-        $as = htmlspecialchars(strip_tags($amount_spent));
+        $as = htmlspecialchars(strip_tags(str_replace(',', '', $amount_spent)));
         $n = htmlspecialchars(strip_tags($notes));
-        $biq = htmlspecialchars(strip_tags($brooding_item_quantity));
+        $biq = htmlspecialchars(strip_tags(str_replace(',', '', $brooding_item_quantity)));
         $bi = htmlspecialchars(strip_tags($brooding_item));
 
         $date1 = new DateTime($brooding_date);
@@ -761,7 +761,7 @@ class Records
         // Ensure safe data
         $fi = htmlspecialchars(strip_tags($farmerid));
         $fid = htmlspecialchars(strip_tags($farmid));
-        $a = htmlspecialchars(strip_tags($amount));
+        $a = htmlspecialchars(strip_tags(str_replace(',', '', $amount)));
         $s = htmlspecialchars(strip_tags($source));
 
         $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
