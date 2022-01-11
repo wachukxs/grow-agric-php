@@ -14,14 +14,120 @@ class Records
         $this->database_connection = $a_database_connection;
     }
 
+    public function generateRandomString()
+    {
+        $random_string = "0" . rand(1,64) . rand(0,94) . rand(0,9) . rand(0,49) . rand(0,29) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . chr(rand(65,90)) . "-" . (new DateTime())->getTimestamp();
+        return $random_string;
+    }
+
+    public function handleFileUpload($data, $row_id, $table, $farmerid)
+    {
+        // farmer_records_uploads
+        try {
+            // set up basic connection
+            $ftp = ftp_connect(getenv("GROW_AGRIC_HOST_NAME"));
+            $ftp_user_name = getenv("FTP_USERNAME") . "@" . getenv("GROW_AGRIC_HOST_NAME");
+            // login with username and password
+            $login_result = ftp_login($ftp, $ftp_user_name, getenv("FTP_PASSWORD"));
+
+            // check connection
+            if ((!$ftp) || (!$login_result)) {
+                file_put_contents('php://stderr', "FTP connection has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+                file_put_contents('php://stderr', "Attempted to connect to " . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+                // if we get here, we should exit ... return status code
+                exit;
+            } else {
+                file_put_contents('php://stderr', "Connected to" . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            }
+
+            $ext = explode('/', mime_content_type($data))[1]; // https://stackoverflow.com/a/52463011/9259701
+
+            file_put_contents('php://stderr', "\nfile ext is: " . $ext . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+            $new_file_name = $this->generateRandomString() . '.' . $ext; // https://stackoverflow.com/a/14600743/9259701
+            file_put_contents('php://stderr', $new_file_name, FILE_APPEND | LOCK_EX);
+
+            $target_path = './' . $new_file_name;
+
+            // https://stackoverflow.com/a/39384867/9259701
+            $content = base64_decode(preg_replace("/^data:[a-z]+\/[a-z]+;base64,/i", "", $data)); 
+            
+            $file = fopen($target_path, 'w'); 
+            fwrite($file, $content);
+            fclose($file);
+
+            $destination_file = getenv("FARMER_RECORDS_UPLOAD_PATH") . $new_file_name;
+
+            $upload = ftp_put($ftp, $destination_file, $target_path, FTP_BINARY);
+
+            $url = substr_replace($destination_file, "https://" . getenv("GROW_AGRIC_HOST_NAME"), 0, strlen(explode('/', $destination_file)[0])); // not tryna hardcode
+
+            if ($upload) {
+                unlink($target_path);
+    
+                $mediaid = $this->recordUploadedMedia($url, $table, $farmerid, $row_id);
+
+                file_put_contents('php://stderr', "Uploaded $url to" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+    
+            } else {
+                file_put_contents('php://stderr', "FTP upload has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+    
+                http_response_code(400);
+            }
+
+
+        } catch (\Throwable $err) {
+            // throw $err;
+        }
+        
+    }
+
+    public function recordUploadedMedia($url, $table, $farmerid, $row_id)
+    {
+        // `url``chicken_input_id``farmerid`
+        $query = 'INSERT INTO farmer_records_uploads 
+                SET
+                url = :_url,
+                farmerid = :_farmerid,'
+                .
+                ($table == "inputs_records_chicken" ? 'chicken_input_id = :_input_id' : ($table == "" ? '': ''))
+                
+            ;
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fid = htmlspecialchars(strip_tags($farmerid));
+        $u = htmlspecialchars(strip_tags($url));
+        $rid = htmlspecialchars(strip_tags($row_id));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fid);
+        $stmt->bindParam(':_url', $u);
+        $stmt->bindParam(':_input_id', $rid);
+
+        $r = $stmt->execute();
+        
+        if ($r) {
+            $last_insert_id = $this->database_connection->lastInsertId();
+            return $last_insert_id;
+            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+        } else {
+            return false;
+        }
+    }
+
     // Create new chicken input record, an entry
-    public function createChickenInputRecord($farmid, $chicken_supplier, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid)
+    public function createChickenInputRecord($farmid, $chicken_supplier, $other_chicken_supplier, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
     {
 
         $query = 'INSERT INTO inputs_records_chicken 
                 SET
                 farm_id = :_farmid,
                 chicken_supplier = :_chickensupplier,
+                other_chicken_supplier = :_otherchickensupplier,
                 farmerid = :_farmerid,
                 input_type = :_inputtype,
                 notes = :_notes,
@@ -35,6 +141,7 @@ class Records
         // Ensure safe data
         $frmid = htmlspecialchars(strip_tags($farmid));
         $cs = htmlspecialchars(strip_tags($chicken_supplier));
+        $ocs = htmlspecialchars(strip_tags($other_chicken_supplier));
         $it = htmlspecialchars(strip_tags($input_type));
         $n = htmlspecialchars(strip_tags($notes));
         $p = htmlspecialchars(strip_tags(str_replace(',', '', $price)));
@@ -47,6 +154,7 @@ class Records
         // Bind parameters to prepared stmt
         $stmt->bindParam(':_farmid', $frmid);
         $stmt->bindParam(':_chickensupplier', $cs);
+        $stmt->bindParam(':_otherchickensupplier', $ocs);
         $stmt->bindParam(':_farmerid', $fi);
         $stmt->bindParam(':_inputtype', $it);
         $stmt->bindParam(':_notes', $n);
@@ -57,7 +165,15 @@ class Records
         $r = $stmt->execute();
 
         if ($r) {
-            return $this->database_connection->lastInsertId();
+            $last_insert_id = $this->database_connection->lastInsertId();
+
+            if ($documents) { // check for empty string or array, if string or array
+                # handle upload
+    
+                $documents = $this->handleFileUpload($documents, $last_insert_id, 'inputs_records_chicken', $farmerid);
+            }
+
+            return $last_insert_id;
             // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
         } else {
             return false;

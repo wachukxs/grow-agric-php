@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
-            $result = $records->createChickenInputRecord($value->farm_id, $value->chicken_supplier, $value->input_type, $value->notes, $value->price, $value->purchase_date, $value->quantity, $value->farmerid);
+            $result = $records->createChickenInputRecord($value->farm_id, $value->chicken_supplier, $value->other_chicken_supplier, $value->input_type, $value->notes, $value->price, $value->purchase_date, $value->quantity, $value->farmerid, $value->documents);
         
             // returns an int [last insert id], $result is an int
 
