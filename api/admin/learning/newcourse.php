@@ -18,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // login with username and password
         $login_result = ftp_login($ftp, $ftp_user_name, getenv("FTP_PASSWORD"));
 
+        ftp_pasv($ftp, true);
+
         // check connection
         if ((!$ftp) || (!$login_result)) {
             file_put_contents('php://stderr', "FTP connection has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
