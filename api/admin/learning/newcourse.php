@@ -18,8 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // login with username and password
         $login_result = ftp_login($ftp, $ftp_user_name, getenv("FTP_PASSWORD"));
 
-        ftp_pasv($ftp, true);
-
         // check connection
         if ((!$ftp) || (!$login_result)) {
             file_put_contents('php://stderr', "FTP connection has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
@@ -27,7 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             file_put_contents('php://stderr', "Attempted to connect to " . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
             exit;
         } else {
-            file_put_contents('php://stderr', "Connected to" . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', "Connected to " . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+            ftp_pasv($ftp, true);
         }
 
         //catch indivizual key-value pair info

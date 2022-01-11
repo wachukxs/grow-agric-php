@@ -39,7 +39,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // if we get here, we should exit ... return status code
             exit;
         } else {
-            file_put_contents('php://stderr', "Connected to" . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', "Connected to " . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            
+            ftp_pasv($ftp, true);
         }
 
         $ext = explode('/', mime_content_type($data->file))[1]; // https://stackoverflow.com/a/52463011/9259701
