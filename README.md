@@ -15,3 +15,6 @@ Watch me build great stuff.
 
 ### Pitfalls
 1. Never use var_dump() ... it's like an api output
+
+
+Maybe sth to look at https://packagist.org/packages/nicolab/php-ftp-client
