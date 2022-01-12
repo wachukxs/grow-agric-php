@@ -21,7 +21,7 @@ $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // echo log tracing => look into loggin in php
-    file_put_contents('php://stderr', print_r('Trying to add/update farm with id: ' . (isset($value->id) ? $data->id : NULL) . "\n", TRUE));
+    file_put_contents('php://stderr', print_r( (isset($value->id) ? 'Trying to update farm with id: ' . $data->id : 'Tying to create new farm') . "\n", TRUE));
     file_put_contents('php://stderr', print_r($data, TRUE));
 
     try {
@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 $result = $farm->createFarm($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid, $data->multiplechickenhouses);
 
-                file_put_contents('php://stderr', print_r("\n\n\n\n\n\n else createFarm:" . $result, TRUE));
+                file_put_contents('php://stderr', print_r("\n\n\n\n else createFarm: " . $result, TRUE));
             }
             file_put_contents('php://stderr', print_r('\n\n\n\n\n\n result:' . $result, TRUE));
             if ($result) { // check that $result is an int
@@ -138,7 +138,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } catch (\Throwable $err) {
         file_put_contents('php://stderr', print_r('Error while trying to add/update farm: ' . $err->getMessage() . "\n", TRUE));
-        // http_response_code(400);
+        
+        http_response_code(400);
         echo json_encode(
             array(
                 'message' => 'Farm not created/updated',

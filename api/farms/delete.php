@@ -67,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
     } catch (\Throwable $err) {
-        file_put_contents('php://stderr', print_r('Error while trying to add/update farm: ' . $err->getMessage() . "\n", TRUE));
+        file_put_contents('php://stderr', print_r('Error while trying to delete farm: ' . $err->getMessage() . "\n", TRUE));
         http_response_code(400);
         echo json_encode(
             array(

@@ -22,7 +22,6 @@ $data = json_decode(file_get_contents('php://input'));
 
 // echo log tracing => look into loggin in php
 file_put_contents('php://stderr', print_r('Trying to update farmer details1' . "\n", TRUE));
-file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->id . "\n", TRUE));
 
 if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->id)
     &&
@@ -45,6 +44,8 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
     !empty($data->id)
 ) { // if good data was provided
     try {
+        file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->id . "\n", TRUE));
+
         // Update the farmer [details]
         file_put_contents('php://stderr', print_r('Good data was provided' . "\n", TRUE));
         $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->id);

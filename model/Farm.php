@@ -67,12 +67,16 @@ class Farm {
         // Ensure safe data
         $cf = ''; // convert the array to strings
         $fi = '';
-        if (is_array($challengesfaced) && is_array($farmeditems)) {
-            $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced))); // convert the array to strings
+        if (is_array($farmeditems)) {
             $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
         } else { // they are strings
-            $cf = htmlspecialchars(strip_tags($challengesfaced)); // convert the array to strings
             $fi = htmlspecialchars(strip_tags($farmeditems));
+        }
+
+        if (is_array($challengesfaced)) {
+            $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced))); // convert the array to strings
+        } else { // they are strings
+            $cf = htmlspecialchars(strip_tags($challengesfaced));
         }
         
         $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
@@ -103,7 +107,7 @@ class Farm {
         try {
             $r = $stmt->execute(); // returns true/false
             if ($r) {
-                file_put_contents('php://stderr', print_r("\n\n\n\n\n\n\n\n\n\n\n\n" . 'last insert id' . $this->database_connection->lastInsertId() . "\n", TRUE));
+                file_put_contents('php://stderr', print_r("\n\n\n\n\n\n" . 'last insert id ' . $this->database_connection->lastInsertId() . "\n", TRUE));
                 return $this->database_connection->lastInsertId();
                 // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
             } else {
@@ -207,13 +211,18 @@ class Farm {
             // Ensure safe data
             $cf = ''; // convert the array to strings
             $fi = '';
-            if (is_array($challengesfaced) && is_array($farmeditems)) {
-                $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced))); // convert the array to strings
+            if (is_array($challengesfaced)) {
+                $cf = htmlspecialchars(strip_tags(implode(",", $challengesfaced)));
+            } else { // they are strings
+                $cf = htmlspecialchars(strip_tags($challengesfaced));
+            }
+
+            if (is_array($farmeditems)) {
                 $fi = htmlspecialchars(strip_tags(implode(",", $farmeditems)));
             } else { // they are strings
-                $cf = htmlspecialchars(strip_tags($challengesfaced)); // convert the array to strings
                 $fi = htmlspecialchars(strip_tags($farmeditems));
             }
+            
             $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
             $fcl = htmlspecialchars(strip_tags($farmcountylocation));
             $hin = htmlspecialchars(strip_tags($haveinsurance));
