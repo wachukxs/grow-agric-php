@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($data as &$value) {
             // insert the record [details]
             // $emp_id, $salary, $notes, $payment_date, $farmerid
-            $result = $records->addFarmerLabourRecord($value->employee_id, $value->salary, $value->notes, $value->paymentdate, $value->farmerid);
+            $result = $records->addFarmerLabourRecord($value->employee_id, $value->salary, $value->notes, $value->paymentdate, $value->farmerid, $value->documents);
         
             // returns an int [last insert id], $result is an int
 
@@ -46,14 +46,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
         }
         
-        echo json_encode(
-            array(
-                'message' => 'Good request, no errors',
-                'response' => 'OK',
-                'response_code' => http_response_code(),
-                'save_details' => $result_array
-            )
-        );
+        if (in_array(false, $result_array)) {
+            http_response_code(400);
+            echo json_encode(
+                array(
+                    'message' => 'Operation failed',
+                    'response' => 'NOT OK',
+                    'response_code' => http_response_code()
+                )
+            );
+        } else {
+            echo json_encode(
+                array(
+                    'message' => 'Good request, no errors',
+                    'response' => 'OK',
+                    'response_code' => http_response_code(),
+                    'save_details' => $result_array
+                )
+            );
+        }
     
     } else {
         echo json_encode(

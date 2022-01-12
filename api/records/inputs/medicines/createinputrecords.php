@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
-            $result = $records->addFarmerMedicineInputRecord($value->medicine_type, $value->medicine_supplier, $value->type, $value->vet_name, $value->purchase_date, $value->notes, $value->price, $value->farmid, $value->farmerid);
+            $result = $records->addFarmerMedicineInputRecord($value->medicine_type, $value->medicine_supplier, $value->type, $value->vet_name, $value->purchase_date, $value->notes, $value->price, $value->farmid, $value->farmerid, $value->documents);
         
             // returns an int [last insert id], $result is an int
 
@@ -45,14 +45,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
         }
         
-        echo json_encode(
-            array(
-                'message' => 'Good request, no errors',
-                'response' => 'OK',
-                'response_code' => http_response_code(),
-                'save_details' => $result_array
-            )
-        );
+        if (in_array(false, $result_array)) {
+            http_response_code(400);
+            echo json_encode(
+                array(
+                    'message' => 'Operation failed',
+                    'response' => 'NOT OK',
+                    'response_code' => http_response_code()
+                )
+            );
+        } else {
+            echo json_encode(
+                array(
+                    'message' => 'Good request, no errors',
+                    'response' => 'OK',
+                    'response_code' => http_response_code(),
+                    'save_details' => $result_array
+                )
+            );
+        }
     
     } else {
         echo json_encode(

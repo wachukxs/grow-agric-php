@@ -4,7 +4,6 @@ class Records
 {
     // DB stuff
     public $database_connection;
-    private $table = 'inputs_records_chicken';
 
     /**
      * Constructor taking db as params
@@ -37,7 +36,7 @@ class Records
                 file_put_contents('php://stderr', "Attempted to connect to " . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
                 // if we get here, we should exit ... return status code
-                exit;
+                return false;
             } else {
                 file_put_contents('php://stderr', "Connected to " . getenv("GROW_AGRIC_HOST_NAME") . " for user $ftp_user_name" . "\n" . "\n", FILE_APPEND | LOCK_EX);
                 ftp_pasv($ftp, true);
@@ -71,30 +70,45 @@ class Records
                 $mediaid = $this->recordUploadedMedia($url, $table, $farmerid, $row_id);
 
                 file_put_contents('php://stderr', "Uploaded $url to" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+                return $mediaid;
     
             } else {
                 file_put_contents('php://stderr', "FTP upload has failed!" . "\n" . "\n", FILE_APPEND | LOCK_EX);
-    
-                http_response_code(400);
+
+                return false;
             }
 
 
         } catch (\Throwable $err) {
             // throw $err;
+            file_put_contents('php://stderr', "handleFileUpload ERR! : " . $err->getMessage() . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            return false;
         }
         
     }
 
     public function recordUploadedMedia($url, $table, $farmerid, $row_id)
     {
-        // `url``chicken_input_id``farmerid`
+        /**
+         * 
+         */
         $query = 'INSERT INTO farmer_records_uploads 
                 SET
                 url = :_url,
                 farmerid = :_farmerid,'
                 .
-                ($table == "inputs_records_chicken" ? 'chicken_input_id = :_input_id' : ($table == "" ? '': ''))
+                ($table == "inputs_records_chicken" ? 'chicken_input_id = :_input_id' : 
+                ($table == "input_records_brooding" ? 'brooding_input_id = :_input_id': 
+                ($table == "input_records_diseases" ? 'diseases_input_id = :_input_id' : 
+                ($table == "inputs_records_feeds" ? 'feeds_input_id = :_input_id' : 
                 
+                ($table == "input_records_income_expenses" ? 'income_expense_input_id = :_input_id' : 
+                ($table == "input_records_labour" ? 'labour_input_id = :_input_id' : 
+                ($table == "input_records_medicines" ? 'medicines_input_id = :_input_id' : 
+                ($table == "input_records_mortalities" ? 'mortalities_input_id = :_input_id' : 
+                 '' ) ) ) ) ))))
+
             ;
 
         $stmt = $this->database_connection->prepare($query);
@@ -110,7 +124,7 @@ class Records
         $stmt->bindParam(':_input_id', $rid);
 
         $r = $stmt->execute();
-        
+
         if ($r) {
             $last_insert_id = $this->database_connection->lastInsertId();
             return $last_insert_id;
@@ -169,13 +183,17 @@ class Records
             $last_insert_id = $this->database_connection->lastInsertId();
 
             if ($documents) { // check for empty string or array, if string or array
-                # handle upload
-    
-                $documents = $this->handleFileUpload($documents, $last_insert_id, 'inputs_records_chicken', $farmerid);
-            }
 
-            return $last_insert_id;
-            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                $upload = $this->handleFileUpload($documents, $last_insert_id, 'inputs_records_chicken', $farmerid);
+
+                if ($upload) {
+                    return $last_insert_id;
+                    // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                } else {
+                    return false;
+                }
+                
+            }
         } else {
             return false;
         }
@@ -208,7 +226,7 @@ class Records
 
 
     // Create new feeds input record, an entry
-    public function createFeedsInputRecord($farmid, $feed_supplier, $feed_type, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid)
+    public function createFeedsInputRecord($farmid, $feed_supplier, $feed_type, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
     {
 
         $query = 'INSERT INTO inputs_records_feeds 
@@ -253,8 +271,20 @@ class Records
         $r = $stmt->execute();
 
         if ($r) {
-            return $this->database_connection->lastInsertId();
-            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            $last_insert_id = $this->database_connection->lastInsertId();
+
+            if ($documents) { // check for empty string or array, if string or array
+
+                $upload = $this->handleFileUpload($documents, $last_insert_id, 'inputs_records_feeds', $farmerid);
+
+                if ($upload) {
+                    return $last_insert_id;
+                    // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                } else {
+                    return false;
+                }
+                
+            }
         } else {
             return false;
         }
@@ -363,7 +393,7 @@ class Records
     }
 
     // Create new farmer employee, an entry
-    public function addFarmerLabourRecord($emp_id, $salary, $notes, $payment_date, $farmerid)
+    public function addFarmerLabourRecord($emp_id, $salary, $notes, $payment_date, $farmerid, $documents)
     {
 
         $query = 'INSERT INTO input_records_labour 
@@ -397,8 +427,20 @@ class Records
         $r = $stmt->execute();
 
         if ($r) {
-            return $this->database_connection->lastInsertId();
-            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            $last_insert_id = $this->database_connection->lastInsertId();
+
+            if ($documents) { // check for empty string or array, if string or array
+
+                $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_labour', $farmerid);
+
+                if ($upload) {
+                    return $last_insert_id;
+                    // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                } else {
+                    return false;
+                }
+                
+            }
         } else {
             return false;
         }
@@ -427,7 +469,7 @@ class Records
     }
 
     // Create new administered medicine, an entry
-    public function addFarmerMedicineInputRecord($medicine_type, $medicine_supplier, $type, $vet_name, $purchase_date, $notes, $price, $farmid, $farmerid)
+    public function addFarmerMedicineInputRecord($medicine_type, $medicine_supplier, $type, $vet_name, $purchase_date, $notes, $price, $farmid, $farmerid, $documents)
     {
 
         $query = 'INSERT INTO input_records_medicines 
@@ -473,8 +515,20 @@ class Records
         $r = $stmt->execute();
 
         if ($r) {
-            return $this->database_connection->lastInsertId();
-            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            $last_insert_id = $this->database_connection->lastInsertId();
+
+            if ($documents) { // check for empty string or array, if string or array
+
+                $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_medicines', $farmerid);
+
+                if ($upload) {
+                    return $last_insert_id;
+                    // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                } else {
+                    return false;
+                }
+                
+            }
         } else {
             return false;
         }
@@ -792,7 +846,7 @@ class Records
         return $stmt;
     }
 
-    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $disease, $vet_name, $farmid, $farmerid)
+    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $disease, $vet_name, $farmid, $farmerid, $documents)
     {
         // date can be auto filled in db though
         $query = 'INSERT INTO input_records_diseases 
@@ -832,8 +886,20 @@ class Records
         $r = $stmt->execute();
 
         if ($r) {
-            return $this->database_connection->lastInsertId();
-            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            $last_insert_id = $this->database_connection->lastInsertId();
+
+            if ($documents) { // check for empty string or array, if string or array
+
+                $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_diseases', $farmerid);
+
+                if ($upload) {
+                    return $last_insert_id;
+                    // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                } else {
+                    return false;
+                }
+                
+            }
         } else {
             return false;
         }
@@ -860,7 +926,7 @@ class Records
         return $stmt;
     }
 
-    public function addFarmerOtherIncomeOrExpenseInputRecord($notes, $source, $_date, $amount, $type, $farmid, $farmerid)
+    public function addFarmerOtherIncomeOrExpenseInputRecord($notes, $source, $_date, $amount, $type, $farmid, $farmerid, $documents)
     {
         $query = 'INSERT INTO input_records_income_expenses 
             SET
@@ -899,8 +965,20 @@ class Records
         $r = $stmt->execute();
 
         if ($r) {
-            return $this->database_connection->lastInsertId();
-            // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            $last_insert_id = $this->database_connection->lastInsertId();
+
+            if ($documents) { // check for empty string or array, if string or array
+
+                $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_income_expenses', $farmerid);
+
+                if ($upload) {
+                    return $last_insert_id;
+                    // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                } else {
+                    return false;
+                }
+                
+            }
         } else {
             return false;
         }
