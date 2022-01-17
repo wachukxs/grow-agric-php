@@ -44,8 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
 
         if (is_array($row1)) { // gettype($row1) == "array" // check if $row1 is array (means transaction was successful)
             if ($row1["password"] === $data->password) {
-                // delete password
+                // delete password [& middlename, middlename is causing ish]
                 unset($row1["password"]);
+                unset($row1["middlename"]);
 
                 file_put_contents('php://stderr', print_r($row1, TRUE));
 
