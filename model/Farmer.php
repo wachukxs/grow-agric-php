@@ -204,7 +204,7 @@ class Farmer {
 
             return $query_statement;
         } catch (\Throwable $err) {
-            //throw $err;
+            // throw $err;
             // file_put_contents('../../logs/api.log', 'Farm.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
             file_put_contents('php://stderr', print_r('Farm.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", TRUE));
             return false;

@@ -63,7 +63,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                 $row5 = $result5->fetchAll(PDO::FETCH_ASSOC);
 
                 $farmer_details_arr["personalInfo"] = $row1;
+                
+                // add chickenhouses to farms
+                foreach ($row2 as $key => $_farm) {
+                    $row2[$key]["chickenhouses"] = array();
+                    $r = $farm->getAllFarmChickenHousesByFarmID($_farm["id"]);
+                    $row2[$key]["chickenhouses"] = $r->fetchAll(PDO::FETCH_ASSOC);
+   
+                }
+
                 $farmer_details_arr["farms"] = $row2;
+                
                 $farmer_details_arr["employees"] = $row3;
                 $farmer_details_arr["customers"] = $row4;
                 $farmer_details_arr["financeApplications"] = $row5;
