@@ -2,11 +2,11 @@
 
 // Headers
 // https://stackoverflow.com/a/17098221
-include_once '../../config/globals/header.php';
+include_once '../../../config/globals/header.php';
 
 // Resources
-include_once '../../config/Database.php';
-include_once '../../model/Farm.php';
+include_once '../../../config/Database.php';
+include_once '../../../model/Farm.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
@@ -18,9 +18,7 @@ $farm = new Farm($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // echo log tracing => look into loggin in php
     file_put_contents('php://stderr', print_r('Trying to delete farm with id: ' . $data->id . "\n", TRUE));
     file_put_contents('php://stderr', print_r($data, TRUE));
 
@@ -29,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result;
         if (isset($data->id)) { // this if block should come before the for loop
             // Update the farm [details]
-            $result = $farm->fakeDeleteFarm($data->id);
+            $result = $farm->fakeDeleteFarmChickenHouseByID($data->id);
             // file_put_contents('../../logs/api.log', print_r("we are deleting with fakeDeleteFarm() \n", TRUE));
             // file_put_contents('../../logs/api.log', print_r('result: ' . $result, TRUE));
 
@@ -37,17 +35,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Get the farm [details]
                 echo json_encode(
                     array(
-                        'message' => 'Farm deleted',
+                        'message' => 'Farm chicken house deleted',
                         'response' => 'OK',
                         'response_code' => http_response_code(),
-                        'deleted_farm_id' => $result
+                        'deleted_farm_chicken_house_id' => $result
                     )
                 );
             } else {
                 http_response_code(400);
                 echo json_encode(
                     array(
-                        'message' => 'Farm details not deleted',
+                        'message' => 'Farm chicken house details not deleted',
                         'response' => 'NOT OK',
                         'response_code' => http_response_code(),
                         'message_details' => $result, //
@@ -58,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             http_response_code(400);
             echo json_encode(
                 array(
-                    'message' => 'Farm details not delete, no id provided',
+                    'message' => 'Farm chicken house details not delete, no id provided',
                     'response' => 'NOT OK',
                     'response_code' => http_response_code(),
                     'message_details' => $result, //
@@ -67,11 +65,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
     } catch (\Throwable $err) {
-        file_put_contents('php://stderr', print_r('Error while trying to delete farm: ' . $err->getMessage() . "\n", TRUE));
+        file_put_contents('php://stderr', print_r('Error while trying to delete farm chicken house: ' . $err->getMessage() . "\n", TRUE));
         http_response_code(400);
         echo json_encode(
             array(
-                'message' => 'Farm not deleted',
+                'message' => 'Farm chicken house not deleted',
                 'response' => 'NOT OK',
                 'response_code' => http_response_code(),
                 'message_details' => $err, //

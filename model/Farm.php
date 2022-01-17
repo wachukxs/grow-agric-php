@@ -12,7 +12,6 @@ class Farm {
         $this->database_connection = $a_database_connection;
     }
 
-
     public function deleteFarm($farmid) {
         try {
             // Create query
@@ -39,6 +38,38 @@ class Farm {
         } catch (\Throwable $err) {
             //throw $err;
             file_put_contents('php://stderr', print_r('ERROR in deleteFarm(): ' . $err->getMessage() . "\n", TRUE));
+            return false; // $err->getMessage(); 
+        }
+    }
+
+    public function fakeDeleteFarm($farmid) {
+        try {
+            // Create query
+            $query = 'UPDATE ' . $this->table . ' 
+                SET 
+                deleted = true
+                WHERE
+                id = ?
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $i = htmlspecialchars(strip_tags($farmid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $i);
+
+            // Execute query statement
+            if ($query_statement->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('ERROR in fakeDeleteFarm(): ' . $err->getMessage() . "\n", TRUE));
             return false; // $err->getMessage(); 
         }
     }
@@ -124,20 +155,161 @@ class Farm {
         
     }
 
-    public function updateFarmChickenHouses($chickenhousename, $farmid, $startdate = NULL, )
+    public function updateFarmChickenHouses($chickenhousename, $farmid, $startdate, $chickenhouseid)
     {
+        try {
+            // Create query
+            $query = 'UPDATE farm_chicken_houses 
+                SET 
+                name = :name,
+                farmid = :farmid,
+                startdate = :startdate
+                WHERE
+                id = :id
+            ';
 
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $date1 = new DateTime($startdate); // Seems this isn't doing timezone conversion and is not accurate
+            $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+            
+            $chn = htmlspecialchars(strip_tags($chickenhousename));
+            $fid = htmlspecialchars(strip_tags($farmid));
+            $_id = htmlspecialchars(strip_tags($chickenhouseid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':name', $chn);
+            $stmt->bindParam(':farmid', $fid);
+            $stmt->bindParam(':startdate', $sd);
+            $stmt->bindParam(':id', $_id);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed farm update query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute farm update query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farm.php->updateFarmByID error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
     }
 
-    public function getFarmChickenHouse($chickenhousename, $farmid)
+    public function addFarmChickenHouses($chickenhousename, $farmid, $startdate)
     {
-        
+        try {
+            // Create query
+
+            $query = 'INSERT INTO farm_chicken_houses
+                SET
+                name = :name,
+                farmid = :farmid,
+                startdate = :startdate
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $date1 = new DateTime($startdate); // Seems this isn't doing timezone conversion and is not accurate
+            $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+            
+            $chn = htmlspecialchars(strip_tags($chickenhousename));
+            $fid = htmlspecialchars(strip_tags($farmid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':name', $chn);
+            $stmt->bindParam(':farmid', $fid);
+            $stmt->bindParam(':startdate', $sd);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed farm insert query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute addFarmChickenHouses query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farm.php->updateFarmByID error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllFarmChickenHousesByFarmID($farmid)
+    {
+        $query = 'SELECT * FROM farm_chicken_houses WHERE farmid = ? AND deleted = false';
+
+        // Prepare statement
+        $query_statement = $this->database_connection->prepare($query);
+
+        // Execute query statement
+        $query_statement->bindParam(1, $farmid);
+
+        // Execute query statement
+        $query_statement->execute();
+
+        return $query_statement;
+    }
+
+    public function getFarmChickenHouseByID($chickenhouseid)
+    {
+        $query = 'SELECT * FROM farm_chicken_houses WHERE id = ? AND deleted = false';
+
+        // Prepare statement
+        $query_statement = $this->database_connection->prepare($query);
+
+        // Execute query statement
+        $query_statement->bindParam(1, $chickenhouseid);
+
+        // Execute query statement
+        $query_statement->execute();
+
+        return $query_statement;
+    }
+
+    public function fakeDeleteFarmChickenHouseByID($chickenhouseid) {
+        try {
+            // Create query
+            $query = 'UPDATE farm_chicken_houses 
+                SET 
+                deleted = true
+                WHERE
+                id = ?
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $i = htmlspecialchars(strip_tags($chickenhouseid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $i);
+
+            // Execute query statement
+            if ($query_statement->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('ERROR in fakeDeleteFarm(): ' . $err->getMessage() . "\n", TRUE));
+            return false; // $err->getMessage(); 
+        }
     }
 
     // getSingleFarmByID
     public function getSingleFarmByID($id)
     {
-        $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ?';
+        $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ? AND deleted = false';
 
         // Prepare statement
         $query_statement = $this->database_connection->prepare($query);
@@ -168,7 +340,7 @@ class Farm {
         // 'FROM farmers ' .
         // 'RIGHT OUTER JOIN orders ON farmer.id = orders.id_of_food ' .
         // 'WHERE farmers.id = ?';
-        $query = 'SELECT * FROM ' . $this->table . ' WHERE farmerid = ?';
+        $query = 'SELECT * FROM ' . $this->table . ' WHERE farmerid = ? AND deleted = false';
 
         // Prepare statement
         $query_statement = $this->database_connection->prepare($query);

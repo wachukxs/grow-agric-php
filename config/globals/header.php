@@ -23,7 +23,7 @@ if (isset($origin) && in_array($origin, $allowed_domains)) {
     header('Access-Control-Allow-Origin: ' . $origin);
 } else {
     file_put_contents('php://stderr', print_r('Invalid CORS access for ' . $origin . ". Trying fallback\n", TRUE));
-    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Origin: *'); // Should disable access
 }
 // header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');

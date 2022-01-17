@@ -22,7 +22,7 @@ $data = json_decode(file_get_contents('php://input'));
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // echo log tracing => look into loggin in php
     file_put_contents('php://stderr', print_r( (isset($value->id) ? 'Trying to update farm with id: ' . $data->id : 'Tying to create new farm') . "\n", TRUE));
-    file_put_contents('php://stderr', print_r($data, TRUE));
+    // file_put_contents('php://stderr', print_r($data, TRUE));
 
     try {
 
@@ -35,11 +35,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (isset($value->id)) { // this if block should come before the for loop
                     // Update the farm [details]
                     $result = $farm->updateFarmByID($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id, $value->multiplechickenhouses);
+
+                    // chickenhouses
+                    if (!empty($value->chickenhouses)) {
+                        foreach ($value->chickenhouses as $chickenhouse) {
+                            if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
+                                $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                            } else {
+                                $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                            }
+                            
+                        }
+                    }
                 } else { // create a new farm entry
                     // $value;
                     // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
                     // file_put_contents('../../logs/api.log', print_r($value, TRUE));
                     $result = $farm->createFarm($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid, $value->multiplechickenhouses);
+                    // chickenhouses
+                    if (!empty($value->chickenhouses)) {
+                        foreach ($value->chickenhouses as $chickenhouse) {
+                            if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
+                                $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                            } else {
+                                $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                            }
+                            
+                        }
+                    }
                 }
 
                 if ($result) {
@@ -57,12 +80,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
 
-            if ($result_array) { // check that $result is an int
+            if ($result_array) { // check that every element is true
                 // Get the farm [details]
                 $farms_result = $farm->getAllFarmsByFarmerID($data[0]->farmerid);
 
                 // returns an array, $row is an array
                 $row = $farms_result->fetchAll(PDO::FETCH_ASSOC);
+                
+                foreach ($row as $key => $_farm) {
+                    $row[$key]["chickenhouses"] = array();
+                    $r = $farm->getAllFarmChickenHousesByFarmID($_farm["id"]);
+                    $row[$key]["chickenhouses"] = $r->fetchAll(PDO::FETCH_ASSOC);
+   
+                }
 
                 if (is_array($row)) { // gettype($row) == "array"
                     // check if $row is array (means transaction was successful)
@@ -94,6 +124,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 $result = $farm->updateFarmByID($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->id, $data->multiplechickenhouses);
 
+                // chickenhouses
+                if (!empty($value->chickenhouses)) {
+                    foreach ($value->chickenhouses as $chickenhouse) {
+                        if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
+                            $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                        } else {
+                            $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                        }
+                        
+                    }
+                }
+
                 file_put_contents('php://stderr', print_r("\n\n\n\n\n\n running updateFarmByID:" . $result, TRUE));
             } else { // create a new farm entry
                 // $value;
@@ -101,9 +143,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 $result = $farm->createFarm($data->challengesfaced, $data->farmcitytownlocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid, $data->multiplechickenhouses);
 
+                // chickenhouses
+                if (!empty($value->chickenhouses)) {
+                    foreach ($value->chickenhouses as $chickenhouse) {
+                        if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
+                            $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                        } else {
+                            $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                        }
+                        
+                    }
+                }
+
                 file_put_contents('php://stderr', print_r("\n\n\n\n else createFarm: " . $result, TRUE));
             }
             file_put_contents('php://stderr', print_r('\n\n\n\n\n\n result:' . $result, TRUE));
+            
             if ($result) { // check that $result is an int
                 // Get the farm [details]
                 
@@ -111,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // returns an array, $row is an array
                 $row = $farm_result->fetch(PDO::FETCH_ASSOC);
+                $row["chickenhouses"] = $farm->getAllFarmChickenHousesByFarmID($row->id);
 
                 if (is_array($row)) { // gettype($row) == "array"
                     // check if $row is array (means transaction was successful)
