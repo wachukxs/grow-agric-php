@@ -140,11 +140,10 @@ class Farm {
             if ($r) {
                 file_put_contents('php://stderr', print_r("\n\n\n\n\n\n" . 'last insert id ' . $this->database_connection->lastInsertId() . "\n", TRUE));
                 return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
             } else {
                 file_put_contents('php://stderr', print_r('Farm.php->createFarm error: ' . $this->database_connection->errorInfo() . "\n", TRUE));
                 // echo $this->database_connection->errorInfo();
-                return $this->database_connection->errorInfo(); // false;
+                return false; // $this->database_connection->errorInfo();
             }
         } catch (\PDOException $err) {
             file_put_contents('php://stderr', print_r('Farm.php->createFarm error: ' . $err->getMessage() . "\n", TRUE));
@@ -155,15 +154,14 @@ class Farm {
         
     }
 
-    public function updateFarmChickenHouses($chickenhousename, $farmid, $startdate, $chickenhouseid)
+    public function updateFarmChickenHouses($chickenhousename, $farmid, $chickenhouseid)
     {
         try {
             // Create query
             $query = 'UPDATE farm_chicken_houses 
                 SET 
                 name = :name,
-                farmid = :farmid,
-                startdate = :startdate
+                farmid = :farmid
                 WHERE
                 id = :id
             ';
@@ -172,9 +170,6 @@ class Farm {
             $stmt = $this->database_connection->prepare($query);
 
             // Ensure safe data
-            $date1 = new DateTime($startdate); // Seems this isn't doing timezone conversion and is not accurate
-            $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-            
             $chn = htmlspecialchars(strip_tags($chickenhousename));
             $fid = htmlspecialchars(strip_tags($farmid));
             $_id = htmlspecialchars(strip_tags($chickenhouseid));
@@ -182,7 +177,6 @@ class Farm {
             // Bind parameters to prepared stmt
             $stmt->bindParam(':name', $chn);
             $stmt->bindParam(':farmid', $fid);
-            $stmt->bindParam(':startdate', $sd);
             $stmt->bindParam(':id', $_id);
 
             // Execute query statement
@@ -200,7 +194,7 @@ class Farm {
         }
     }
 
-    public function addFarmChickenHouses($chickenhousename, $farmid, $startdate)
+    public function addFarmChickenHouses($chickenhousename, $farmid,)
     {
         try {
             // Create query
@@ -208,24 +202,19 @@ class Farm {
             $query = 'INSERT INTO farm_chicken_houses
                 SET
                 name = :name,
-                farmid = :farmid,
-                startdate = :startdate
+                farmid = :farmid
             ';
 
             // Prepare statement
             $stmt = $this->database_connection->prepare($query);
 
             // Ensure safe data
-            $date1 = new DateTime($startdate); // Seems this isn't doing timezone conversion and is not accurate
-            $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
-            
             $chn = htmlspecialchars(strip_tags($chickenhousename));
             $fid = htmlspecialchars(strip_tags($farmid));
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':name', $chn);
             $stmt->bindParam(':farmid', $fid);
-            $stmt->bindParam(':startdate', $sd);
 
             // Execute query statement
             if ($stmt->execute()) {
@@ -328,18 +317,6 @@ class Farm {
     public function getAllFarmsByFarmerID($id)
     {
         // Create query
-        // $query = 'SELECT ' .
-        // 'farmer.name, ' .
-        // 'farmer.price, ' .
-        // 'farmer.`image`, ' .
-        // 'farmer.price * orders.quantity AS total, ' .
-        // 'orders.time as time_of_order, ' .
-        // 'orders.address, ' .
-        // 'orders.customer_name, ' .
-        // 'orders.quantity ' .
-        // 'FROM farmers ' .
-        // 'RIGHT OUTER JOIN orders ON farmer.id = orders.id_of_food ' .
-        // 'WHERE farmers.id = ?';
         $query = 'SELECT * FROM ' . $this->table . ' WHERE farmerid = ? AND deleted = false';
 
         // Prepare statement

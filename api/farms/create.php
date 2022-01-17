@@ -21,44 +21,46 @@ $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // echo log tracing => look into loggin in php
-    file_put_contents('php://stderr', print_r( (isset($value->id) ? 'Trying to update farm with id: ' . $data->id : 'Tying to create new farm') . "\n", TRUE));
-    // file_put_contents('php://stderr', print_r($data, TRUE));
+    file_put_contents('php://stderr', print_r( (isset($value->id) ? 'Trying to update farm with id: ' . $data->id : 'Tying to create new farm') . "\n\n", TRUE));
+    file_put_contents('php://stderr', print_r($data, TRUE));
 
     try {
 
         if (is_array($data)) {
             $result_array = array();
 
-            foreach ($data as &$value) {
-
+            foreach ($data as $key => $value) {
                 $result;
-                if (isset($value->id)) { // this if block should come before the for loop
+                if (isset($value->id) && !empty($value->id)) { // this if block should come before the for loop
                     // Update the farm [details]
+                    file_put_contents('php://stderr', print_r("\n\nUpdate the farm [details] " . " " . "\n\n", TRUE));
+                    file_put_contents('php://stderr', print_r($value, TRUE));
                     $result = $farm->updateFarmByID($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id, $value->multiplechickenhouses);
 
                     // chickenhouses
                     if (!empty($value->chickenhouses)) {
                         foreach ($value->chickenhouses as $chickenhouse) {
                             if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
-                                $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                                $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->id);
                             } else {
-                                $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                                $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid);
                             }
                             
                         }
                     }
                 } else { // create a new farm entry
                     // $value;
-                    // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
-                    // file_put_contents('../../logs/api.log', print_r($value, TRUE));
+                    file_put_contents('php://stderr', print_r("\n\nwe are saving with createFarm() " . $value->farmcitytownlocation . " \n", TRUE));
+                    file_put_contents('php://stderr', print_r($value, TRUE));
                     $result = $farm->createFarm($value->challengesfaced, $value->farmcitytownlocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid, $value->multiplechickenhouses);
+                    
                     // chickenhouses
                     if (!empty($value->chickenhouses)) {
                         foreach ($value->chickenhouses as $chickenhouse) {
                             if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
-                                $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                                $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->id);
                             } else {
-                                $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                                $farm->addFarmChickenHouses($chickenhouse->name, $result);
                             }
                             
                         }
@@ -67,9 +69,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 if ($result) {
                     // $result is 1 if we're good
-                    file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
+                    file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result) . "\n\n", TRUE));
 
-                    file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
+                    file_put_contents('php://stderr', print_r("\n\n[last insert id for farm] " . $result . "\n\n", TRUE));
                     file_put_contents('php://stderr', print_r('Updated/created new farm record: ' . $result . "\n", TRUE));
 
                     array_push($result_array, $result);
@@ -80,8 +82,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
 
-            if ($result_array) { // check that every element is true
+            if (!empty($result_array)) { // check that every element is true
                 // Get the farm [details]
+                file_put_contents('php://stderr', print_r('Gtting farm record for farmerid: ' . $data[0]->farmerid . "\n", TRUE));
                 $farms_result = $farm->getAllFarmsByFarmerID($data[0]->farmerid);
 
                 // returns an array, $row is an array
@@ -94,26 +97,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    
                 }
 
-                if (is_array($row)) { // gettype($row) == "array"
-                    // check if $row is array (means transaction was successful)
-
-                    echo json_encode(
-                        array(
-                            'message' => 'Farm created/updated',
-                            'response' => 'OK',
-                            'response_code' => http_response_code(),
-                            'farms' => $row
-                        )
-                    );
-                }
+                echo json_encode(
+                    array(
+                        'message' => 'Farm created/updated',
+                        'response' => 'OK',
+                        'response_code' => http_response_code(),
+                        'farms' => $row
+                    )
+                );
             } else {
-                // http_response_code(400);
+                http_response_code(400);
                 echo json_encode(
                     array(
                         'message' => 'Farm details not created/updated',
                         'response' => 'NOT OK',
                         'response_code' => http_response_code(),
-                        'message_details' => $result, //
+                        'message_details' => "Empty data provided", //
                     )
                 );
             }
@@ -128,9 +127,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (!empty($value->chickenhouses)) {
                     foreach ($value->chickenhouses as $chickenhouse) {
                         if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
-                            $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                            $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->id);
                         } else {
-                            $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                            $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid);
                         }
                         
                     }
@@ -147,9 +146,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (!empty($value->chickenhouses)) {
                     foreach ($value->chickenhouses as $chickenhouse) {
                         if (isset($chickenhouse->id) && !empty($chickenhouse->id)) { // not in_array()
-                            $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate, $chickenhouse->id);
+                            $farm->updateFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->id);
                         } else {
-                            $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid, $chickenhouse->startdate);
+                            $farm->addFarmChickenHouses($chickenhouse->name, $chickenhouse->farmid);
                         }
                         
                     }
@@ -157,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 file_put_contents('php://stderr', print_r("\n\n\n\n else createFarm: " . $result, TRUE));
             }
-            file_put_contents('php://stderr', print_r('\n\n\n\n\n\n result:' . $result, TRUE));
+            file_put_contents('php://stderr', print_r("\n\n\n\n\n\n result:" . $result, TRUE));
             
             if ($result) { // check that $result is an int
                 // Get the farm [details]

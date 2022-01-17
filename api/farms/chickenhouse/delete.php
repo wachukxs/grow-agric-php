@@ -19,15 +19,15 @@ $farm = new Farm($a_database_connection);
 $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    file_put_contents('php://stderr', print_r('Trying to delete farm with id: ' . $data->id . "\n", TRUE));
+    file_put_contents('php://stderr', print_r('Trying to delete farm with id: ' . $data->chickenhouseid . "\n", TRUE));
     file_put_contents('php://stderr', print_r($data, TRUE));
 
     try {
 
         $result;
-        if (isset($data->id)) { // this if block should come before the for loop
+        if (isset($data->chickenhouseid)) { // this if block should come before the for loop
             // Update the farm [details]
-            $result = $farm->fakeDeleteFarmChickenHouseByID($data->id);
+            $result = $farm->fakeDeleteFarmChickenHouseByID($data->chickenhouseid);
             // file_put_contents('../../logs/api.log', print_r("we are deleting with fakeDeleteFarm() \n", TRUE));
             // file_put_contents('../../logs/api.log', print_r('result: ' . $result, TRUE));
 
