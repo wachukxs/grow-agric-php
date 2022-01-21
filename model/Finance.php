@@ -30,8 +30,7 @@ class Finance
         $chickscost,
         $feedscost,
         $broodingcost,
-        $vaccinesused,
-        $medicinesused,
+        $dateneeded, $medicinesandvaccinescost, // no longer connected
         $projectedsales
     ) {
 
@@ -55,8 +54,8 @@ class Finance
         chickscost = :chickscost,
         feedscost = :feedscost,
         broodingcost = :broodingcost,
-        vaccinesused = :vaccinesused,
-        medicinesused = :medicinesused,
+        dateneeded = :dateneeded,
+        medicinesandvaccinescost = :medicinesandvaccinescost,
         projectedsales = :projectedsales
     ';
 
@@ -66,8 +65,8 @@ class Finance
             // Ensure safe data
             $fi = htmlspecialchars(strip_tags($farmerid));
             $fid = htmlspecialchars(strip_tags($farmid));
-            $fbc = htmlspecialchars(strip_tags($farmbirdcapacity));
-            $cfp = htmlspecialchars(strip_tags($currentfarmproduction));
+            $fbc = htmlspecialchars(strip_tags(str_replace(',', '', $farmbirdcapacity)));
+            $cfp = htmlspecialchars(strip_tags(str_replace(',', '', $currentfarmproduction)));
             $amr = htmlspecialchars(strip_tags($averagemortalityrate));
             $nocmif = htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickensmoneyisfor)));
             $nos = htmlspecialchars(strip_tags(str_replace(',', '', $numberofstaff)));
@@ -79,8 +78,11 @@ class Finance
             $cc = htmlspecialchars(strip_tags(str_replace(',', '', $chickscost)));
             $fc = htmlspecialchars(strip_tags(str_replace(',', '', $feedscost)));
             $bc = htmlspecialchars(strip_tags(str_replace(',', '', $broodingcost)));
-            $vu = htmlspecialchars(strip_tags($vaccinesused));
-            $mu = htmlspecialchars(strip_tags($medicinesused));
+            $mavc = htmlspecialchars(strip_tags(str_replace(',', '', $medicinesandvaccinescost)));
+
+            $date1 = new DateTime($dateneeded);
+            $dn = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+            
             $ps = htmlspecialchars(strip_tags(str_replace(',', '', $projectedsales)));
 
             // Bind parameters to prepared stmt
@@ -99,8 +101,9 @@ class Finance
             $stmt->bindParam(':chickscost', $cc);
             $stmt->bindParam(':feedscost', $fc);
             $stmt->bindParam(':broodingcost', $bc);
-            $stmt->bindParam(':vaccinesused', $vu);
-            $stmt->bindParam(':medicinesused', $mu);
+            $stmt->bindParam(':medicinesandvaccinescost', $mavc);
+
+            $stmt->bindParam(':dateneeded', $dn);
             $stmt->bindParam(':projectedsales', $ps);
 
             // Execute query statement

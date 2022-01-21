@@ -35,7 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $data->otherpreferredchickssupplier,
         $data->otherpreferredfeedsssupplier, $data->howmuchrequired, $data->chickscost, $data->feedscost, 
         $data->broodingcost, 
-        $data->vaccinesused, $data->medicinesused, $data->projectedsales);
+        $data->dateneeded, $data->medicinesandvaccinescost, // no longer collected
+        $data->projectedsales);
 
         if ($result instanceof Throwable) {
             
