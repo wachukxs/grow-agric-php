@@ -23,10 +23,10 @@ $data = json_decode(file_get_contents('php://input'));
  */
 // echo $_GET["id"];
 // course id ...(might later add course and module id, not necessary though)
-if (isset($_GET["id"])) {
+if (isset($_GET["courseid"])) {
     // Get the course [details]
 
-    $course_result = $course->getSingleCourseByCourseID($_GET["id"]);
+    $course_result = $course->getSingleCourseByCourseID($_GET["courseid"], $_GET["farmerid"]);
     $row1 = $course_result->fetch(PDO::FETCH_ASSOC);
 
     echo json_encode($row1);

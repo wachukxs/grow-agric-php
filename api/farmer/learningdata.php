@@ -16,9 +16,10 @@ $farmer = new Farmer($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-file_put_contents('php://stderr', print_r("Trying to add farmer to wait list\n", TRUE));
+file_put_contents('php://stderr', print_r("Trying to add farmer learning data\n", TRUE));
 
-if (isset($data->courseid, $data->currentpage, $data->readendtime, $data->readstarttime, $data->totalpages, $data->farmerid)
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($data->courseid, $data->currentpage, $data->readendtime, $data->readstarttime, $data->totalpages, $data->farmerid)
     &&
     !empty($data->courseid)
     &&
@@ -43,6 +44,8 @@ if (isset($data->courseid, $data->currentpage, $data->readendtime, $data->readst
         )
     );
 } else {
+    // http_response_code(400);
+
     echo json_encode(
         array(
             'message' => 'Farmer learning NOT info updated',
@@ -52,4 +55,6 @@ if (isset($data->courseid, $data->currentpage, $data->readendtime, $data->readst
         )
     );
 }
+}
+
 ?>
