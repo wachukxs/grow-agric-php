@@ -75,11 +75,12 @@ class Farm {
     }
 
     // Create new order, an entry. DONE?
-    public function createFarm($challengesfaced, $farmcitytownlocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $farmerid, $multiplechickenhouses) {
+    public function createFarm($challengesfaced, $farmwardlocation, $farmsubcountylocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $farmerid, $multiplechickenhouses) {
         $query = 'INSERT INTO ' . $this->table . '
             SET
             challengesfaced = :challengesfaced,
-            farmcitytownlocation = :farmcitytownlocation,
+            farmwardlocation = :farmwardlocation,
+            farmsubcountylocation = :farmsubcountylocation,
             farmcountylocation = :farmcountylocation,
             farmeditems = :farmeditems,
             haveinsurance = :haveinsurance,
@@ -110,7 +111,8 @@ class Farm {
             $cf = htmlspecialchars(strip_tags($challengesfaced));
         }
         
-        $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
+        $fwl = htmlspecialchars(strip_tags($farmwardlocation));
+        $fscl = htmlspecialchars(strip_tags($farmsubcountylocation));
         $fcl = htmlspecialchars(strip_tags($farmcountylocation));
         $hin = htmlspecialchars(strip_tags($haveinsurance));
         $in = htmlspecialchars(strip_tags($insurer));
@@ -123,7 +125,8 @@ class Farm {
 
         // Bind parameters to prepared stmt
         $stmt->bindParam(':challengesfaced', $cf);
-        $stmt->bindParam(':farmcitytownlocation', $fctl);
+        $stmt->bindParam(':farmsubcountylocation', $fscl);
+        $stmt->bindParam(':farmwardlocation', $fwl);
         $stmt->bindParam(':farmeditems', $fi);
         $stmt->bindParam(':insurer', $in);
         $stmt->bindParam(':haveinsurance', $hin);
@@ -333,7 +336,7 @@ class Farm {
     }
 
     // getSingleFarmerByID
-    public function updateFarmByID($challengesfaced, $farmcitytownlocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $id, $multiplechickenhouses)
+    public function updateFarmByID($challengesfaced, $farmwardlocation, $farmsubcountylocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $id, $multiplechickenhouses)
     {
         try {
             // Create query
@@ -342,6 +345,8 @@ class Farm {
                 challengesfaced = :challengesfaced,
                 farmcitytownlocation = :farmcitytownlocation,
                 farmcountylocation = :farmcountylocation,
+                farmwardlocation = :farmwardlocation,
+                farmsubcountylocation = :farmsubcountylocation,
                 farmeditems = :farmeditems,
                 haveinsurance = :haveinsurance,
                 insurer = :insurer,
@@ -372,7 +377,8 @@ class Farm {
                 $fi = htmlspecialchars(strip_tags($farmeditems));
             }
             
-            $fctl = htmlspecialchars(strip_tags($farmcitytownlocation));
+            $fwl = htmlspecialchars(strip_tags($farmwardlocation));
+            $fscl = htmlspecialchars(strip_tags($farmsubcountylocation));
             $fcl = htmlspecialchars(strip_tags($farmcountylocation));
             $hin = htmlspecialchars(strip_tags($haveinsurance));
             $in = htmlspecialchars(strip_tags($insurer));
@@ -385,7 +391,8 @@ class Farm {
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':challengesfaced', $cf);
-            $stmt->bindParam(':farmcitytownlocation', $fctl);
+            $stmt->bindParam(':farmwardlocation', $fwl);
+            $stmt->bindParam(':farmsubcountylocation', $fscl);
             $stmt->bindParam(':farmcountylocation', $fcl);
             $stmt->bindParam(':farmeditems', $fi);
             $stmt->bindParam(':haveinsurance', $hin);
