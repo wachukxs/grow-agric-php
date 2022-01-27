@@ -180,6 +180,8 @@ class Records
                     } else {
                         return false;
                     }
+                } else {
+                    return $last_insert_id;
                 }
             } else {
                 return false;
@@ -280,6 +282,8 @@ class Records
                     } else {
                         return false;
                     }
+                } else {
+                    return $last_insert_id;
                 }
             } else {
                 return false;
@@ -458,6 +462,8 @@ class Records
                     } else {
                         return false;
                     }
+                } else {
+                    return $last_insert_id;
                 }
             } else {
                 return false;
@@ -554,6 +560,8 @@ class Records
                     } else {
                         return false;
                     }
+                } else {
+                    return $last_insert_id;
                 }
             } else {
                 return false;
@@ -968,6 +976,8 @@ class Records
                     } else {
                         return false;
                     }
+                } else {
+                    return $last_insert_id;
                 }
             } else {
                 return false;
@@ -1056,6 +1066,8 @@ class Records
                     } else {
                         return false;
                     }
+                } else {
+                    return $last_insert_id;
                 }
             } else {
                 return false;

@@ -12,24 +12,41 @@ include_once '../../../model/Records.php';
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
-// Instantiate Course object
+// Instantiate Records object
 $records = new Records($a_database_connection);
 
 // get data
 $data = json_decode(file_get_contents('php://input'));
+/*
 
-// record_type ==> "Feeds"
+data is an array
+Array
+(
+    [0] => stdClass Object
+        (
+            [date] => 2022-01-18T21:00:00.000Z
+            [diagonsis] => Thelol
+            [disease] => Shared
+            [vet_name] => C'mon
+            [documents] => 
+            [notes] => 
+            [farmerid] => 147
+            [farmid] => 43
+        )
 
+)
+
+*/
+file_put_contents('php://stderr', print_r("\n\n[===>] \n", TRUE));
+file_put_contents('php://stderr', print_r($data, TRUE));
+file_put_contents('php://stderr', print_r("\n\n[<===] \n", TRUE));
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (
-        $data
-        &&
-        isset($data[0])
-        &&
         !empty($data)
+        &&
+        count($data) > 0
     ) {
     
-
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
@@ -38,9 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
             // returns an int [last insert id], $result is an int
 
-            file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
+            file_put_contents('php://stderr', print_r(dirname(__FILE__) . ' type of result ' .  gettype($result), TRUE));
             
-            file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
+            file_put_contents('php://stderr', print_r("\n\n[result of adding disease record] " . $result . "\n\n", TRUE));
 
             array_push($result_array, $result);
             
@@ -76,5 +93,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
     }
 } else {
-    file_put_contents('php://stderr', print_r('Woow 3', TRUE));
+    file_put_contents('php://stderr', print_r("Woow 3\n", TRUE));
 }
