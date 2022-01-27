@@ -285,6 +285,41 @@ class Course {
         return $query_statement;
     }
 
+    public function getAllCompletedAndIncompletedCourses()
+    {
+        $query = 'SELECT 
+        ANY_VALUE(lc.`mediatype`) AS mediatype, ANY_VALUE(lc.`name`) AS name, ANY_VALUE(lc.`description`) AS description, 
+        ANY_VALUE(lc.`id`) AS courseid, ANY_VALUE(lc.`url`) as url, ANY_VALUE(lc.`moduleid`) AS moduleid, 
+        IF(MAX(ll.`totalpages`) = MAX(ll.`currentpage`), true, false) AS completed, MAX(ll.end) AS last_time, 
+        ll.farmerid AS farmerid, ( SELECT currentpage FROM learning_info WHERE learning_info.end = MAX(ll.end) ) AS last_page 
+        FROM learning_courses lc 
+        LEFT JOIN learning_info ll 
+        ON lc.id = ll.course_id 
+        GROUP BY ll.course_id, ll.farmerid';
+
+        // Prepare statement
+        $query_statement = $this->database_connection->prepare($query);
+
+        // Execute query statement
+        $query_statement->execute();
+
+        return $query_statement;
+    }
+
+    public function getAllCourses()
+    {
+        // Create query
+        $query = 'SELECT * FROM `learning_courses`';
+
+        // Prepare statement
+        $query_statement = $this->database_connection->prepare($query);
+
+        // Execute query statement
+        $query_statement->execute();
+
+        return $query_statement;
+    }
+
 
     public function getSingleCourseByCourseID($courseid, $farmerid)
     {

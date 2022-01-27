@@ -20,11 +20,13 @@ class Farmer {
         $this->database_connection = $a_database_connection;
     }
 
-    // Get all farmer
+    /**
+     * @depreciated
+     */
     public function getAllInventory()
     {
         // Create query
-        $query = 'SELECT * FROM ' . $this->table;
+        $query = 'SELECT * FROM ';
         
         // Prepare statement
         $query_statement = $this->database_connection->prepare($query);
@@ -34,6 +36,21 @@ class Farmer {
 
         return $query_statement;
     }
+
+     // Get all farmers' personalInfo
+     public function getAllFarmersPersonalInfo()
+     {
+         // Create query
+         $query = 'SELECT `id`, `firstname`, `lastname`, `email`, `phonenumber`, `timejoined`, `highesteducationallevel`, `maritalstatus`, `age`, `yearsofexperience` FROM `farmers`';
+         
+         // Prepare statement
+         $query_statement = $this->database_connection->prepare($query);
+ 
+         // Execute query statement
+         $query_statement->execute();
+ 
+         return $query_statement;
+     }
 
     public function getSingleInventoryByID($id)
     {
