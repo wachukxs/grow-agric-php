@@ -343,7 +343,6 @@ class Farm {
             $query = 'UPDATE ' . $this->table . ' 
                 SET 
                 challengesfaced = :challengesfaced,
-                farmcitytownlocation = :farmcitytownlocation,
                 farmcountylocation = :farmcountylocation,
                 farmwardlocation = :farmwardlocation,
                 farmsubcountylocation = :farmsubcountylocation,
