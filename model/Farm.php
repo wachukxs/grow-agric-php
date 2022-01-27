@@ -192,7 +192,7 @@ class Farm {
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Farm.php->updateFarmByID error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Farm.php->updateFarmChickenHouses error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -229,7 +229,7 @@ class Farm {
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Farm.php->updateFarmByID error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Farm.php->addFarmChickenHouses error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
