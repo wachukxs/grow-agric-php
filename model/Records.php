@@ -985,7 +985,7 @@ class Records
     }
 
 
-    public function getFinanceApplicationStatus($farmerid) {
+    public function getAllFarmerFinanceApplicationStatusByFarmerID($farmerid) {
         try {
             $query = 'SELECT 
             finance_applications.`farmerid`, 
@@ -1014,7 +1014,7 @@ class Records
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('ERROR in getFinanceApplicationStatus(): ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('ERROR in getAllFarmerFinanceApplicationStatusByFarmerID(): ' . $err->getMessage() . "\n", TRUE));
             return $err->getMessage();
         }
     }

@@ -50,12 +50,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 )
             );
         } else { // should have an extra else block to check if it's false
+
+            $finance_result = $finance->getSingleFarmerFinanceApplicationByID($result);
+            $_row = $finance_result->fetch(PDO::FETCH_ASSOC);
+
             echo json_encode(
                 array(
                     'message' => 'Good request, no errors',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
-                    'order_details' => $result
+                    'finance_details' => $_row
                 )
             );
         }
