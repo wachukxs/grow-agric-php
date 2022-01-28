@@ -753,7 +753,7 @@ class Records
 
 
 
-    public function addFarmerSaleInputRecord($customer_id, $solditem, $sale_date, $quantity, $price, $farmid, $farmerid)
+    public function addFarmerSaleInputRecord($customer_id, $solditem, $othersolditem, $sale_date, $quantity, $price, $farmid, $farmerid)
     {
 
         try {
@@ -762,6 +762,7 @@ class Records
                 customer_id = :_customer_id,
                 sale_date = :_sale_date,
                 solditem = :_solditem,
+                othersolditem = :_othersolditem,
                 quantity = :_quantity,
                 price = :_price,
                 farmid = :_farmid,
@@ -775,6 +776,7 @@ class Records
             $fid = htmlspecialchars(strip_tags($farmid));
             $ci = htmlspecialchars(strip_tags($customer_id));
             $si = htmlspecialchars(strip_tags($solditem));
+            $osi = htmlspecialchars(strip_tags($othersolditem));
 
             $date1 = new DateTime($sale_date); // Seems this isn't doing timezone conversion and is not accurate
             $sd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -790,17 +792,21 @@ class Records
             $stmt->bindParam(':_price', $p);
             $stmt->bindParam(':_farmid', $fid);
             $stmt->bindParam(':_solditem', $si);
+            $stmt->bindParam(':_othersolditem', $osi);
 
             $r = $stmt->execute();
+            file_put_contents('php://stderr', print_r('addFarmerSaleInputRecord(): ' . "\n", TRUE));
+            file_put_contents('php://stderr', print_r($r, TRUE));
 
             if ($r) {
                 return $this->database_connection->lastInsertId();
+                file_put_contents('php://stderr', print_r("\nEnd addFarmerSaleInputRecord(): what was r? \n", TRUE));
                 // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
             } else {
                 return false;
             }
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('ERROR in getAllFarmerMortalitiesInputRecords(): ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('ERROR in addFarmerSaleInputRecord(): ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

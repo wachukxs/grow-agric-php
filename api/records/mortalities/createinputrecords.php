@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
         }
         
-        if (in_array(false, $result_array)) {
+        if (in_array(false, $result_array, true)) {
             http_response_code(400);
             echo json_encode(
                 array(
