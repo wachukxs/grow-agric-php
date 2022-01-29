@@ -75,7 +75,7 @@ class Farm {
     }
 
     // Create new order, an entry. DONE?
-    public function createFarm($challengesfaced, $farmwardlocation, $farmsubcountylocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $farmerid, $multiplechickenhouses) {
+    public function createFarm($challengesfaced, $farmwardlocation, $farmsubcountylocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $farmerid) {
         $query = 'INSERT INTO ' . $this->table . '
             SET
             challengesfaced = :challengesfaced,
@@ -89,8 +89,7 @@ class Farm {
             otherchallengesfaced = :otherchallengesfaced,
             otherfarmeditems = :otherfarmeditems,
             yearsfarming = :yearsfarming,
-            farmerid = :farmerid,
-            multiplechickenhouses = :multiplechickenhouses
+            farmerid = :farmerid
         ';
 
         // Prepare the query statement
@@ -120,7 +119,6 @@ class Farm {
         $ocf = htmlspecialchars(strip_tags($otherchallengesfaced));
         $ofi = htmlspecialchars(strip_tags($otherfarmeditems));
         $yf = htmlspecialchars(strip_tags($yearsfarming));
-        $mch = htmlspecialchars(strip_tags($multiplechickenhouses));
         $fid = htmlspecialchars(strip_tags($farmerid));
 
         // Bind parameters to prepared stmt
@@ -135,7 +133,6 @@ class Farm {
         $stmt->bindParam(':otherchallengesfaced', $ocf);
         $stmt->bindParam(':yearsfarming', $yf);
         $stmt->bindParam(':otherfarmeditems', $ofi);
-        $stmt->bindParam(':multiplechickenhouses', $mch);
         $stmt->bindParam(':farmerid', $fid);
 
         try {
@@ -336,7 +333,7 @@ class Farm {
     }
 
     // getSingleFarmerByID
-    public function updateFarmByID($challengesfaced, $farmwardlocation, $farmsubcountylocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $id, $multiplechickenhouses)
+    public function updateFarmByID($challengesfaced, $farmwardlocation, $farmsubcountylocation, $farmcountylocation, $farmeditems, $haveinsurance, $insurer, $numberofemployees, $otherchallengesfaced, $otherfarmeditems, $yearsfarming, $id)
     {
         try {
             // Create query
@@ -352,8 +349,7 @@ class Farm {
                 numberofemployees = :numberofemployees,
                 otherchallengesfaced = :otherchallengesfaced,
                 otherfarmeditems = :otherfarmeditems,
-                yearsfarming = :yearsfarming,
-                multiplechickenhouses = :multiplechickenhouses
+                yearsfarming = :yearsfarming
                 WHERE
                 id = :id
             ';
@@ -385,7 +381,6 @@ class Farm {
             $ocf = htmlspecialchars(strip_tags($otherchallengesfaced));
             $ofi = htmlspecialchars(strip_tags($otherfarmeditems));
             $yf = htmlspecialchars(strip_tags($yearsfarming));
-            $mch = htmlspecialchars(strip_tags($multiplechickenhouses));
             $_id = htmlspecialchars(strip_tags($id));
 
             // Bind parameters to prepared stmt
@@ -400,7 +395,6 @@ class Farm {
             $stmt->bindParam(':otherchallengesfaced', $ocf);
             $stmt->bindParam(':otherfarmeditems', $ofi);
             $stmt->bindParam(':yearsfarming', $yf);
-            $stmt->bindParam(':multiplechickenhouses', $mch);
             $stmt->bindParam(':id', $_id);
 
             // Execute query statement

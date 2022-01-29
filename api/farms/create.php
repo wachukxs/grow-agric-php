@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Update the farm [details]
                     file_put_contents('php://stderr', print_r("\n\nUpdate the farm [details] " . " " . "\n\n", TRUE));
                     file_put_contents('php://stderr', print_r($value, TRUE));
-                    $result = $farm->updateFarmByID($value->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id, $value->multiplechickenhouses);
+                    $result = $farm->updateFarmByID($value->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id);
 
                     // chickenhouses
                     if (!empty($value->chickenhouses)) {
@@ -50,9 +50,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                 } else { // create a new farm entry
                     // $value;
-                    file_put_contents('php://stderr', print_r("\n\nwe are saving with createFarm() " . $value->farmcitytownlocation . " \n", TRUE));
+                    file_put_contents('php://stderr', print_r("\n\nwe are saving with createFarm() " . $value->farmsubcountylocation . " \n", TRUE));
                     file_put_contents('php://stderr', print_r($value, TRUE));
-                    $result = $farm->createFarm($value->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid, $value->multiplechickenhouses);
+                    $result = $farm->createFarm($value->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->farmerid);
                     
                     // chickenhouses
                     if (!empty($value->chickenhouses)) {
@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (isset($data->id) && !empty($data->id)) { // this if block should come before the for loop
                 // Update the farm [details]
                 
-                $result = $farm->updateFarmByID($data->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->id, $data->multiplechickenhouses);
+                $result = $farm->updateFarmByID($data->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->id);
 
                 // chickenhouses
                 if (!empty($value->chickenhouses)) {
@@ -140,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // $value;
                 // file_put_contents('../../logs/api.log', print_r("we are saving with createFarm() \n", TRUE));
                 
-                $result = $farm->createFarm($data->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid, $data->multiplechickenhouses);
+                $result = $farm->createFarm($data->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $data->farmcountylocation, $data->farmeditems, $data->haveinsurance, $data->insurer, $data->numberofemployees, $data->otherchallengesfaced, $data->otherfarmeditems, $data->yearsfarming, $data->farmerid);
 
                 // chickenhouses
                 if (!empty($value->chickenhouses)) {

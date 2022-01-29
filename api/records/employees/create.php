@@ -33,13 +33,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
-            $result = $records->createNewFarmerEmployee($value->employee_fullname, $value->farmerid);
+            $result = $records->createNewFarmerEmployee($value->employee_fullname, $value->farmerid, $value->farmid);
         
             // returns an int [last insert id], $result is an int
 
-            file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
+            file_put_contents('php://stderr', print_r(dirname(__FILE__) . " \n " . gettype($result), TRUE));
             
-            file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
+            file_put_contents('php://stderr', print_r($result, TRUE));
+            file_put_contents('php://stderr', print_r("\n\n []", TRUE));
 
             array_push($result_array, $result);
             
@@ -60,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'message' => 'Good request, no errors',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
-                    'save_details' => $result_array
+                    'employee_details' => $result_array
                 )
             );
         }

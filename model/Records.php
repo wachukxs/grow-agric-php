@@ -170,7 +170,7 @@ class Records
             if ($r) {
                 $last_insert_id = $this->database_connection->lastInsertId();
 
-                if ($documents) { // check for empty string or array, if string or array
+                if ($documents && !empty($documents)) { // check for empty string or array, if string or array
 
                     $upload = $this->handleFileUpload($documents, $last_insert_id, 'inputs_records_chicken', $farmerid);
 
@@ -224,7 +224,7 @@ class Records
 
 
     // Create new feeds input record, an entry
-    public function createFeedsInputRecord($farmid, $feed_supplier, $feed_type, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
+    public function createFeedsInputRecord($farmid, $feed_supplier, $other_feed_supplier, $feed_type, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
     {
 
         try {
@@ -232,6 +232,7 @@ class Records
                 SET
                 farm_id = :_farmid,
                 feed_supplier = :_feedsupplier,
+                other_feed_supplier = :_other_feed_supplier,
                 feed_type = :_feedtype,
                 farmerid = :_farmerid,
                 input_type = :_inputtype,
@@ -245,7 +246,8 @@ class Records
 
             // Ensure safe data
             $frmid = htmlspecialchars(strip_tags($farmid));
-            $cs = htmlspecialchars(strip_tags($feed_supplier));
+            $fs = htmlspecialchars(strip_tags($feed_supplier));
+            $ofs = htmlspecialchars(strip_tags($other_feed_supplier));
             $ft = htmlspecialchars(strip_tags($feed_type));
             $it = htmlspecialchars(strip_tags($input_type));
             $n = htmlspecialchars(strip_tags($notes));
@@ -258,7 +260,8 @@ class Records
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_farmid', $frmid);
-            $stmt->bindParam(':_feedsupplier', $cs);
+            $stmt->bindParam(':_feedsupplier', $fs);
+            $stmt->bindParam(':_other_feed_supplier', $ofs);
             $stmt->bindParam(':_feedtype', $ft);
             $stmt->bindParam(':_farmerid', $fi);
             $stmt->bindParam(':_inputtype', $it);
@@ -272,7 +275,7 @@ class Records
             if ($r) {
                 $last_insert_id = $this->database_connection->lastInsertId();
 
-                if ($documents) { // check for empty string or array, if string or array
+                if ($documents && !empty($documents)) { // check for empty string or array, if string or array
 
                     $upload = $this->handleFileUpload($documents, $last_insert_id, 'inputs_records_feeds', $farmerid);
 
@@ -325,14 +328,15 @@ class Records
 
 
     // Create new farmer employee, an entry
-    public function createNewFarmerEmployee($emp_fullname, $farmerid)
+    public function createNewFarmerEmployee($emp_fullname, $farmerid, $farmid)
     {
 
         try {
             $query = 'INSERT INTO farmer_employees 
                 SET
                 employeefullname = :_emp_fullname,
-                farmerid = :_farmerid
+                farmerid = :_farmerid,
+                farmid = :_farmid
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -340,21 +344,51 @@ class Records
             // Ensure safe data
             $fi = htmlspecialchars(strip_tags($farmerid));
             $ef = htmlspecialchars(strip_tags($emp_fullname));
+            $frmid = htmlspecialchars(strip_tags($farmid));
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_farmerid', $fi);
             $stmt->bindParam(':_emp_fullname', $ef);
+            $stmt->bindParam(':_farmid', $frmid);
 
             $r = $stmt->execute();
 
             if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                // return $this->database_connection->lastInsertId();
+                $_result = $this->getSingleEmployee($this->database_connection->lastInsertId());
+                $_row = $_result->fetch(PDO::FETCH_ASSOC);
+
+                return $_row;
             } else {
                 return false;
             }
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('ERROR in createNewFarmerEmployee(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getSingleEmployee($employeeid)
+    {
+        try {
+            $query = 'SELECT * FROM farmer_employees
+                WHERE
+                id = :_employeeid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $ei = htmlspecialchars(strip_tags($employeeid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_employeeid', $ei);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getSingleFarmerEmployee(): ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -432,7 +466,7 @@ class Records
 
             // Ensure safe data
             $fi = htmlspecialchars(strip_tags($farmerid));
-            $s = htmlspecialchars(strip_tags($salary));
+            $s = htmlspecialchars(strip_tags(str_replace(',', '', $salary)));
             $n = htmlspecialchars(strip_tags($notes));
 
             $date1 = new DateTime($payment_date);
@@ -452,7 +486,7 @@ class Records
             if ($r) {
                 $last_insert_id = $this->database_connection->lastInsertId();
 
-                if ($documents) { // check for empty string or array, if string or array
+                if ($documents && !empty($documents)) { // check for empty string or array, if string or array
 
                     $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_labour', $farmerid);
 
@@ -469,7 +503,7 @@ class Records
                 return false;
             }
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('ERROR in addFarmerLabourRecord(): ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r("******\n\nERROR in addFarmerLabourRecord(): " . $err->getMessage() . "\n*******\n\n", TRUE));
             return false;
         }
     }
@@ -550,7 +584,7 @@ class Records
             if ($r) {
                 $last_insert_id = $this->database_connection->lastInsertId();
 
-                if ($documents) { // check for empty string or array, if string or array
+                if ($documents && !empty($documents)) { // check for empty string or array, if string or array
 
                     $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_medicines', $farmerid);
 
@@ -750,9 +784,6 @@ class Records
     }
 
 
-
-
-
     public function addFarmerSaleInputRecord($customer_id, $solditem, $othersolditem, $sale_date, $quantity, $price, $farmid, $farmerid)
     {
 
@@ -832,6 +863,7 @@ class Records
 
         return $stmt;
     }
+
 
     public function getAllFarmerMortalitiesInputRecords($farmerid)
     {
@@ -972,7 +1004,7 @@ class Records
             if ($r) {
                 $last_insert_id = $this->database_connection->lastInsertId();
 
-                if ($documents) { // check for empty string or array, if string or array
+                if ($documents && !empty($documents)) { // check for empty string or array, if string or array
 
                     $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_diseases', $farmerid);
 
@@ -993,7 +1025,6 @@ class Records
             return false;
         }
     }
-
 
     public function getAllFarmerOtherIncomeOrExpenseInputRecords($farmerid)
     {
@@ -1062,7 +1093,7 @@ class Records
             if ($r) {
                 $last_insert_id = $this->database_connection->lastInsertId();
 
-                if ($documents) { // check for empty string or array, if string or array
+                if ($documents && !empty($documents)) { // check for empty string or array, if string or array
 
                     $upload = $this->handleFileUpload($documents, $last_insert_id, 'input_records_income_expenses', $farmerid);
 
@@ -1083,7 +1114,6 @@ class Records
             return false;
         }
     }
-
 
     public function getAllFarmerFinanceApplicationStatusByFarmerID($farmerid)
     {
