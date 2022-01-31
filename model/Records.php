@@ -871,6 +871,8 @@ class Records
             $query = 'SELECT * FROM input_records_mortalities
                 WHERE
                 farmerid = :_farmerid
+                ORDER BY 
+                date DESC
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -910,13 +912,13 @@ class Records
             $fi = htmlspecialchars(strip_tags($farmerid));
             $fid = htmlspecialchars(strip_tags($farmid));
             $r = htmlspecialchars(strip_tags($reason));
-            $ob = htmlspecialchars(strip_tags($openingbalance));
+            $ob = htmlspecialchars(strip_tags(str_replace(',', '', $openingbalance)));
 
             $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
             $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-            $nod = htmlspecialchars(strip_tags($numberofdeaths));
-            $cb = htmlspecialchars(strip_tags($closingbalance));
+            $nod = htmlspecialchars(strip_tags(str_replace(',', '', $numberofdeaths)));
+            $cb = htmlspecialchars(strip_tags(str_replace(',', '', $closingbalance)));
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_farmerid', $fi);

@@ -18,7 +18,9 @@ $data = json_decode(file_get_contents('php://input'));
 
 file_put_contents('php://stderr', print_r("Trying to add farmer to wait list\n", TRUE));
 
-if (isset($data->fullname, $data->email, $data->farmeditems)
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($data->fullname, $data->email, $data->farmeditems)
     &&
     !empty($data->fullname)
     &&
@@ -37,6 +39,7 @@ if (isset($data->fullname, $data->email, $data->farmeditems)
     );
 } else {
     # code...
+}
 }
 
 ?>
