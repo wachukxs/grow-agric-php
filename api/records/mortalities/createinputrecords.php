@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             file_put_contents('php://stderr', print_r(dirname(__FILE__) . gettype($result), TRUE));
             
-            file_put_contents('php://stderr', print_r("\n\n[]" . $result, TRUE));
+            file_put_contents('php://stderr', print_r($result, TRUE));
 
             array_push($result_array, $result);
             

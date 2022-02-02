@@ -892,6 +892,31 @@ class Records
         }
     }
 
+    public function getSingleMortalityRecordByID($mortalityrecordid)
+    {
+        try {
+            $query = 'SELECT * FROM input_records_mortalities
+                WHERE
+                id = :_id
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $mrid = htmlspecialchars(strip_tags($mortalityrecordid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_id', $mrid);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getSingleMortalityRecordByID(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     public function addFarmerMortalityInputRecord($reason, $_date, $openingbalance, $numberofdeaths, $closingbalance, $farmid, $farmerid)
     {
         try {
@@ -932,8 +957,10 @@ class Records
             $r = $stmt->execute();
 
             if ($r) {
-                return $this->database_connection->lastInsertId();
-                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+                $_result = $this->getSingleMortalityRecordByID($this->database_connection->lastInsertId());
+                $_row = $_result->fetch(PDO::FETCH_ASSOC);
+
+                return $_row;
             } else {
                 return false;
             }
