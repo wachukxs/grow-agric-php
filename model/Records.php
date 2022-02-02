@@ -634,7 +634,7 @@ class Records
 
 
     // Create new brooding, an entry
-    public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid)
+    public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid, $chickenhouseid)
     {
 
         try {
@@ -646,6 +646,7 @@ class Records
                 brooding_item_quantity = :_brooding_item_quantity,
                 brooding_item = :_brooding_item,
                 farmid = :_farmid,
+                chickenhouseid = :_chickenhouseid,
                 farmerid = :_farmerid
             ';
 
@@ -658,6 +659,7 @@ class Records
             $n = htmlspecialchars(strip_tags($notes));
             $biq = htmlspecialchars(strip_tags(str_replace(',', '', $brooding_item_quantity)));
             $bi = htmlspecialchars(strip_tags($brooding_item));
+            $chid = htmlspecialchars(strip_tags($chickenhouseid));
 
             $date1 = new DateTime($brooding_date);
             $bd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -669,6 +671,7 @@ class Records
             $stmt->bindParam(':_brooding_item_quantity', $biq);
             $stmt->bindParam(':_brooding_date', $bd);
             $stmt->bindParam(':_brooding_item', $bi);
+            $stmt->bindParam(':_chickenhouseid', $chid);
             $stmt->bindParam(':_farmid', $fid);
 
             $r = $stmt->execute();
@@ -917,7 +920,7 @@ class Records
         }
     }
 
-    public function addFarmerMortalityInputRecord($reason, $_date, $openingbalance, $numberofdeaths, $closingbalance, $farmid, $farmerid)
+    public function addFarmerMortalityInputRecord($reason, $_date, $openingbalance, $numberofdeaths, $closingbalance, $farmid, $farmerid, $chickenhouseid)
     {
         try {
             $query = 'INSERT INTO input_records_mortalities 
@@ -928,7 +931,8 @@ class Records
                 numberofdeaths = :_numberofdeaths,
                 closingbalance = :_closingbalance,
                 farmid = :_farmid,
-                farmerid = :_farmerid
+                farmerid = :_farmerid,
+                chickenhouseid = :_chickenhouseid
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -937,6 +941,7 @@ class Records
             $fi = htmlspecialchars(strip_tags($farmerid));
             $fid = htmlspecialchars(strip_tags($farmid));
             $r = htmlspecialchars(strip_tags($reason));
+            $chid = htmlspecialchars(strip_tags($chickenhouseid));
             $ob = htmlspecialchars(strip_tags(str_replace(',', '', $openingbalance)));
 
             $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
@@ -953,6 +958,7 @@ class Records
             $stmt->bindParam(':_closingbalance', $cb);
             $stmt->bindParam(':_farmid', $fid);
             $stmt->bindParam(':_date', $d);
+            $stmt->bindParam(':_chickenhouseid', $chid);
 
             $r = $stmt->execute();
 

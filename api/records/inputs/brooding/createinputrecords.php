@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
-            $result = $records->addFarmerBroodingInputRecord($value->amount_spent, $value->brooding_date, $value->brooding_item_quantity, $value->brooding_item, $value->notes, $value->farmid, $value->farmerid);
+            $result = $records->addFarmerBroodingInputRecord($value->amount_spent, $value->brooding_date, $value->brooding_item_quantity, $value->brooding_item, $value->notes, $value->farmid, $value->farmerid, $value->chickenhouseid);
         
             // returns an int [last insert id], $result is an int
 
