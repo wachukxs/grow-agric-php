@@ -634,7 +634,7 @@ class Records
 
 
     // Create new brooding, an entry
-    public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid, $chickenhouseid)
+    public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid, $chickenhouseid, $other_brooding_item)
     {
 
         try {
@@ -647,6 +647,7 @@ class Records
                 brooding_item = :_brooding_item,
                 farmid = :_farmid,
                 chickenhouseid = :_chickenhouseid,
+                other_brooding_item = :_other_brooding_item,
                 farmerid = :_farmerid
             ';
 
@@ -661,6 +662,8 @@ class Records
             $bi = htmlspecialchars(strip_tags($brooding_item));
             $chid = htmlspecialchars(strip_tags($chickenhouseid));
 
+            $obi = htmlspecialchars(strip_tags($other_brooding_item));
+
             $date1 = new DateTime($brooding_date);
             $bd = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
@@ -673,6 +676,8 @@ class Records
             $stmt->bindParam(':_brooding_item', $bi);
             $stmt->bindParam(':_chickenhouseid', $chid);
             $stmt->bindParam(':_farmid', $fid);
+            $stmt->bindParam(':_other_brooding_item', $obi);
+            
 
             $r = $stmt->execute();
 
