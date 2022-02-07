@@ -589,10 +589,45 @@ class Farmer {
 
         try {
             // Create query
-            $query = 'SELECT * FROM saved_learnings 
-                WHERE
-                farmerid = ?
-            ';
+            // too basic for needs
+            // $query = 'SELECT * FROM saved_learnings 
+            //     WHERE
+            //     farmerid = ?
+            // ';
+
+            // doesn't have last_page, etc
+            // $query = 'SELECT
+            // lc.`mediatype`, lc.`name`, lc.`description`, lc.`id`, lc.`url`, lc.`moduleid`
+            
+            // FROM learning_courses lc
+            
+            // RIGHT JOIN 
+            // saved_learnings sl
+            
+            // ON lc.id = sl.course_id
+            // WHERE sl.farmerid = ?';
+
+            $query = 'SELECT
+            lc.`mediatype`, lc.`name`, lc.`description`, lc.`id`, lc.`url`, lc.`moduleid`, MAX(ll.end) AS last_time,
+            (
+            SELECT currentpage FROM learning_info WHERE learning_info.end = MAX(ll.end)
+            ) AS last_page
+            
+            FROM learning_courses lc
+            
+            LEFT JOIN 
+            learning_info ll
+            
+            ON lc.id = ll.course_id
+            
+            WHERE ll.farmerid = ?
+            AND
+            lc.id IN 
+            (
+                SELECT DISTINCT saved_learnings.course_id FROM saved_learnings WHERE saved_learnings.farmerid = ?
+            )
+            
+            GROUP BY ll.course_id';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -602,6 +637,7 @@ class Farmer {
 
             // Bind parameters to prepared stmt
             $query_statement->bindParam(1, $fi);
+            $query_statement->bindParam(2, $fi);
 
             $query_statement->execute();
 
