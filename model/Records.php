@@ -900,6 +900,61 @@ class Records
         }
     }
 
+    public function calculateTotalIncome($farmerid)
+    {
+        // 
+        try {
+            $query = 'SELECT MAX(amount) 
+            AS total_income 
+            FROM `input_records_income_expenses` 
+            WHERE type = "Income" AND farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fid);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in calculateTotalIncome(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+
+    public function calculateTotalExpense($farmerid)
+    {
+        // 
+        try {
+            $query = 'SELECT MAX(amount) 
+            AS total_expense 
+            FROM `input_records_income_expenses` 
+            WHERE type = "Expense" AND farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fid);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in calculateTotalExpense(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     public function getSingleMortalityRecordByID($mortalityrecordid)
     {
         try {
