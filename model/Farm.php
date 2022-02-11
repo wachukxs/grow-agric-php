@@ -413,4 +413,18 @@ class Farm {
 
     }
 
+    public function getAllFarms()
+    {
+        // Create query
+        $query = 'SELECT * FROM ' . $this->table . ' WHERE deleted = false';
+
+        // Prepare statement
+        $query_statement = $this->database_connection->prepare($query);
+
+        // Execute query statement
+        $query_statement->execute();
+
+        return $query_statement;
+    }
+
 }

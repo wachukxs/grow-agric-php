@@ -1244,4 +1244,147 @@ class Records
             return $err->getMessage();
         }
     }
+
+    public function saveFieldAgentFarmVisit($fieldagentid, 
+    $farmerid,    $dateofvisit,    $farmid,    $farmvisittype,    $didchickengainnecessaryrequiredweight,    $numberofdeadchickensincelastvisit,    $totalmortalitytodate,    $additionalobservations,    
+    $advicegiventofarmer,    $dateofnextvisit,    $numberofchickenthatcanfitthecurrentchickenhouse,
+    $farmerhousebuildingmaterial,    $numberoffinancedchicken,
+    $farmernumberofchildren,    $farmernumberofchildrenlessthan18,    $farmernumberofoccupants,
+    $numberofpeopleworkingonfarm,    $farmermobiledevicetype,
+    $numberofchickenaddedbysupplierondelivery,    $numberofdeadchicksondayofdelivery,    $nameofinsurer,    $datefarmercanstartfarmingwithus,    
+    $otherfarmedanimals,    $opinionofhowmanychickenweshouldfinancefarmerfor,    $howmuchfinancingisthefarmerseeking)
+    {
+        try {
+            $query = 'INSERT INTO `fieldagents_farm_visits`
+                SET
+                `fieldagentid` = :_fieldagentid, 
+                `farmerid` = :_farmerid,
+                `farmid` = :_farmid,
+                `farmvisittype` = :_farmvisittype,
+                `didchickengainnecessaryrequiredweight` = :_didchickengainnecessaryrequiredweight, 
+                `numberofdeadchickensincelastvisit` = :_numberofdeadchickensincelastvisit,
+                `totalmortalitytodate` = :_totalmortalitytodate,
+                `additionalobservations` = :_additionalobservations,
+                `advicegiventofarmer` = :_advicegiventofarmer,
+                `dateofnextvisit` = :_dateofnextvisit,
+                `numberofchickenthatcanfitthecurrentchickenhouse` = :_numberofchickenthatcanfitthecurrentchickenhouse, 
+                `numberoffinancedchicken` = :_numberoffinancedchicken,
+                `farmernumberofchildren` = :_farmernumberofchildren,
+                `farmernumberofchildrenlessthan18` = :_farmernumberofchildrenlessthan18,
+                `farmernumberofoccupants` = :_farmernumberofoccupants,
+                `numberofpeopleworkingonfarm` = :_numberofpeopleworkingonfarm,
+                `farmermobiledevicetype` = :_farmermobiledevicetype,
+                `numberofchickenaddedbysupplierondelivery` = :_numberofchickenaddedbysupplierondelivery, 
+                `numberofdeadchicksondayofdelivery` = :_numberofdeadchicksondayofdelivery,
+                `nameofinsurer` = :_nameofinsurer,
+                `datefarmercanstartfarmingwithus` = :_datefarmercanstartfarmingwithus, 
+                `otherfarmedanimals` = :_otherfarmedanimals,
+                `opinionofhowmanychickenweshouldfinancefarmerfor` = :_opinionofhowmanychickenweshouldfinancefarmerfor, 
+                `howmuchfinancingisthefarmerseeking` = :_howmuchfinancingisthefarmerseeking
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $faid = htmlspecialchars(strip_tags($fieldagentid));
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $fid = htmlspecialchars(strip_tags($farmid));
+            $nocabsod = htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickenaddedbysupplierondelivery)));
+            $fvt = htmlspecialchars(strip_tags($farmvisittype));
+
+            $dcgnrw = htmlspecialchars(strip_tags($didchickengainnecessaryrequiredweight));
+            $addob = htmlspecialchars(strip_tags($additionalobservations));
+            $fhbm = htmlspecialchars(strip_tags($farmerhousebuildingmaterial));
+
+            $oohmcwsfff = htmlspecialchars(strip_tags($opinionofhowmanychickenweshouldfinancefarmerfor));
+            $fmdt = htmlspecialchars(strip_tags($farmermobiledevicetype));
+            $agtf = htmlspecialchars(strip_tags($advicegiventofarmer));
+
+            $noi = htmlspecialchars(strip_tags($nameofinsurer));
+
+            $ofa = htmlspecialchars(strip_tags($otherfarmedanimals));
+
+            
+
+         
+            $nodcslv = htmlspecialchars(strip_tags(str_replace(',', '', $numberofdeadchickensincelastvisit)));
+            $tmtd = htmlspecialchars(strip_tags(str_replace(',', '', $totalmortalitytodate)));
+            $noctcftcch = htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickenthatcanfitthecurrentchickenhouse)));
+            $nofc = htmlspecialchars(strip_tags(str_replace(',', '', $numberoffinancedchicken)));
+
+            $fnoc = htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofchildren)));
+            $fnoclt18 = htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofchildrenlessthan18)));
+            $fnoo = htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofoccupants)));
+            $nopwof = htmlspecialchars(strip_tags(str_replace(',', '', $numberofpeopleworkingonfarm)));
+
+            $nodcodod = htmlspecialchars(strip_tags(str_replace(',', '', $numberofdeadchicksondayofdelivery)));
+
+            $hmfstfs = htmlspecialchars(strip_tags(str_replace(',', '', $howmuchfinancingisthefarmerseeking)));
+            
+
+            $dov = null;
+            if (!empty($dateofvisit) && isset($dateofvisit)) {
+                $date1 = new DateTime($dateofvisit); // Seems this isn't doing timezone conversion and is not accurate
+                $dov = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+            }
+
+            $donv = null;
+            if (!empty($dateofnextvisit) && isset($dateofnextvisit)) {
+                $date2 = new DateTime($dateofnextvisit); // Seems this isn't doing timezone conversion and is not accurate
+                $donv = htmlspecialchars(strip_tags($date2->format('Y-m-d H:i:s')));
+            }
+
+            $dfcsfwu = null;
+            if (!empty($datefarmercanstartfarmingwithus) && isset($datefarmercanstartfarmingwithus)) {
+                $date3 = new DateTime($datefarmercanstartfarmingwithus); // Seems this isn't doing timezone conversion and is not accurate
+                $dfcsfwu = htmlspecialchars(strip_tags($date3->format('Y-m-d H:i:s')));
+            }
+            
+
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_fieldagentid', $faid);
+            $stmt->bindParam(':_numberofchickenaddedbysupplierondelivery', $nocabsod);
+            $stmt->bindParam(':_farmvisittype', $fvt);
+            $stmt->bindParam(':_didchickengainnecessaryrequiredweight', $dcgnrw);
+            $stmt->bindParam(':_additionalobservations', $addob);
+            $stmt->bindParam(':_farmid', $fid);
+            $stmt->bindParam(':_farmerhousebuildingmaterial', $fhbm);
+
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_opinionofhowmanychickenweshouldfinancefarmerfor', $oohmcwsfff);
+            $stmt->bindParam(':_farmermobiledevicetype', $fmdt);
+            $stmt->bindParam(':_advicegiventofarmer', $agtf);
+            $stmt->bindParam(':_nameofinsurer', $noi);
+            $stmt->bindParam(':_numberofdeadchickensincelastvisit', $nodcslv);
+            $stmt->bindParam(':_otherfarmedanimals', $ofa);
+
+            $stmt->bindParam(':_totalmortalitytodate', $tmtd);
+            $stmt->bindParam(':_numberofchickenthatcanfitthecurrentchickenhouse', $noctcftcch);
+            $stmt->bindParam(':_numberoffinancedchicken', $nofc);
+            $stmt->bindParam(':_farmernumberofchildren', $fnoc);
+            $stmt->bindParam(':_farmernumberofchildrenlessthan18', $fnoclt18);
+            $stmt->bindParam(':_farmernumberofoccupants', $fnoo);
+            $stmt->bindParam(':_numberofpeopleworkingonfarm', $nopwof);
+            $stmt->bindParam(':_numberofdeadchicksondayofdelivery', $nodcodod);
+            $stmt->bindParam(':_howmuchfinancingisthefarmerseeking', $hmfstfs);
+            
+            $stmt->bindParam(':_dateofvisit', $dov);
+            $stmt->bindParam(':_datefarmercanstartfarmingwithus', $dfcsfwu);
+            $stmt->bindParam(':_dateofnextvisit', $donv);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                $last_insert_id = $this->database_connection->lastInsertId();
+
+                return $last_insert_id;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in saveFieldAgentFarmVisit(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
 }
