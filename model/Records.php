@@ -1384,7 +1384,10 @@ class Records
             if (is_array($otherfarmedanimals)) {
                 $fi = htmlspecialchars(strip_tags(implode(",", $otherfarmedanimals)));
             } else { // they are strings
-                $ofa = htmlspecialchars(strip_tags($otherfarmedanimals));
+
+                file_put_contents('php://stderr', print_r("\n\n" . 'see this in converint(): ' . serialize($otherfarmedanimals) . "\n", TRUE));
+
+                $ofa = htmlspecialchars(serialize($otherfarmedanimals));
             }
 
             // Bind parameters to prepared stmt
