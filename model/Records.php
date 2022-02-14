@@ -1252,7 +1252,11 @@ class Records
     $farmernumberofchildren,    $farmernumberofchildrenlessthan18,    $farmernumberofoccupants,
     $numberofpeopleworkingonfarm,    $farmermobiledevicetype,
     $numberofchickenaddedbysupplierondelivery,    $numberofdeadchicksondayofdelivery,    $nameofinsurer,    $datefarmercanstartfarmingwithus,    
-    $otherfarmedanimals,    $opinionofhowmanychickenweshouldfinancefarmerfor,    $howmuchfinancingisthefarmerseeking)
+    $otherfarmedanimals,    $opinionofhowmanychickenweshouldfinancefarmerfor,    $howmuchfinancingisthefarmerseeking, $isfarmingontrack,
+    $doesfarmerhavepreviousfarmingrecords, $takencopiesorphotosoffarmerpreviousfarmingrecords, $farmerchickenhousebuildingmaterial, $doesfarmerhaveexistinginsurance,
+    $seenevidenceofexistinginsurance, $didfarmerfillcicinsuranceformcorrectly, $hasfarmerobtainedstampedvetreportwithvetregistrationnumber,
+    $takencopiesoffarmeridsordocumentsandphonenumber, $doesfarmerkeeplayers, $seenproofthatfarmerhasbuyers
+    )
     {
         try {
             $query = 'INSERT INTO `fieldagents_farm_visits`
@@ -1261,6 +1265,8 @@ class Records
                 `farmerid` = :_farmerid,
                 `farmid` = :_farmid,
                 `farmvisittype` = :_farmvisittype,
+                `farmerhousebuildingmaterial` = :_farmerhousebuildingmaterial,
+                `dateofvisit` = :_dateofvisit,
                 `didchickengainnecessaryrequiredweight` = :_didchickengainnecessaryrequiredweight, 
                 `numberofdeadchickensincelastvisit` = :_numberofdeadchickensincelastvisit,
                 `totalmortalitytodate` = :_totalmortalitytodate,
@@ -1280,7 +1286,18 @@ class Records
                 `datefarmercanstartfarmingwithus` = :_datefarmercanstartfarmingwithus, 
                 `otherfarmedanimals` = :_otherfarmedanimals,
                 `opinionofhowmanychickenweshouldfinancefarmerfor` = :_opinionofhowmanychickenweshouldfinancefarmerfor, 
-                `howmuchfinancingisthefarmerseeking` = :_howmuchfinancingisthefarmerseeking
+                `howmuchfinancingisthefarmerseeking` = :_howmuchfinancingisthefarmerseeking,
+                isfarmingontrack = :_isfarmingontrack,
+                doesfarmerhavepreviousfarmingrecords = :_doesfarmerhavepreviousfarmingrecords,
+                takencopiesorphotosoffarmerpreviousfarmingrecords = :_takencopiesorphotosoffarmerpreviousfarmingrecords,
+                farmerchickenhousebuildingmaterial = :_farmerchickenhousebuildingmaterial,
+                doesfarmerhaveexistinginsurance = :_doesfarmerhaveexistinginsurance,
+                seenevidenceofexistinginsurance = :_seenevidenceofexistinginsurance,
+                didfarmerfillcicinsuranceformcorrectly = :_didfarmerfillcicinsuranceformcorrectly,
+                hasfarmerobtainedstampedvetreportwithvetregistrationnumber = :_hasfarmerobtainedstampedvetreportwithvetregistrationnumber,
+                takencopiesoffarmeridsordocumentsandphonenumber = :_takencopiesoffarmeridsordocumentsandphonenumber,
+                doesfarmerkeeplayers = :_doesfarmerkeeplayers,
+                seenproofthatfarmerhasbuyers = :_seenproofthatfarmerhasbuyers
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -1289,58 +1306,86 @@ class Records
             $faid = htmlspecialchars(strip_tags($fieldagentid));
             $fi = htmlspecialchars(strip_tags($farmerid));
             $fid = htmlspecialchars(strip_tags($farmid));
-            $nocabsod = htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickenaddedbysupplierondelivery)));
             $fvt = htmlspecialchars(strip_tags($farmvisittype));
 
-            $dcgnrw = htmlspecialchars(strip_tags($didchickengainnecessaryrequiredweight));
-            $addob = htmlspecialchars(strip_tags($additionalobservations));
-            $fhbm = htmlspecialchars(strip_tags($farmerhousebuildingmaterial));
 
-            $oohmcwsfff = htmlspecialchars(strip_tags($opinionofhowmanychickenweshouldfinancefarmerfor));
-            $fmdt = htmlspecialchars(strip_tags($farmermobiledevicetype));
-            $agtf = htmlspecialchars(strip_tags($advicegiventofarmer));
 
-            $noi = htmlspecialchars(strip_tags($nameofinsurer));
+            // data can be NULL
+            $nocabsod = empty($numberofchickenaddedbysupplierondelivery) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickenaddedbysupplierondelivery)));
+            $dcgnrw = empty($didchickengainnecessaryrequiredweight) ? NULL : htmlspecialchars(strip_tags($didchickengainnecessaryrequiredweight));
+            $addob = empty($additionalobservations) ? NULL : htmlspecialchars(strip_tags($additionalobservations));
+            $fhbm = empty($farmerhousebuildingmaterial) ? NULL : htmlspecialchars(strip_tags($farmerhousebuildingmaterial));
 
-            $ofa = htmlspecialchars(strip_tags($otherfarmedanimals));
+            $oohmcwsfff = empty($opinionofhowmanychickenweshouldfinancefarmerfor) ? NULL : htmlspecialchars(strip_tags($opinionofhowmanychickenweshouldfinancefarmerfor));
+            $fmdt = empty($farmermobiledevicetype) ? NULL : htmlspecialchars(strip_tags($farmermobiledevicetype));
+            $agtf = empty($advicegiventofarmer) ? NULL : htmlspecialchars(strip_tags($advicegiventofarmer));
+
+            $noi = empty($nameofinsurer) ? NULL : htmlspecialchars(strip_tags($nameofinsurer));
+            $tcopor = empty($takencopiesorphotosoffarmerpreviousfarmingrecords) ? NULL : htmlspecialchars(strip_tags($takencopiesorphotosoffarmerpreviousfarmingrecords));
 
             
-
+            $dfhei = empty($doesfarmerhaveexistinginsurance) ? NULL : htmlspecialchars(strip_tags($doesfarmerhaveexistinginsurance));
+            
          
-            $nodcslv = htmlspecialchars(strip_tags(str_replace(',', '', $numberofdeadchickensincelastvisit)));
-            $tmtd = htmlspecialchars(strip_tags(str_replace(',', '', $totalmortalitytodate)));
-            $noctcftcch = htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickenthatcanfitthecurrentchickenhouse)));
-            $nofc = htmlspecialchars(strip_tags(str_replace(',', '', $numberoffinancedchicken)));
-
-            $fnoc = htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofchildren)));
-            $fnoclt18 = htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofchildrenlessthan18)));
-            $fnoo = htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofoccupants)));
-            $nopwof = htmlspecialchars(strip_tags(str_replace(',', '', $numberofpeopleworkingonfarm)));
-
-            $nodcodod = htmlspecialchars(strip_tags(str_replace(',', '', $numberofdeadchicksondayofdelivery)));
-
-            $hmfstfs = htmlspecialchars(strip_tags(str_replace(',', '', $howmuchfinancingisthefarmerseeking)));
+            $nodcslv = empty($numberofdeadchickensincelastvisit) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $numberofdeadchickensincelastvisit)));
             
+            $tmtd = empty($totalmortalitytodate) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $totalmortalitytodate)));
+            $noctcftcch = empty($numberofchickenthatcanfitthecurrentchickenhouse) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickenthatcanfitthecurrentchickenhouse)));
+            $nofc = empty($numberoffinancedchicken) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $numberoffinancedchicken)));
 
-            $dov = null;
+            $fnoc = empty($farmernumberofchildren) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofchildren)));
+            $fnoclt18 = empty($farmernumberofchildrenlessthan18) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofchildrenlessthan18)));
+            $fnoo = empty($farmernumberofoccupants) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $farmernumberofoccupants)));
+            $nopwof = empty($numberofpeopleworkingonfarm) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $numberofpeopleworkingonfarm)));
+
+            $nodcodod = empty($numberofdeadchicksondayofdelivery) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $numberofdeadchicksondayofdelivery)));
+
+            $hmfstfs = empty($howmuchfinancingisthefarmerseeking) ? NULL : htmlspecialchars(strip_tags(str_replace(',', '', $howmuchfinancingisthefarmerseeking)));
+
+            $ifot = empty($isfarmingontrack) ? NULL : htmlspecialchars(strip_tags($isfarmingontrack));
+            $dfhpfr = empty($doesfarmerhavepreviousfarmingrecords) ? NULL : htmlspecialchars(strip_tags($doesfarmerhavepreviousfarmingrecords));
+
+            $mfchimo = empty($farmerchickenhousebuildingmaterial) ? NULL : htmlspecialchars(strip_tags($farmerchickenhousebuildingmaterial));
+            $svoei = empty($seenevidenceofexistinginsurance) ? NULL : htmlspecialchars(strip_tags($seenevidenceofexistinginsurance));
+
+            $dffcifc = empty($didfarmerfillcicinsuranceformcorrectly) ? NULL : htmlspecialchars(strip_tags($didfarmerfillcicinsuranceformcorrectly));
+
+            $hfosvrwvrn = empty($hasfarmerobtainedstampedvetreportwithvetregistrationnumber) ? NULL : htmlspecialchars(strip_tags($hasfarmerobtainedstampedvetreportwithvetregistrationnumber));
+            $tcofiodapn = empty($takencopiesoffarmeridsordocumentsandphonenumber) ? NULL : htmlspecialchars(strip_tags($takencopiesoffarmeridsordocumentsandphonenumber));
+
+            $dfkl = empty($doesfarmerkeeplayers) ? NULL : htmlspecialchars(strip_tags($doesfarmerkeeplayers));
+
+            $sptfhb = empty($seenproofthatfarmerhasbuyers) ? NULL : htmlspecialchars(strip_tags($seenproofthatfarmerhasbuyers));
+
+            
+            
+            
+            $dov = NULL;
             if (!empty($dateofvisit) && isset($dateofvisit)) {
                 $date1 = new DateTime($dateofvisit); // Seems this isn't doing timezone conversion and is not accurate
                 $dov = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
             }
 
-            $donv = null;
+            $donv = NULL;
             if (!empty($dateofnextvisit) && isset($dateofnextvisit)) {
                 $date2 = new DateTime($dateofnextvisit); // Seems this isn't doing timezone conversion and is not accurate
                 $donv = htmlspecialchars(strip_tags($date2->format('Y-m-d H:i:s')));
             }
 
-            $dfcsfwu = null;
+            $dfcsfwu = NULL;
             if (!empty($datefarmercanstartfarmingwithus) && isset($datefarmercanstartfarmingwithus)) {
                 $date3 = new DateTime($datefarmercanstartfarmingwithus); // Seems this isn't doing timezone conversion and is not accurate
                 $dfcsfwu = htmlspecialchars(strip_tags($date3->format('Y-m-d H:i:s')));
             }
             
 
+
+            $ofa = NULL;
+            if (is_array($otherfarmedanimals)) {
+                $fi = htmlspecialchars(strip_tags(implode(",", $otherfarmedanimals)));
+            } else { // they are strings
+                $ofa = htmlspecialchars(strip_tags($otherfarmedanimals));
+            }
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_fieldagentid', $faid);
@@ -1356,22 +1401,42 @@ class Records
             $stmt->bindParam(':_farmermobiledevicetype', $fmdt);
             $stmt->bindParam(':_advicegiventofarmer', $agtf);
             $stmt->bindParam(':_nameofinsurer', $noi);
-            $stmt->bindParam(':_numberofdeadchickensincelastvisit', $nodcslv);
-            $stmt->bindParam(':_otherfarmedanimals', $ofa);
+            $stmt->bindParam(':_numberofdeadchickensincelastvisit',  $nodcslv);
+            $stmt->bindParam(':_otherfarmedanimals',  $ofa);
 
-            $stmt->bindParam(':_totalmortalitytodate', $tmtd);
-            $stmt->bindParam(':_numberofchickenthatcanfitthecurrentchickenhouse', $noctcftcch);
-            $stmt->bindParam(':_numberoffinancedchicken', $nofc);
-            $stmt->bindParam(':_farmernumberofchildren', $fnoc);
-            $stmt->bindParam(':_farmernumberofchildrenlessthan18', $fnoclt18);
-            $stmt->bindParam(':_farmernumberofoccupants', $fnoo);
-            $stmt->bindParam(':_numberofpeopleworkingonfarm', $nopwof);
-            $stmt->bindParam(':_numberofdeadchicksondayofdelivery', $nodcodod);
-            $stmt->bindParam(':_howmuchfinancingisthefarmerseeking', $hmfstfs);
+            $stmt->bindParam(':_totalmortalitytodate',  $tmtd);
+            $stmt->bindParam(':_numberofchickenthatcanfitthecurrentchickenhouse',  $noctcftcch);
+            $stmt->bindParam(':_numberoffinancedchicken',  $nofc);
+            $stmt->bindParam(':_farmernumberofchildren',  $fnoc);
+            $stmt->bindParam(':_farmernumberofchildrenlessthan18',  $fnoclt18);
+            $stmt->bindParam(':_farmernumberofoccupants',  $fnoo);
+            $stmt->bindParam(':_numberofpeopleworkingonfarm',  $nopwof);
+            $stmt->bindParam(':_numberofdeadchicksondayofdelivery',  $nodcodod);
+            $stmt->bindParam(':_howmuchfinancingisthefarmerseeking',  $hmfstfs);
             
             $stmt->bindParam(':_dateofvisit', $dov);
-            $stmt->bindParam(':_datefarmercanstartfarmingwithus', $dfcsfwu);
-            $stmt->bindParam(':_dateofnextvisit', $donv);
+            $stmt->bindParam(':_datefarmercanstartfarmingwithus',  $dfcsfwu);
+            $stmt->bindParam(':_dateofnextvisit',  $donv);
+            $stmt->bindParam(':_isfarmingontrack',  $ifot);
+            $stmt->bindParam(':_doesfarmerhavepreviousfarmingrecords',  $dfhpfr);
+            $stmt->bindParam(':_takencopiesorphotosoffarmerpreviousfarmingrecords',  $tcopor);
+
+
+            $stmt->bindParam(':_farmerchickenhousebuildingmaterial',  $mfchimo);
+            $stmt->bindParam(':_doesfarmerhaveexistinginsurance',  $dfhei);
+            $stmt->bindParam(':_didfarmerfillcicinsuranceformcorrectly',  $dffcifc);
+             
+            $stmt->bindParam(':_seenevidenceofexistinginsurance',  $svoei);
+
+            $stmt->bindParam(':_hasfarmerobtainedstampedvetreportwithvetregistrationnumber',  $hfosvrwvrn);
+
+            $stmt->bindParam(':_takencopiesoffarmeridsordocumentsandphonenumber',  $tcofiodapn);
+            $stmt->bindParam(':_doesfarmerkeeplayers',  $dfkl);
+
+            $stmt->bindParam(':_seenproofthatfarmerhasbuyers',  $sptfhb);
+
+             
+             
 
             $r = $stmt->execute();
 
@@ -1383,7 +1448,8 @@ class Records
                 return false;
             }
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('ERROR in saveFieldAgentFarmVisit(): ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r( $err->getMessage(), TRUE));
+            file_put_contents('php://stderr', print_r("\n\n" . 'ERROR in saveFieldAgentFarmVisit(): ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

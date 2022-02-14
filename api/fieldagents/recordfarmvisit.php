@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
          */
         $result = $records->saveFieldAgentFarmVisit(
             $data->fieldagentid,
-            $data->farmerid,
+            $data->farmer->id,
             $data->dateofvisit,
             $data->farmid,
             $data->farmvisittype,
@@ -66,7 +66,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data->datefarmercanstartfarmingwithus,
             $data->otherfarmedanimals,
             $data->opinionofhowmanychickenweshouldfinancefarmerfor,
-            $data->howmuchfinancingisthefarmerseeking
+            $data->howmuchfinancingisthefarmerseeking,
+            $data->isfarmingontrack,
+            $data->doesfarmerhavepreviousfarmingrecords,
+            $data->takencopiesorphotosoffarmerpreviousfarmingrecords,
+            $data->farmerchickenhousebuildingmaterial,
+            $data->doesfarmerhaveexistinginsurance,
+            $data->seenevidenceofexistinginsurance,
+            $data->didfarmerfillcicinsuranceformcorrectly,
+            $data->hasfarmerobtainedstampedvetreportwithvetregistrationnumber,
+            $data->takencopiesoffarmeridsordocumentsandphonenumber,
+            $data->doesfarmerkeeplayers,
+            $data->seenproofthatfarmerhasbuyers
         );
 
         if ($result) {
@@ -90,5 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 )
             );
         }
+    } else {
+        
     }
 }
