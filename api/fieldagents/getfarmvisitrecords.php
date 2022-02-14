@@ -33,9 +33,9 @@ file_put_contents('php://stderr', print_r("\n\n[<===] \n", TRUE));
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_GET["fieldagentid"])) {
 
-        // getAllFieldAgentFarmVisitRecords
         $result1 = $field_agents->getAllFieldAgentFarmVisitRecords($_GET["farmerid"]);
-        $row1["mortalities"] = $result1->fetchAll(PDO::FETCH_ASSOC);
+        $row1["visits"] = $result1->fetchAll(PDO::FETCH_ASSOC);
+
         echo json_encode($row1);
     } else {
         file_put_contents('php://stderr', print_r("\n\n" . 'ERR: Trying to fetch previous farm visits for field agents, Bad data provided' . "\n", TRUE));
