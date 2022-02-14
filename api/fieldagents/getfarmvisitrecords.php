@@ -9,6 +9,7 @@ include_once '../../config/Database.php';
 include_once '../../model/Records.php';
 include_once '../../model/Farmer.php';
 include_once '../../model/Farm.php';
+include_once '../../model/FieldAgents.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
@@ -33,7 +34,7 @@ file_put_contents('php://stderr', print_r("\n\n[<===] \n", TRUE));
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_GET["fieldagentid"])) {
 
-        $result1 = $field_agents->getAllFieldAgentFarmVisitRecords($_GET["farmerid"]);
+        $result1 = $field_agents->getAllFieldAgentFarmVisitRecords($_GET["fieldagentid"]);
         $row1["visits"] = $result1->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode($row1);
