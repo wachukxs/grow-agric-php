@@ -1255,7 +1255,7 @@ class Records
     $otherfarmedanimals,    $opinionofhowmanychickenweshouldfinancefarmerfor,    $howmuchfinancingisthefarmerseeking, $isfarmingontrack,
     $doesfarmerhavepreviousfarmingrecords, $takencopiesorphotosoffarmerpreviousfarmingrecords, $farmerchickenhousebuildingmaterial, $doesfarmerhaveexistinginsurance,
     $seenevidenceofexistinginsurance, $didfarmerfillcicinsuranceformcorrectly, $hasfarmerobtainedstampedvetreportwithvetregistrationnumber,
-    $takencopiesoffarmeridsordocumentsandphonenumber, $doesfarmerkeeplayers, $seenproofthatfarmerhasbuyers
+    $takencopiesoffarmeridsordocumentsandphonenumber, $doesfarmerkeeplayers, $seenproofthatfarmerhasbuyers, $farmerpobox
     )
     {
         try {
@@ -1297,7 +1297,8 @@ class Records
                 hasfarmerobtainedstampedvetreportwithvetregistrationnumber = :_hasfarmerobtainedstampedvetreportwithvetregistrationnumber,
                 takencopiesoffarmeridsordocumentsandphonenumber = :_takencopiesoffarmeridsordocumentsandphonenumber,
                 doesfarmerkeeplayers = :_doesfarmerkeeplayers,
-                seenproofthatfarmerhasbuyers = :_seenproofthatfarmerhasbuyers
+                seenproofthatfarmerhasbuyers = :_seenproofthatfarmerhasbuyers,
+                farmerpobox = :_farmerpobox
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -1356,9 +1357,8 @@ class Records
             $dfkl = empty($doesfarmerkeeplayers) ? NULL : htmlspecialchars(strip_tags($doesfarmerkeeplayers));
 
             $sptfhb = empty($seenproofthatfarmerhasbuyers) ? NULL : htmlspecialchars(strip_tags($seenproofthatfarmerhasbuyers));
+            $fpob = empty($farmerpobox) ? NULL : htmlspecialchars(strip_tags($farmerpobox));
 
-            
-            
             
             $dov = NULL;
             if (!empty($dateofvisit) && isset($dateofvisit)) {
@@ -1437,7 +1437,8 @@ class Records
             $stmt->bindParam(':_doesfarmerkeeplayers',  $dfkl);
 
             $stmt->bindParam(':_seenproofthatfarmerhasbuyers',  $sptfhb);
-
+            $stmt->bindParam(':_farmerpobox',  $fpob);
+             
              
              
 

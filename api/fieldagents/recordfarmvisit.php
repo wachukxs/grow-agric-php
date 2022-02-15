@@ -77,7 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data->hasfarmerobtainedstampedvetreportwithvetregistrationnumber,
             $data->takencopiesoffarmeridsordocumentsandphonenumber,
             $data->doesfarmerkeeplayers,
-            $data->seenproofthatfarmerhasbuyers
+            $data->seenproofthatfarmerhasbuyers,
+            $data->farmerpobox
         );
 
         if ($result) {
