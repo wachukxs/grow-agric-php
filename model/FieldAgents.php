@@ -14,11 +14,11 @@ class FieldAgents {
     }
 
 
-    public function getFieldAgentByEmail(string $_email)
+    public function getFieldAgentByEmail($_email)
     {
         try {
             // Create query
-            $query = 'SELECT * FROM fieldagents
+            $query = 'SELECT * FROM `fieldagents`
                 WHERE
                 email = :_email
             ';
@@ -50,6 +50,7 @@ class FieldAgents {
             $query = 'SELECT * FROM fieldagents_farm_visits
                 WHERE
                 fieldagentid = :_fieldagentid
+                ORDER BY `dateofvisit` DESC
             ';
 
             // Prepare statement
@@ -67,6 +68,35 @@ class FieldAgents {
         } catch (\Throwable $err) {
             //throw $err;
             file_put_contents('php://stderr', print_r('FieldAgents.php->getAllFieldAgentFarmVisitRecords error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+
+    public function getFieldAgentAssignedSubCounties($fieldagentid)
+    {
+        try {
+            // Create query
+            $query = 'SELECT `assignedsubcounties` FROM fieldagents
+                WHERE
+                id = :_fieldagentid
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $faid = htmlspecialchars(strip_tags($fieldagentid));
+
+            // Execute query statement
+            $query_statement->bindParam(':_fieldagentid', $faid);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('FieldAgents.php->getFieldAgentAssignedSubCounties error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

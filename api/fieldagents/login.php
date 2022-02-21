@@ -54,10 +54,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // fieldagent_details
 
-                if (is_array($row1)) {
+                if ($result1 && is_array($row1)) {
                     if ($row1["password"] === $data->password) {
                         // delete password
                         unset($row1["password"]);
+                        $row1["assignedsubcounties"] = explode(',', $row1["assignedsubcounties"]);
         
                         file_put_contents('php://stderr', print_r($row1, TRUE));
         
@@ -85,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             'message' => 'Field Agent not logged',
                             'response' => 'NOT OK',
                             'response_code' => http_response_code(401),
-                            'message_details' => 'Account not found'
+                            'message_details' => 'Account not found or sth'
                         )
                     );
                 }

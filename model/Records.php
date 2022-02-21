@@ -19,7 +19,14 @@ class Records
         return $random_string;
     }
 
-    public function handleFileUpload($data, $row_id, $table, $farmerid)
+    /**
+     * takes in
+     * base64 string
+     * the row id to insert
+     * the table to insert it in
+     * the farmer id
+     */
+    public function handleFileUpload($data, $row_id, $table, $farmerid, $column = NULL)
     {
         // farmer_records_uploads
         try {
@@ -67,8 +74,13 @@ class Records
             if ($upload) {
                 unlink($target_path);
 
-                $mediaid = $this->recordUploadedMedia($url, $table, $farmerid, $row_id);
-
+                $mediaid = false ;
+                if ($table == "fieldagents_farm_visits") {
+                    $mediaid = $this->recordFieldAgentFarmVisitUploadedMedia($url, $table, $column, $row_id);
+                } else {
+                    $mediaid = $this->recordUploadedMedia($url, $table, $farmerid, $row_id);
+                }
+                
                 file_put_contents('php://stderr', "Uploaded $url to" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
                 return $mediaid;
@@ -80,6 +92,41 @@ class Records
         } catch (\Throwable $err) {
             // throw $err;
             file_put_contents('php://stderr', "handleFileUpload ERR! : " . $err->getMessage() . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            return false;
+        }
+    }
+
+    public function recordFieldAgentFarmVisitUploadedMedia($url, $table, $column, $row_id)
+    {
+        try {
+            $query = 'UPDATE '. $table .' 
+                SET 
+                '. $column .' = :url
+                WHERE
+                id = :id
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $u = htmlspecialchars(strip_tags($url));
+            $rid = htmlspecialchars(strip_tags($row_id));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':url', $u);
+            $stmt->bindParam(':id', $rid);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                $last_insert_id = $this->database_connection->lastInsertId();
+                return $last_insert_id;
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in recordFieldAgentFarmVisitUploadedMedia(): ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -1255,7 +1302,12 @@ class Records
     $otherfarmedanimals,    $opinionofhowmanychickenweshouldfinancefarmerfor,    $howmuchfinancingisthefarmerseeking, $isfarmingontrack,
     $doesfarmerhavepreviousfarmingrecords, $takencopiesorphotosoffarmerpreviousfarmingrecords, $farmerchickenhousebuildingmaterial, $doesfarmerhaveexistinginsurance,
     $seenevidenceofexistinginsurance, $didfarmerfillcicinsuranceformcorrectly, $hasfarmerobtainedstampedvetreportwithvetregistrationnumber,
-    $takencopiesoffarmeridsordocumentsandphonenumber, $doesfarmerkeeplayers, $seenproofthatfarmerhasbuyers, $farmerpobox
+    $takencopiesoffarmeridsordocumentsandphonenumber, $doesfarmerkeeplayers, $seenproofthatfarmerhasbuyers, $farmerpobox,
+    $farmerproofofbuyersfileinput,
+    $farmerpincertfileinput,
+    $farmeridfileinput,
+    $farmerexistinginsurancefileinput,
+    $farmerpreviousfarmingrecordsfileinput
     )
     {
         try {
@@ -1446,8 +1498,36 @@ class Records
 
             if ($r) {
                 $last_insert_id = $this->database_connection->lastInsertId();
+                // file upload status results array 
+                $fileuploadstatusresult = array();
+                if ($farmerproofofbuyersfileinput && !empty($farmerproofofbuyersfileinput)) { // check for empty string or array, if string or array
+                    $upload1 = $this->handleFileUpload($farmerproofofbuyersfileinput, $last_insert_id, 'fieldagents_farm_visits', $fi, 'farmerproofofbuyersfileinput');
+                    array_push($fileuploadstatusresult, $upload1);
+                }
+                if ($farmerpincertfileinput && !empty($farmerpincertfileinput)) { // check for empty string or array, if string or array
+                    $upload2 = $this->handleFileUpload($farmerpincertfileinput, $last_insert_id, 'fieldagents_farm_visits', $fi, 'farmerpincertfileinput');
+                    array_push($fileuploadstatusresult, $upload2);
+                }
+                if ($farmeridfileinput && !empty($farmeridfileinput)) { // check for empty string or array, if string or array
+                    $upload3 = $this->handleFileUpload($farmeridfileinput, $last_insert_id, 'fieldagents_farm_visits', $fi, 'farmeridfileinput');
+                    array_push($fileuploadstatusresult, $upload3);
+                }
+                if ($farmerexistinginsurancefileinput && !empty($farmerexistinginsurancefileinput)) { // check for empty string or array, if string or array
+                    $upload4 = $this->handleFileUpload($farmerexistinginsurancefileinput, $last_insert_id, 'fieldagents_farm_visits', $fi, 'farmerexistinginsurancefileinput');
+                    array_push($fileuploadstatusresult, $upload4);
+                }
+                if ($farmerpreviousfarmingrecordsfileinput && !empty($farmerpreviousfarmingrecordsfileinput)) { // check for empty string or array, if string or array
+                    $upload5 = $this->handleFileUpload($farmerpreviousfarmingrecordsfileinput, $last_insert_id, 'fieldagents_farm_visits', $fi, 'farmerpreviousfarmingrecordsfileinput');
+                    array_push($fileuploadstatusresult, $upload5);
+                }
 
-                return $last_insert_id;
+                if (in_array(false, $fileuploadstatusresult, true)) {
+                    return false;
+                } else {
+                    return $last_insert_id;
+                }
+                
+
             } else {
                 return false;
             }

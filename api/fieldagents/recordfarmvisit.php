@@ -78,7 +78,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data->takencopiesoffarmeridsordocumentsandphonenumber,
             $data->doesfarmerkeeplayers,
             $data->seenproofthatfarmerhasbuyers,
-            $data->farmerpobox
+            $data->farmerpobox,
+            $data->farmerproofofbuyersfileinput,
+            $data->farmerpincertfileinput,
+            $data->farmeridfileinput,
+            $data->farmerexistinginsurancefileinput,
+            $data->farmerpreviousfarmingrecordsfileinput
+
         );
 
         if ($result) {

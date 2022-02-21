@@ -9,6 +9,8 @@ include_once '../../model/Records.php';
 include_once '../../model/Farmer.php';
 include_once '../../model/Farm.php';
 
+include_once '../../model/FieldAgents.php';
+
 // Instantiate Database to get a connection
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
@@ -17,6 +19,7 @@ $a_database_connection = $database_connection->connect();
 $records = new Records($a_database_connection);
 $farmer = new Farmer($a_database_connection);
 $farm = new Farm($a_database_connection);
+$field_agents = new FieldAgents($a_database_connection);
 
 // get data
 $data = json_decode(file_get_contents('php://input'));
@@ -28,6 +31,25 @@ file_put_contents('php://stderr', print_r("\n\n[===>] \n", TRUE));
 file_put_contents('php://stderr', print_r($data, TRUE));
 file_put_contents('php://stderr', print_r("\n\n[<===] \n", TRUE));
 
+function in_array_field($needle, $needle_field, $haystack, $strict = false) {
+
+    if ($strict) {
+        foreach ($haystack as $item)
+
+            file_put_contents('php://stderr', print_r("\n\n[<=== comparing{{{] \n" . $needle . "::::" . $item[$needle_field] , TRUE));
+            if (isset($item->$needle_field) && stristr($needle, $item->$needle_field)) // && $item->$needle_field === $needle
+                return true;
+    }
+    else {
+        foreach ($haystack as $item)
+
+            file_put_contents('php://stderr', print_r("\n\n[<=== comparing{{{] \n" . $needle . ":::" . $item[$needle_field] , TRUE));
+            if (isset($item[$needle_field]) && stristr($needle, $item[$needle_field])) // &&  $item->$needle_field == $needle
+                return true;
+    }
+    return false;
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     try {
@@ -36,25 +58,47 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $result2 = $farm->getAllFarms();
 
         // returns an array, $row is an array
-        $row1 = $result1->fetchAll(PDO::FETCH_ASSOC); // farmers
-        $row2 = $result2->fetchAll(PDO::FETCH_ASSOC); // farms
+        $farmers = $result1->fetchAll(PDO::FETCH_ASSOC); // farmers
+        $farms = $result2->fetchAll(PDO::FETCH_ASSOC); // farms
 
-        for ($i = 0; $i < count($row1); $i++) {
-            $_farmer_id = $row1[$i]['id'];
+        // isset($_GET["fieldagentid"])
+        $result3 = $field_agents->getFieldAgentAssignedSubCounties($_GET["fieldagentid"]);
+        $fieldAgentAssignedSubCounties = $result3->fetch(PDO::FETCH_ASSOC);
 
-            $row1[$i]['farms'] = array_values(array_filter($row2, function($_farm) use ($_farmer_id)
+
+        for ($i = 0; $i < count($farmers); $i++) {
+
+            $_farmer_id = $farmers[$i]['id'];
+
+            $farmers[$i]['farms'] = array_values(array_filter($farms, function($_farm) use ($_farmer_id)
             {
                 return $_farm['farmerid'] == $_farmer_id;
             }));
         }
+
+        $farmers = array_values(array_filter($farmers, function ($_farmer) use ($fieldAgentAssignedSubCounties) {
+            if (count($_farmer['farms']) > 0) {
+                // $_farmer['farms']->farmsubcountylocation
+                // file_put_contents('php://stderr', print_r("\n\n[<=== mayyybeeee checking{{{] \n" , TRUE));
+                // file_put_contents('php://stderr', print_r($fieldAgentAssignedSubCounties['assignedsubcounties'], TRUE));
+                
+                return in_array_field($fieldAgentAssignedSubCounties['assignedsubcounties'], 'farmsubcountylocation', $_farmer['farms']);
+
+                // return stristr($fieldAgentAssignedSubCounties, $_farmer['farms']->farmsubcountylocation);
+
+            } else {
+                return false;
+            }
+            
+        }));
 
         echo json_encode(
             array(
                 'message' => 'Good request, no errors',
                 'response' => 'OK',
                 'response_code' => http_response_code(),
-                'farmers_info' => $row1,
-                // 'farms' => $row2
+                'farmers_info' => $farmers,
+                // 'farms' => $farms
             )
         );
     } catch (\Throwable $err) {
