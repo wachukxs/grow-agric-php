@@ -10,6 +10,7 @@ $allowed_domains = [
     'https://investors.growagric.com',
     'https://grow-agric.netlify.app',
     'https://grow-agric-admin.netlify.app',
+    'https://grow-agric-fieldagents.netlify.app',
     'http://localhost:4005',
     'http://localhost:4009',
     'http://localhost:4011',
