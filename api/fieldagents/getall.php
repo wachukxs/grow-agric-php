@@ -31,6 +31,8 @@ file_put_contents('php://stderr', print_r("\n\n[===>] \n", TRUE));
 file_put_contents('php://stderr', print_r($data, TRUE));
 file_put_contents('php://stderr', print_r("\n\n[<===] \n", TRUE));
 
+
+// from https://www.php.net/manual/en/function.in-array.php#105251
 function in_array_field($needle, $needle_field, $haystack, $strict = false) {
 
     if ($strict) {
@@ -75,6 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 return $_farm['farmerid'] == $_farmer_id;
             }));
         }
+
+        // later include farmers without farms
 
         $farmers = array_values(array_filter($farmers, function ($_farmer) use ($fieldAgentAssignedSubCounties) {
             if (count($_farmer['farms']) > 0) {

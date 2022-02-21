@@ -83,7 +83,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data->farmerpincertfileinput,
             $data->farmeridfileinput,
             $data->farmerexistinginsurancefileinput,
-            $data->farmerpreviousfarmingrecordsfileinput
+            $data->farmerpreviousfarmingrecordsfileinput,
+            $data->otheranimalkeptinfarm
 
         );
 

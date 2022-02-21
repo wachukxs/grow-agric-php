@@ -1307,7 +1307,8 @@ class Records
     $farmerpincertfileinput,
     $farmeridfileinput,
     $farmerexistinginsurancefileinput,
-    $farmerpreviousfarmingrecordsfileinput
+    $farmerpreviousfarmingrecordsfileinput,
+    $otheranimalkeptinfarm
     )
     {
         try {
@@ -1350,7 +1351,8 @@ class Records
                 takencopiesoffarmeridsordocumentsandphonenumber = :_takencopiesoffarmeridsordocumentsandphonenumber,
                 doesfarmerkeeplayers = :_doesfarmerkeeplayers,
                 seenproofthatfarmerhasbuyers = :_seenproofthatfarmerhasbuyers,
-                farmerpobox = :_farmerpobox
+                farmerpobox = :_farmerpobox,
+                otheranimalkeptinfarm = :_otheranimalkeptinfarm
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -1410,6 +1412,9 @@ class Records
 
             $sptfhb = empty($seenproofthatfarmerhasbuyers) ? NULL : htmlspecialchars(strip_tags($seenproofthatfarmerhasbuyers));
             $fpob = empty($farmerpobox) ? NULL : htmlspecialchars(strip_tags($farmerpobox));
+            $oakif = empty($otheranimalkeptinfarm) ? NULL : htmlspecialchars(strip_tags($otheranimalkeptinfarm));
+
+            
 
             
             $dov = NULL;
@@ -1490,6 +1495,8 @@ class Records
 
             $stmt->bindParam(':_seenproofthatfarmerhasbuyers',  $sptfhb);
             $stmt->bindParam(':_farmerpobox',  $fpob);
+
+            $stmt->bindParam(':_otheranimalkeptinfarm',  $oakif);
              
              
              
