@@ -8,6 +8,7 @@ include_once '../../config/globals/header.php';
 include_once '../../config/Database.php';
 include_once '../../model/Module.php';
 include_once '../../model/Course.php';
+include_once '../../model/Farmer.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
@@ -16,7 +17,7 @@ $a_database_connection = $database_connection->connect();
 // Instantiate food delivery Farmer object
 $module = new Module($a_database_connection);
 $course = new Course($a_database_connection);
-
+$farmer = new Farmer($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
@@ -27,10 +28,22 @@ $data = json_decode(file_get_contents('php://input'));
 // echo $_GET["id"];
 
 try {
-    $modules_result = $module->getAllModules();
-    $row1 = $modules_result->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode($row1);
+    $course_result = $farmer->getLearningOverviewInfo($_GET["farmerid"]);
+    $row1 = $course_result->fetch(PDO::FETCH_ASSOC);
+
+    $modules_result = $module->getAllModules();
+    $row1["modules"] = $modules_result->fetchAll(PDO::FETCH_ASSOC);
+
+    $course_completion = $farmer->getLearningProgressInfo($_GET["farmerid"]);
+    $row2 = $course_completion->fetch(PDO::FETCH_ASSOC);
+
+    $saved_courses = $farmer->getSavedCoursesForFarmer($_GET["farmerid"]);
+    $row1["saved_courses"] = $saved_courses->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $result = array_merge($row1, $row2);
+    echo json_encode($result);
 } catch (\Throwable $err) {
     //throw $th;
     echo "Error";

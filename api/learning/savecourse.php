@@ -11,7 +11,7 @@ include_once '../../model/Farmer.php';
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
-// Instantiate Course object
+// Instantiate Farmer object
 $farmer = new Farmer($a_database_connection);
 
 // get data

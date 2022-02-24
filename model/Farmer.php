@@ -427,7 +427,7 @@ class Farmer {
 
             // SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as total_learning_hours, SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))/60 as total_learning_minutes FROM learning_info
 
-            $query = 'SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as total_learning_hours, SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))/60 as total_learning_minutes FROM learning_info WHERE farmerid = ?';
+            $query = 'SELECT HOUR(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`))))) as total_learning_hours, SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))/60 as total_learning_minutes, (SUM(TIME_TO_SEC(TIMEDIFF(`end`, `start`)))/60)/60 as detailed_total_learning_hours FROM learning_info WHERE farmerid = ?';
             // SELECT COUNT(DISTINCT course_id) AS completed_learning FROM `learning_info` WHERE currentpage = totalpages AND farmerid = 1
 
             // Prepare statement
