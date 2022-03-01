@@ -1,5 +1,12 @@
 <?php
 
+require __DIR__ . "../../vendor/autoload.php"; // https://stackoverflow.com/a/44623787/9259701
+file_put_contents('php://stderr', "Hitting upload" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+// Headers
+
+$dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "../.."); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
+$dotenv->safeLoad();
 
 class Admin
 {
@@ -16,13 +23,140 @@ class Admin
         $this->database_connection = $a_database_connection;
     }
 
+
+    public function sendMessage($_message, $_time_sent, $_from, $_to)
+    {
+        try {
+            file_put_contents('php://stderr', print_r("\n\n" . 'actually sending email' . "\n", TRUE));
+
+            $query = 'INSERT INTO `messages`
+                SET
+                _from = :_from,
+                the_message = :_the_message,
+                _to = :_to,
+                time_sent = :_time_sent
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $m = htmlspecialchars(strip_tags($_message));
+            $f = htmlspecialchars(strip_tags($_from));
+            $t = htmlspecialchars(strip_tags($_to));
+
+            $date1 = new DateTime($_time_sent); // Seems this isn't doing timezone conversion and is not accurate
+            $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_from', $f);
+            $stmt->bindParam(':_the_message', $m);
+            $stmt->bindParam(':_to', $t);
+            $stmt->bindParam(':_time_sent', $d);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+
+                file_put_contents('php://stderr', print_r('created THe MessAGE ' . "\n", TRUE));
+                $_result = $this->getSingleChatMessage($this->database_connection->lastInsertId());
+                $_row = $_result->fetch(PDO::FETCH_ASSOC);
+
+                return $_row;
+
+            } else {
+                file_put_contents('php://stderr', print_r('DID created THe MessAGE ' . "\n", TRUE));
+                return false;
+            }
+
+        } catch (\Throwable $err) {
+            //throw $th;
+            file_put_contents('php://stderr', print_r('Admin.php->sendMessage error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllFarmerMessages($_farmerid)
+    {
+        try {
+
+            // we should be escaping farmerid
+        
+            $query = 'SELECT * FROM `messages` WHERE `_from` = "FARMER-' . $_farmerid . '"
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $th;
+            file_put_contents('php://stderr', print_r('Admin.php->getAllMessages error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllMessages()
+    {
+        try {
+        
+            $query = 'SELECT * FROM `messages`
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $th;
+            file_put_contents('php://stderr', print_r('Admin.php->getAllMessages error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function sendMail($_message = NULL)
+    {
+        try {
+            
+
+            file_put_contents('php://stderr', print_r("\n\n" . 'actually sending email' . "\n", TRUE));
+
+            $to      = getenv("TEST_EMAIL");
+            $subject = 'the subject';
+            // The message
+            $message = "Line 1\r\nLine 2\r\nLine 3";
+
+            // In case any of our lines are larger than 70 characters, we should use wordwrap()
+            $message = wordwrap($message, 70, "\r\n");
+            $headers = 'From: ' . getenv("OUR_EMAIL") . "\r\n" .
+                'Reply-To: ' . getenv("OUR_EMAIL") . "\r\n" .
+                'X-Mailer: PHP/' . phpversion();
+
+            $mailsent = mail($to, $subject, $message, $headers);
+
+            file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . $mailsent . "\n", TRUE));
+        } catch (\Throwable $err) {
+            //throw $th;
+            file_put_contents('php://stderr', print_r('Admin.php->sendMail error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     /**
      * fetch all info from this query ???
      * Or maybe just fetch more
      */
     public function getReviewInfo()
     {
-        $query = 'SELECT 
+        try {
+        
+            $query = 'SELECT 
 
                 (SELECT COUNT(*) FROM farmers) AS no_farmers,
                                     
@@ -30,15 +164,21 @@ class Admin
                 
                 (SELECT COUNT(*) FROM farms) AS no_farms,
                 
-                (SELECT COUNT(*) FROM waiting_list) AS no_waiting_list';
+                (SELECT COUNT(*) FROM waiting_list) AS no_waiting_list'
+            ;
 
-        // Prepare statement
-        $query_statement = $this->database_connection->prepare($query);
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
 
-        // Execute query statement
-        $query_statement->execute();
+            // Execute query statement
+            $query_statement->execute();
 
-        return $query_statement;
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $th;
+            file_put_contents('php://stderr', print_r('Admin.php->getReviewInfo error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
     }
 
 
@@ -66,6 +206,32 @@ class Admin
         } catch (\Throwable $err) {
             //throw $err;
             file_put_contents('php://stderr', print_r('Admin.php->getAdminByEmail error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getSingleChatMessage($_id)
+    {
+        try {
+            // Create query // we need to specify every column we need, this just selects everything from both table
+            $query = '
+                SELECT * FROM `messages` WHERE `id` = :id
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $i = htmlspecialchars(strip_tags($_id));
+
+            // Execute query statement
+            $query_statement->bindParam(':id', $i);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getSingleChatMessage error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

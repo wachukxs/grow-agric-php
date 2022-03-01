@@ -21,24 +21,16 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     try {
 
         $row = array();
+        $result1;
 
-        $result1 = $admin->getReviewInfo();
-        $row["summary"] = $result1->fetch(PDO::FETCH_ASSOC); // not fetchAll
+        if (isset($_GET["farmerid"])) {
+            $result1 = $admin->getAllFarmerMessages($_GET["farmerid"]);
+        } else {
+            $result1 = $admin->getAllMessages();
+        }
+        
 
-        $result2 = $admin->getAllFinanceApplications();
-        $row["finance_applications"] = $result2->fetchAll(PDO::FETCH_ASSOC);
-
-        $result3 = $admin->getAllFarms();
-        $row["farms"] = $result3->fetchAll(PDO::FETCH_ASSOC);
-
-        $result4 = $admin->getAllFarmers();
-        $row["farmers"] = $result4->fetchAll(PDO::FETCH_ASSOC);
-
-        $result5 = $admin->getAllCourses();
-        $row["courses"] = $result5->fetchAll(PDO::FETCH_ASSOC);
-
-        $result6 = $admin->getAllModules();
-        $row["modules"] = $result6->fetchAll(PDO::FETCH_ASSOC);
+        $row["messages"] = $result1->fetchAll(PDO::FETCH_ASSOC); //
  
         http_response_code();
         echo json_encode($row);
@@ -47,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         //throw $th;
         $result = array();
 
-        file_put_contents('php://stderr', "ERR getting overview: " . $err->getMessage() . "\n" . "\n", FILE_APPEND | LOCK_EX);
+        file_put_contents('php://stderr', "ERR getting all messages: " . $err->getMessage() . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
         http_response_code(400);
         $result = array();

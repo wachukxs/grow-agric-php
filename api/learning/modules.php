@@ -22,13 +22,12 @@ $farmer = new Farmer($a_database_connection);
 $data = json_decode(file_get_contents('php://input'));
 
 /**
- * check if $_GET["id"] is set
+ * TODO: check if $_GET["id"] is set
  * also check that that module id exist in db
  */
 // echo $_GET["id"];
 
-try {
-
+try { 
     $course_result = $farmer->getLearningOverviewInfo($_GET["farmerid"]);
     $row1 = $course_result->fetch(PDO::FETCH_ASSOC);
 
@@ -45,8 +44,24 @@ try {
     $result = array_merge($row1, $row2);
     echo json_encode($result);
 } catch (\Throwable $err) {
-    //throw $th;
-    echo "Error";
+    // throw $th;
+    // echo "Error";
+
+    // hot fix
+    // not sure if setting a 400 status is right giving this is a resolver endpoint
+    $result = array(
+        "completed_learning"=> "0",
+        "detailed_total_learning_hours"=> "0",
+        "in_progress_learning"=> "0",
+        "modules"=> array(),
+        "not_started_learning"=> "0",
+        "saved_courses"=> array(),
+        "total_learning_hours"=> "0",
+        "total_learning_minutes"=> "0",
+    );
+
+    echo json_encode($result);
+
 }
 
 ?>
