@@ -70,41 +70,44 @@ class Admin
             }
 
         } catch (\Throwable $err) {
-            //throw $th;
+            //throw $err;
             file_put_contents('php://stderr', print_r('Admin.php->sendMessage error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
 
-    public function getAllFarmerMessages($_farmerid)
+    public function getAllFarmerMessages($_farmeremail)
     {
         try {
 
             // we should be escaping farmerid
         
-            $query = 'SELECT * FROM `messages` WHERE `_from` = "FARMER-' . $_farmerid . '"
-            ';
+            $query = 'SELECT * FROM `messages` WHERE `_from` = :farmeremail OR `_to` = :farmeremail';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
+
+            $fe = htmlspecialchars(strip_tags($_farmeremail));
+
+            // Execute query statement
+            $query_statement->bindParam(':farmeremail', $fe);
 
             // Execute query statement
             $query_statement->execute();
 
             return $query_statement;
         } catch (\Throwable $err) {
-            //throw $th;
-            file_put_contents('php://stderr', print_r('Admin.php->getAllMessages error: ' . $err->getMessage() . "\n", TRUE));
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmerMessages error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
 
-    public function getAllMessages()
+    public function getAllAdminMessages()
     {
         try {
         
-            $query = 'SELECT * FROM `messages`
-            ';
+            $query = 'SELECT * FROM `messages` -- RIGHT JOIN `farmers` ON `farmers`.`email` = `messages`.`_from`';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -114,8 +117,32 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            //throw $th;
-            file_put_contents('php://stderr', print_r('Admin.php->getAllMessages error: ' . $err->getMessage() . "\n", TRUE));
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Admin.php->getAllAdminMessages error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    // returns the farmer's emails
+    public function getAllFarmersWithMessages()
+    {
+        try {
+            // $query = 'SELECT DISTINCT `_from` FROM `messages`';
+            $query = 'SELECT DISTINCT farmers.firstname, farmers.lastname, _from FROM `messages`
+            LEFT JOIN farmers
+            ON farmers.email = messages._from
+            WHERE messages._from NOT LIKE "%@growagric%"';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithMessages error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -142,7 +169,7 @@ class Admin
 
             file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . $mailsent . "\n", TRUE));
         } catch (\Throwable $err) {
-            //throw $th;
+            //throw $err;
             file_put_contents('php://stderr', print_r('Admin.php->sendMail error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
@@ -175,7 +202,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            //throw $th;
+            //throw $err;
             file_put_contents('php://stderr', print_r('Admin.php->getReviewInfo error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }

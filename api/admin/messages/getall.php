@@ -1,5 +1,7 @@
 <?php
 
+// this should be in farmer
+
 // Headers
 // https://stackoverflow.com/a/17098221
 include_once '../../../config/globals/header.php';
@@ -23,17 +25,42 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $row = array();
         $result1;
 
-        if (isset($_GET["farmerid"])) {
-            $result1 = $admin->getAllFarmerMessages($_GET["farmerid"]);
+        if (isset($_GET["farmeremail"])) {
+            $result1 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
+
+            $row["messages"] = $result1->fetchAll(PDO::FETCH_ASSOC); //
         } else {
-            $result1 = $admin->getAllMessages();
+            $result1 = $admin->getAllFarmersWithMessages();
+            $theFarmers = $result1->fetchAll(PDO::FETCH_ASSOC); // the farmer's fn, ln, and email
+
+            $result2 = $admin->getAllAdminMessages();
+            $theMessages = $result2->fetchAll(PDO::FETCH_ASSOC);
+
+            for ($i = 0; $i < count($theFarmers); $i++) {
+
+                $_farmer_email = $theFarmers[$i]['_from'];
+    
+                $theFarmers[$i]['messages'] = array_values(array_filter($theMessages, function($_message) use ($_farmer_email)
+                {
+                    return $_message['_from'] == $_farmer_email || $_message['_to'] == $_farmer_email;
+                }));
+            }
+
+            $row["messages"] = $theFarmers;
+        }
+
+        if ($result1) {
+            
+ 
+            http_response_code();
+            echo json_encode($row);
+        } else { // if error occured
+            echo json_encode([]);
         }
         
+        
 
-        $row["messages"] = $result1->fetchAll(PDO::FETCH_ASSOC); //
- 
-        http_response_code();
-        echo json_encode($row);
+        
         
     } catch (\Throwable $err) {
         //throw $th;
