@@ -22,3 +22,7 @@ Maybe sth to look at https://packagist.org/packages/nicolab/php-ftp-client
 
 // 
 sendmail_path = /usr/sbin/sendmail -t -i
+
+## Rules,
+
+Don't pick out farms that have been deleted

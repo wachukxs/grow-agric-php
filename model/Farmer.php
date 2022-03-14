@@ -20,22 +20,82 @@ class Farmer {
         $this->database_connection = $a_database_connection;
     }
 
-    /**
-     * @depreciated
-     */
-    public function getAllInventory()
+    public function generateRandomString()
     {
-        // Create query
-        $query = 'SELECT * FROM ';
-        
-        // Prepare statement
-        $query_statement = $this->database_connection->prepare($query);
-
-        // Execute query statement
-        $query_statement->execute();
-
-        return $query_statement;
+        $random_string = "0" . rand(1, 64) . rand(0, 94) . rand(0, 9) . rand(0, 49) . rand(0, 29) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . "-" . (new DateTime())->getTimestamp();
+        return $random_string;
     }
+
+
+    public function createNewFarmerUploadedDocument($mediatype, $name, $farmerid, $url)
+    {
+        try {
+            $query = 'INSERT INTO custom_farmer_uploads
+                SET
+                `farmerid` = :farmerid,
+                `fileuploadname` = :fileuploadname,
+                `url` = :url,
+                `mediatype` = :mediatype
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $n = htmlspecialchars(strip_tags($name));
+            $fid = htmlspecialchars(strip_tags($farmerid));
+            $mt = htmlspecialchars(strip_tags($mediatype));
+            $u = htmlspecialchars(strip_tags($url));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':fileuploadname', $n);
+            $stmt->bindParam(':farmerid', $fid);
+            $stmt->bindParam(':mediatype', $mt);
+            $stmt->bindParam(':url', $u);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Farmer.php->getAllModules error: ' . $err->getMessage() . "\n", TRUE));
+            return $err;
+        }
+    }
+
+
+    public function getFarmerUploadedDocumentByID($id)
+    {
+        try {
+            // Create query
+            $query = 'SELECT * FROM custom_farmer_uploads
+                WHERE
+                id = :_id
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $i = htmlspecialchars(strip_tags($id));
+
+            // Execute query statement
+            $query_statement->bindParam(':_id', $i);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Farmer.php->getFarmerUploadedDocumentByID error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+
 
      // Get all farmers' personalInfo
      public function getAllFarmersPersonalInfo()
@@ -51,65 +111,6 @@ class Farmer {
  
          return $query_statement;
      }
-
-    public function getSingleInventoryByID($id)
-    {
-        // Create query
-        $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ?';
-
-        // Prepare statement
-        $query_statement = $this->database_connection->prepare($query);
-
-        // Execute query statement
-        $query_statement->bindParam(1, $id);
-
-        // Execute query statement
-        $query_statement->execute();
-
-        return $query_statement;
-
-    }
-
-
-    // TODO
-    public function addToInventory($name, $available, $category, $price, $description)
-    {
-
-        // Create query
-        $query = 'INSERT INTO ' . $this->table . '
-            SET
-            name = :name,
-            available = :available,
-            category = :category,
-            price = :price,
-            description = :description
-        ';
-
-        // Prepare statement
-        $stmt = $this->database_connection->prepare($query);
-
-        // Ensure safe data
-        $n = htmlspecialchars(strip_tags($name));
-        $a = htmlspecialchars(strip_tags($available));
-        $c = htmlspecialchars(strip_tags($category));
-        $p = htmlspecialchars(strip_tags(str_replace(',', '', $price))); 
-        $d = htmlspecialchars(strip_tags($description));
-
-        // Bind parameters to prepared stmt
-        $stmt->bindParam(':name', $n);
-        $stmt->bindParam(':available', $a);
-        $stmt->bindParam(':category', $c);
-        $stmt->bindParam(':price', $p);
-        $stmt->bindParam(':description', $d);
-
-        // Execute query statement
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
 
     // Create new order, an entry
     public function createFarmer($first_name, $last_name, $_email, $phone_number, $_password) {

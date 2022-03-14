@@ -23,6 +23,12 @@ class Admin
         $this->database_connection = $a_database_connection;
     }
 
+    public function generateRandomString()
+    {
+        $random_string = "0" . rand(1, 64) . rand(0, 94) . rand(0, 9) . rand(0, 49) . rand(0, 29) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . chr(rand(65, 90)) . "-" . (new DateTime())->getTimestamp();
+        return $random_string;
+    }
+
 
     public function sendMessage($_message, $_time_sent, $_from, $_to)
     {

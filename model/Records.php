@@ -1268,11 +1268,16 @@ class Records
             finance_application_statuses.status 
             FROM 
             `finance_applications` 
-            RIGHT OUTER JOIN 
+            LEFT JOIN 
             finance_application_statuses 
             ON 
             finance_applications.id = finance_application_statuses.finance_application_id 
-            WHERE farmerid = ?';
+            LEFT JOIN
+            farms
+            ON
+            finance_applications.farmid = farms.id
+            WHERE finance_applications.farmerid = ?
+            AND farms.deleted = false';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -1541,6 +1546,33 @@ class Records
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r( $err->getMessage(), TRUE));
             file_put_contents('php://stderr', print_r("\n\n" . 'ERROR in saveFieldAgentFarmVisit(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllFarmerFinanceApplications($farmerid)
+    {
+        try {
+            $query = 'SELECT * FROM input_records_mortalities
+                WHERE
+                farmerid = :_farmerid
+                ORDER BY 
+                date DESC
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllFarmerMortalitiesInputRecords(): ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

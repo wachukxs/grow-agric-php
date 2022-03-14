@@ -32,22 +32,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         //catch indivizual key-value pair info
         //from form data
-        $tz = $_POST["tz"];
+        // $tz = $_POST["tz"];
 
         //catch and convert json object info
-        $info = $_POST["info"];
-        $info = json_decode($info);
+        // $info = $_POST["info"];
+        // $info = json_decode($info);
 
 
         //get the file
-        $ori_fname = $_FILES['file']['name'];
+        $original_filename = $_FILES['file']['name'];
 
         //replace special chars in the file name
         $actual_fname = $_FILES['file']['name'];
         $actual_fname = preg_replace('/[^A-Za-z0-9\-]/', '', $actual_fname);
 
         //get file extension
-        $ext = pathinfo($ori_fname, PATHINFO_EXTENSION);
+        $ext = pathinfo($original_filename, PATHINFO_EXTENSION);
         file_put_contents('php://stderr', "fil extention " . $ext . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
         //set random unique name why because file name duplicate will replace
