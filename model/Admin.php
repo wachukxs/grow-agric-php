@@ -1,7 +1,14 @@
 <?php
 
+//Load Composer's autoloader
 require __DIR__ . "../../vendor/autoload.php"; // https://stackoverflow.com/a/44623787/9259701
-file_put_contents('php://stderr', "Hitting upload" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+file_put_contents('php://stderr', "Hitting Admin.php" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+//Import PHPMailer classes into the global namespace
+//These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 // Headers
 
@@ -155,28 +162,58 @@ class Admin
 
     public function sendMail($_message = NULL)
     {
+        //Create an instance; passing `true` enables exceptions
+        $mail = new PHPMailer(true);
+
         try {
             
 
             file_put_contents('php://stderr', print_r("\n\n" . 'actually sending email' . "\n", TRUE));
 
-            $to      = getenv("TEST_EMAIL");
-            $subject = 'the subject';
-            // The message
-            $message = "Line 1\r\nLine 2\r\nLine 3";
+            //Server settings
+            // uncomment to see email report/output
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+            $mail->isSMTP();                                            //Send using SMTP
+            $mail->Host       = getenv("OUR_EMAIL_REGION");   //Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+            $mail->Username   = getenv("OUR_EMAIL");                     //SMTP username
+            $mail->Password   = getenv("OUR_EMAIL_PASSWORD");            //SMTP password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+            $mail->Port       = getenv("OUR_EMAIL_PORT");               //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
-            // In case any of our lines are larger than 70 characters, we should use wordwrap()
-            $message = wordwrap($message, 70, "\r\n");
-            $headers = 'From: ' . getenv("OUR_EMAIL") . "\r\n" .
-                'Reply-To: ' . getenv("OUR_EMAIL") . "\r\n" .
-                'X-Mailer: PHP/' . phpversion();
+            //Recipients
+            $mail->setFrom(getenv("OUR_EMAIL"), 'Mailer');
+            $mail->addAddress(getenv("TEST_EMAIL"), getenv('OUR_TEST_EMAIL_NAME'));     //Add a recipient
+            // $mail->addAddress('ellen@example.com');               //Name is optional
+            $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
+            // $mail->addCC('cc@example.com');
+            // $mail->addBCC('bcc@example.com');
 
-            $mailsent = mail($to, $subject, $message, $headers);
+            //Attachments
+            //$mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+            //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
 
-            file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . $mailsent . "\n", TRUE));
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = 'Here is the subject';
+            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
+            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+            if ($mail->send()) {
+                
+            return true;
+                file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
+            } else {
+                return false;
+                
+                file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
+            }
+
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->sendMail error: ' . $err->getMessage() . "\n", TRUE));
+
+            file_put_contents('php://stderr', print_r ("Message could not be sent. Mailer Error: {$mail->ErrorInfo}") );
+            // file_put_contents('php://stderr', print_r('Admin.php->sendMail error: ' . $mail->ErrorInfo . "\n", TRUE));
             return false;
         }
     }
