@@ -7,6 +7,8 @@ include_once '../../../config/globals/header.php';
 include_once '../../../config/Database.php';
 include_once '../../../model/Admin.php';
 
+include_once '../../../utilities/Emailing.php';
+
 // Instantiate Database to get a connection
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
@@ -19,10 +21,11 @@ $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     file_put_contents('php://stderr', print_r("\n\n" . 'Trying to send email' . "\n", TRUE));
-    $sent = $admin->sendMail();
+
+    // $firstname, $emailtype, $invitedby = NULL, $lastname = NULL, $fullname = NULL
+    $sent = false; // $admin->sendMail();
 
     if ($sent) {
-
             echo json_encode(
                 array(
                     'message' => 'GOOd response. message sent.',

@@ -9,9 +9,10 @@ Watch me build great stuff.
 
 
 ### TODOs
-
+0. we should send an email for people that joined waiting list
 1. include a repititions in a file and include it, eg. when we set header config for api endpoints
 
+2. check that phone number or email on sign up is not from delete account
 ### Pitfalls
 1. Never use var_dump() ... it's like an api output
 

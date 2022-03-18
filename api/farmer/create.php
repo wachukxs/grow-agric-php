@@ -16,14 +16,17 @@ include_once '../../config/globals/header.php';
 // Resources
 include_once '../../config/Database.php';
 include_once '../../model/Farmer.php';
+include_once '../../model/Admin.php';
+include_once '../../utilities/Emailing.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
     // Instantiate Database to get a connection
     $database_connection = new Database();
     $a_database_connection = $database_connection->connect();
 
-    // Instantiate new farmer object
+    // Instantiate new farmer n admin object
     $farmer = new Farmer($a_database_connection);
+    $admin = new Admin($a_database_connection);
 
     // get data
     $data = json_decode(file_get_contents('php://input'));
@@ -70,6 +73,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                         // 'total' => $total,
                         // 'name' => $name
                     );
+
+                    // send the farmer an email.
+                    $admin->sendMail($firstname, Emailing::SIGNUP, $email);
 
                     echo json_encode(
                         array(
