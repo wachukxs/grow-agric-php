@@ -171,9 +171,14 @@ class Admin
         try {
             $email_template = file_get_contents(__DIR__ . "/../assets/email.template.html");
 
+            // remove newlines, and space
+            $email_template = preg_replace(array("/\n/", "/\s/"), '', $email_template); // would the email be too long?
+
             $signup_text = "Thank you for signing up on GrowAgric. Join farmers across Kenya in accessing finance, learning materials, and record keeping for your farm.";
             
             $invitation_text = "Your friend and colleague, {farmerfriendname}, is inviting you to join GrowAgric. GrowAgric helps farmers like you across Kenya in accessing finance, learning materials, and record keeping for your farm.";
+
+            $password_reset_text = "";
 
             $login_cta_text = "Login";
             $signup_cta_text = "Verify email";
@@ -206,6 +211,9 @@ class Admin
         }
     }
 
+    /**
+     * needs refactoring : either do separate methods for emailing different scenarios: or do if checks to make sure the correct data is provided for each scenarios
+     */
     public function sendMail($firstname, $emailtype, $sendtoemail, $invitedby = NULL, $lastname = NULL, $fullname = NULL)
     {
         //Create an instance; passing `true` enables exceptions

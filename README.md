@@ -13,6 +13,7 @@ Watch me build great stuff.
 1. include a repititions in a file and include it, eg. when we set header config for api endpoints
 
 2. check that phone number or email on sign up is not from delete account
+3. make sure we have these checks: if ($_SERVER["REQUEST_METHOD"] == "POST") and for other http methods too ... confirm what http method calls them in the frontend
 ### Pitfalls
 1. Never use var_dump() ... it's like an api output
 

@@ -26,6 +26,36 @@ class Farmer {
         return $random_string;
     }
 
+    public function createNewFarmerPasswordResetRequest($farmerid)
+    {
+        try {
+            $query = 'INSERT INTO reset_password_requests
+                SET
+                `farmerid` = :farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fid);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Farmer.php->createNewFarmerPasswordResetRequest error: ' . $err->getMessage() . "\n", TRUE));
+            return $err;
+        }
+    }
+
 
     public function createNewFarmerUploadedDocument($mediatype, $name, $farmerid, $url)
     {
@@ -360,6 +390,7 @@ class Farmer {
         }
     }
 
+    // why are we not returning boolean of fail?
     public function addLearningData($courseid, $currentpage, $readendtime, $readstarttime, $totalpages, $farmerid) {
         try {
             $query = 'INSERT INTO learning_info' . '
@@ -650,6 +681,11 @@ class Farmer {
             return $err->getMessage();
         }
 
+    }
+
+    public function createdResetPasswordRequest()
+    {
+        
     }
 
 }
