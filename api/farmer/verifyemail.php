@@ -28,15 +28,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $farmer->getFarmerByEmail($data->email);
         if ($result) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
+
+            /**
+             * Array
+                (
+                    [id] => 1
+                    [firstname] => Nwachukwu
+                    [lastname] => Ossai
+                    [middlename] => 
+                    [email] => nwachukwuossai@gmail.com
+                    [phonenumber] => 0115335593
+                    [password] => pass
+                    [timejoined] => 2021-09-30 19:54:15
+                    [highesteducationallevel] => Secondary school
+                    [maritalstatus] => Widowed
+                    [age] => 20
+                    [yearsofexperience] => 1
+                )
+             */
+
+            file_put_contents('php://stderr', print_r("what is row farmerid: " . $row['id'] . "\n\n", TRUE));
+
+            file_put_contents('php://stderr', print_r($row, TRUE));
+
             if ($row) {
                 
                 // create reset password request, then send reset password email
-                $requestid = $farmer->createNewFarmerPasswordResetRequest($row['farmerid']);
+                $requestid = $farmer->createNewFarmerPasswordResetRequest($row['id']);
+
+                // get hash of request id, hash(HASHING_ALGORITHM, 4), if hash is ...
+                // email/hash
+
+
+                // ger cta link, in this case, password reset link
+                $cta_link = getenv("PROD_BASE_URL") . "/" . "password-reset" . "/" . $row['email'] . "/" . hash(getenv("HASHING_ALGORITHM"), $requestid);
 
                 // sending email
-                $admin->sendMail($firstname, Emailing::PASSWORD_RESET, $email);
-                
-
+                $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, $cta_link);
 
                 echo json_encode(
                     array(

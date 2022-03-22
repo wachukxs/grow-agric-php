@@ -162,7 +162,7 @@ class Admin
         }
     }
 
-    public function getEmailTemplateHTML($firstname, $emailtype, $invitedby = NULL, $lastname = NULL, $fullname = NULL)
+    public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL)
     {
         /**
          * include their emails for easy logins?
@@ -172,22 +172,27 @@ class Admin
             $email_template = file_get_contents(__DIR__ . "/../assets/email.template.html");
 
             // remove newlines, and space
-            $email_template = preg_replace(array("/\n/", "/\s/"), '', $email_template); // would the email be too long?
+            // causing damaged html message
+            // $email_template = preg_replace(array("/\n/", "/\s/"), '', $email_template); // would the email be too long?
 
             $signup_text = "Thank you for signing up on GrowAgric. Join farmers across Kenya in accessing finance, learning materials, and record keeping for your farm.";
             
             $invitation_text = "Your friend and colleague, {farmerfriendname}, is inviting you to join GrowAgric. GrowAgric helps farmers like you across Kenya in accessing finance, learning materials, and record keeping for your farm.";
 
-            $password_reset_text = "";
+            $password_reset_text = "Click the <b>Reset password</b> link below to reset your password.";
 
             $login_cta_text = "Login";
             $signup_cta_text = "Verify email";
             $invite_cta_text = "Sign up now";
+
+            $reset_password_cta = "Reset password";
             
             if ($emailtype == Emailing::SIGNUP) {
                 $emailbody = str_replace("{body}", $signup_text, $email_template);
                 $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
                 $emailbody = str_replace("{cta}", $login_cta_text, $emailbody); // tOdO: replace login_cta_text with signup_cta_text
+
+                $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             } else if ($emailtype == Emailing::INVITE) {
                 $emailbody = str_replace("{body}", $invitation_text, $email_template);
                 $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
@@ -195,8 +200,17 @@ class Admin
                 // must be after replacing $invitation_text, cause {farmerfriendname} is in $invitation_text
                 $emailbody = str_replace("{farmerfriendname}", $invitedby, $emailbody);
                 $emailbody = str_replace("{cta}", $invite_cta_text, $emailbody);
-            } else if ($emailtype == Emailing::PASSWORD_RESET) {
 
+                $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
+            } else if ($emailtype == Emailing::PASSWORD_RESET) {
+                $emailbody = str_replace("{body}", $password_reset_text, $email_template);
+                $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
+
+                $emailbody = str_replace("{cta}", $reset_password_cta, $emailbody);
+
+                // -- get reset password link
+
+                $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             }
             
 
@@ -214,7 +228,7 @@ class Admin
     /**
      * needs refactoring : either do separate methods for emailing different scenarios: or do if checks to make sure the correct data is provided for each scenarios
      */
-    public function sendMail($firstname, $emailtype, $sendtoemail, $invitedby = NULL, $lastname = NULL, $fullname = NULL)
+    public function sendMail($firstname, $emailtype, $sendtoemail, $invitedby = NULL, $lastname = NULL, $fullname = NULL, $cta_link = "https://farmers.growagric.com")
     {
         //Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
@@ -250,7 +264,7 @@ class Admin
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ( $emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ( $emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : 'Hello!!' ));
-            $mail->Body = $this->getEmailTemplateHTML($firstname, $emailtype, $invitedby, $lastname, $fullname); // 'This is the HTML message body <b>in bold!</b>';
+            $mail->Body = $this->getEmailTemplateHTML($firstname, $emailtype, $cta_link, $invitedby, $lastname, $fullname); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             if ($mail->send()) {

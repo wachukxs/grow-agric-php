@@ -26,6 +26,36 @@ class Farmer {
         return $random_string;
     }
 
+    public function getAllFarmerPasswordResetRequest($farmeremail)
+    {
+        $query = 'SELECT farmers.id AS "farmerid", reset_password_requests.`request_id`, reset_password_requests.`time_created`, reset_password_requests.`used` FROM `reset_password_requests` 
+
+        LEFT JOIN farmers
+        ON farmers.id = reset_password_requests.farmerid
+        
+        WHERE farmers.email = :farmeremail
+        AND reset_password_requests.used = false
+        AND reset_password_requests.time_created >= NOW() - INTERVAL 1 DAY'; // in the last 24 hours
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fe = htmlspecialchars(strip_tags($farmeremail));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmeremail', $fe);
+
+        $r = $stmt->execute();
+
+        if ($r) {
+            return $stmt;
+        } else {
+            return false;
+        }
+
+
+    }
+
     public function createNewFarmerPasswordResetRequest($farmerid)
     {
         try {
@@ -289,6 +319,74 @@ class Farmer {
 
         return $query_statement;
 
+    }
+
+    public function updatePasswordResetStatus($requestid)
+    {
+        try {
+            // Create query
+            $query = 'UPDATE reset_password_requests 
+                SET 
+                used = true
+                WHERE
+                request_id = :requestid
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $ri = htmlspecialchars(strip_tags($requestid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':requestid', $ri);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed updatePasswordResetStatus update query' . "\n", TRUE));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farmer.php->updatePasswordResetStatus error: ' . $err->getMessage() . "\n", TRUE));
+        }
+    }
+
+    public function updateFarmerPassword($farmerid, $password)
+    {
+        try {
+            // Create query
+            $query = 'UPDATE ' . $this->table . ' 
+                SET 
+                password =:password
+                WHERE
+                id = :farmerid
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $pw = htmlspecialchars(strip_tags($password));
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':password', $pw);
+            $stmt->bindParam(':farmerid', $fi);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed updateFarmerPassword update query' . "\n", TRUE));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farmer.php->updateFarmerPassword error: ' . $err->getMessage() . "\n", TRUE));
+        }
     }
 
     // getSingleFarmerByID
