@@ -31,26 +31,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         !empty($data->password)
     ) {
         // try to check their credentials
-        $result1 = $admin->getAdminByEmail($data->email);
-        file_put_contents('php://stderr', print_r($result1, TRUE));
-        file_put_contents('php://stderr', print_r(gettype($result1), TRUE));
+        $result0 = $admin->getAdminByEmail($data->email);
+        file_put_contents('php://stderr', print_r($result0, TRUE));
+        file_put_contents('php://stderr', print_r(gettype($result0), TRUE));
 
         // returns an array, $row1 is an array
-        $row1 = $result1->fetch(PDO::FETCH_ASSOC);
+        $row0 = $result0->fetch(PDO::FETCH_ASSOC);
 
-        if (is_array($row1)) {
-            if ($row1["password"] === $data->password) {
+        if (is_array($row0)) {
+            if ($row0["password"] === $data->password) {
                 // delete password
-                unset($row1["password"]);
+                unset($row0["password"]);
 
-                file_put_contents('php://stderr', print_r($row1, TRUE));
+                file_put_contents('php://stderr', print_r($row0, TRUE));
+
+                $row = array();
+                $row['personalInfo'] = $row0;
+
+                $result1 = $admin->getReviewInfo();
+                $row["summary"] = $result1->fetch(PDO::FETCH_ASSOC); // not fetchAll
+
+                $result2 = $admin->getAllFinanceApplications();
+                $row["finance_applications"] = $result2->fetchAll(PDO::FETCH_ASSOC);
+
+                $result3 = $admin->getAllFarms();
+                $row["farms"] = $result3->fetchAll(PDO::FETCH_ASSOC);
+
+                $result4 = $admin->getAllFarmers();
+                $row["farmers"] = $result4->fetchAll(PDO::FETCH_ASSOC);
+
+                $result5 = $admin->getAllCourses();
+                $row["courses"] = $result5->fetchAll(PDO::FETCH_ASSOC);
+
+                $result6 = $admin->getAllModules();
+                $row["modules"] = $result6->fetchAll(PDO::FETCH_ASSOC);
+        
+                http_response_code();
 
                 echo json_encode(
                     array(
                         'message' => 'Admin logged in',
                         'response' => 'OK',
                         'response_code' => http_response_code(),
-                        'admin_details' => $row1
+                        'admin_details' => $row
                     )
                 );
             } else {
