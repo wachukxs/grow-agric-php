@@ -44,6 +44,16 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $response["incompletedcompletedcourses"] = $row2;
         $response["courses"] = $row3;
 
+        // add farms, finance applications, and farmers too
+        $result2 = $admin->getAllFinanceApplications();
+        $response["finance_applications"] = $result2->fetchAll(PDO::FETCH_ASSOC);
+
+        $result3 = $admin->getAllFarms();
+        $response["farms"] = $result3->fetchAll(PDO::FETCH_ASSOC);
+
+        $result4 = $admin->getAllFarmers();
+        $response["farmers"] = $result4->fetchAll(PDO::FETCH_ASSOC);
+
         echo json_encode(
             array(
                 'message' => 'Good request, no errors',

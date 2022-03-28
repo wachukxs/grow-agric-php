@@ -138,12 +138,11 @@ class Admin
         }
     }
 
-    // returns the farmer's emails
     public function getAllFarmersWithMessages()
     {
         try {
             // $query = 'SELECT DISTINCT `_from` FROM `messages`';
-            $query = 'SELECT DISTINCT farmers.firstname, farmers.lastname, _from FROM `messages`
+            $query = 'SELECT DISTINCT farmers.id, farmers.firstname, farmers.lastname, messages._from FROM `messages`
             LEFT JOIN farmers
             ON farmers.email = messages._from
             WHERE messages._from NOT LIKE "%@growagric%"';
@@ -161,6 +160,30 @@ class Admin
             return false;
         }
     }
+
+    public function getAllFarmersWithoutMessages()
+    {
+        try {
+            $query = 'SELECT DISTINCT farmers.id, farmers.email, farmers.firstname, farmers.lastname, messages._from FROM `farmers`
+            LEFT JOIN messages
+            ON farmers.email = messages._from
+            WHERE messages._from IS NULL';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithoutMessages error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    
 
     public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL)
     {

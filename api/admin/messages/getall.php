@@ -31,12 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $row["messages"] = $result1->fetchAll(PDO::FETCH_ASSOC); //
         } else {
             $result1 = $admin->getAllFarmersWithMessages();
-            $theFarmers = $result1->fetchAll(PDO::FETCH_ASSOC); // the farmer's fn, ln, and email
+            $theFarmers = $result1->fetchAll(PDO::FETCH_ASSOC); // the farmer's id, firstname, lastname, and email
 
             $result2 = $admin->getAllAdminMessages();
             $theMessages = $result2->fetchAll(PDO::FETCH_ASSOC);
 
-            for ($i = 0; $i < count($theFarmers); $i++) {
+            for ($i = 0; $i < count($theFarmers); $i++) { // this is filtering only farmers with messages.
 
                 $_farmer_email = $theFarmers[$i]['_from'];
     
@@ -47,11 +47,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             }
 
             $row["messages"] = $theFarmers;
+
+            $result0 = $admin->getAllFarmersWithoutMessages();
+            $row["no_messages"] = $result0->fetchAll(PDO::FETCH_ASSOC);
         }
 
         if ($result1) {
-            
- 
             http_response_code();
             echo json_encode($row);
         } else { // if error occured
