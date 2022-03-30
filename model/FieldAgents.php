@@ -100,4 +100,47 @@ class FieldAgents {
             return false;
         }
     }
+
+    public function getAllFarmVisitsByFieldAgent($fieldagentid)
+    {
+        try {
+            $query = 'SELECT * FROM `fieldagents_farm_visits`
+
+            LEFT JOIN farmers
+            
+            ON farmers.id = fieldagents_farm_visits.farmerid
+            
+            WHERE fieldagents_farm_visits.fieldagentid = :_fieldagentid';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            $faid = htmlspecialchars(strip_tags($fieldagentid));
+
+            // Execute query statement
+            $query_statement->bindParam(':_fieldagentid', $faid);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            //throw $err;
+            file_put_contents('php://stderr', print_r('FieldAgents.php->getAllFarmVisitsByFieldAgent error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+
+
+    }
+
+    public function getAllFarmVisits()
+    {
+        $query = 'SELECT * FROM `fieldagents_farm_visits`
+
+        LEFT JOIN farmers
+        
+        ON farmers.id = fieldagents_farm_visits.farmerid';
+
+
+    }
 }

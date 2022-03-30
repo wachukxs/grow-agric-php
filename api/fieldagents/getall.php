@@ -27,8 +27,8 @@ $data = json_decode(file_get_contents('php://input'));
 
 
 */
-file_put_contents('php://stderr', print_r("\n\n[===>] \n", TRUE));
-file_put_contents('php://stderr', print_r($data, TRUE));
+file_put_contents('php://stderr', print_r("\n\n[===>]fieldagentid: \n", TRUE));
+file_put_contents('php://stderr', print_r($_GET["fieldagentid"], TRUE));
 file_put_contents('php://stderr', print_r("\n\n[<===] \n", TRUE));
 
 
@@ -38,14 +38,14 @@ function in_array_field($needle, $needle_field, $haystack, $strict = false) {
     if ($strict) {
         foreach ($haystack as $item)
 
-            file_put_contents('php://stderr', print_r("\n\n[<=== comparing{{{] \n" . $needle . "::::" . $item[$needle_field] , TRUE));
+            // file_put_contents('php://stderr', print_r("\n\n[<=== comparing{{{] \n" . $needle . "::::" . $item[$needle_field] , TRUE));
             if (isset($item->$needle_field) && stristr($needle, $item->$needle_field)) // && $item->$needle_field === $needle
                 return true;
     }
     else {
         foreach ($haystack as $item)
 
-            file_put_contents('php://stderr', print_r("\n\n[<=== comparing{{{] \n" . $needle . ":::" . $item[$needle_field] , TRUE));
+            // file_put_contents('php://stderr', print_r("\n\n[<=== comparing{{{] \n" . $needle . ":::" . $item[$needle_field] , TRUE));
             if (isset($item[$needle_field]) && stristr($needle, $item[$needle_field])) // &&  $item->$needle_field == $needle
                 return true;
     }
@@ -96,13 +96,18 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             
         }));
 
+
+        // get all field visits
+        $result4 = $field_agents->getAllFarmVisitsByFieldAgent($_GET["fieldagentid"]);
+        $fieldAgentFarmVisits = $result4->fetchAll(PDO::FETCH_ASSOC);
+
         echo json_encode(
             array(
                 'message' => 'Good request, no errors',
                 'response' => 'OK',
                 'response_code' => http_response_code(),
                 'farmers_info' => $farmers,
-                // 'farms' => $farms
+                'farm_visits' => $fieldAgentFarmVisits
             )
         );
     } catch (\Throwable $err) {
