@@ -309,6 +309,24 @@ class Admin
         }
     }
 
+    public function getAllWaitingList()
+    {
+        try {
+            $query = 'SELECT * FROM `waiting_list`';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllWaitingList error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     /**
      * fetch all info from this query ???
      * Or maybe just fetch more
@@ -403,7 +421,7 @@ class Admin
             // Create query // we need to specify every column we need, this just selects everything from both table
             $query = 'SELECT *, finance_application_statuses.status 
             FROM finance_applications 
-            RIGHT OUTER JOIN 
+            LEFT JOIN 
             finance_application_statuses 
             ON 
             finance_applications.id = finance_application_statuses.finance_application_id
@@ -544,6 +562,101 @@ class Admin
             return $this->database_connection->lastInsertId();
             // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
         } else {
+            return false;
+        }
+    }
+
+    public function editExistingCourse($name, $description, $courseid, $url = NULL, $mediatype = NULL)
+    {
+        try {
+            // Create query // if there is url, then there is mediatype
+            $query = 'UPDATE learning_courses 
+                SET 
+                description = :description,
+                name = :name 
+                '
+                .
+                ($mediatype ? ',mediatype = :mediatype' : '' )
+                .
+                ($url ? ',url = :url' : '' )
+                .
+                '
+                WHERE
+                id = :id
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $n = htmlspecialchars(strip_tags($name));
+            $desc = htmlspecialchars(strip_tags($description));
+            $_id = htmlspecialchars(strip_tags($courseid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':name', $n);
+            $stmt->bindParam(':description', $desc);
+            $stmt->bindParam(':id', $_id);
+            if ($mediatype) {
+                $mt = htmlspecialchars(strip_tags($mediatype));
+                $stmt->bindParam(':mediatype', $mt);
+            }
+            if ($url) {
+                $u = htmlspecialchars(strip_tags($url));
+                $stmt->bindParam(':url', $u);
+            }
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed course module update query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute course module update query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farm.php->editExistingCourse error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function editExistingModule($name, $description, $moduleid)
+    {
+        try {
+            // Create query
+            $query = 'UPDATE learning_modules 
+                SET 
+                description = :description,
+                name = :name
+                WHERE
+                id = :id
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $n = htmlspecialchars(strip_tags($name));
+            $desc = htmlspecialchars(strip_tags($description));
+            $_id = htmlspecialchars(strip_tags($moduleid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':name', $n);
+            $stmt->bindParam(':description', $desc);
+            $stmt->bindParam(':id', $_id);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed learning module update query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute learning module update query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farm.php->editExistingModule error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
