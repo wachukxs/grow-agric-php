@@ -39,7 +39,7 @@ class Admin
     }
 
 
-    public function sendMessage($_message, $_time_sent, $_from, $_to)
+    public function sendMessage($_message, $_time_sent, $_from, $_to, $farmerid)
     {
         try {
             file_put_contents('php://stderr', print_r("\n\n" . 'actually sending email' . "\n", TRUE));
@@ -48,6 +48,7 @@ class Admin
                 SET
                 _from = :_from,
                 the_message = :_the_message,
+                farmerid = :_farmerid,
                 _to = :_to,
                 time_sent = :_time_sent
             ';
@@ -58,6 +59,7 @@ class Admin
             $m = htmlspecialchars(strip_tags($_message));
             $f = htmlspecialchars(strip_tags($_from));
             $t = htmlspecialchars(strip_tags($_to));
+            $fi = htmlspecialchars(strip_tags($farmerid));
 
             $date1 = new DateTime($_time_sent); // Seems this isn't doing timezone conversion and is not accurate
             $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -68,6 +70,7 @@ class Admin
             $stmt->bindParam(':_the_message', $m);
             $stmt->bindParam(':_to', $t);
             $stmt->bindParam(':_time_sent', $d);
+            $stmt->bindParam(':_farmerid', $fi);
 
             $r = $stmt->execute();
 
@@ -142,10 +145,13 @@ class Admin
     {
         try {
             // $query = 'SELECT DISTINCT `_from` FROM `messages`';
-            $query = 'SELECT DISTINCT farmers.id, farmers.firstname, farmers.lastname, messages._from FROM `messages`
-            LEFT JOIN farmers
-            ON farmers.email = messages._from
-            WHERE messages._from NOT LIKE "%@growagric%"';
+            $query = "SELECT DISTINCT farmers.id, farmers.email, farmers.firstname, farmers.lastname 
+            -- , messages._from, messages._to 
+                        FROM `messages` ,farmers
+                        WHERE farmers.email IN (SELECT DISTINCT messages._from FROM messages WHERE messages._from NOT LIKE '%@growagric.com')
+                        OR
+                        farmers.email IN (SELECT DISTINCT messages._to FROM messages WHERE messages._to NOT LIKE '%@growagric.com')
+            ";
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -164,10 +170,12 @@ class Admin
     public function getAllFarmersWithoutMessages()
     {
         try {
-            $query = 'SELECT DISTINCT farmers.id, farmers.email, farmers.firstname, farmers.lastname, messages._from FROM `farmers`
-            LEFT JOIN messages
-            ON farmers.email = messages._from
-            WHERE messages._from IS NULL';
+            $query = "SELECT DISTINCT farmers.id, farmers.email, farmers.firstname, farmers.lastname 
+            -- , messages._from, messages._to 
+                        FROM `messages` ,farmers
+                        WHERE farmers.email NOT IN (SELECT DISTINCT messages._from FROM messages WHERE messages._from NOT LIKE '%@growagric.com')
+                        AND
+                        farmers.email NOT IN (SELECT DISTINCT messages._to FROM messages WHERE messages._to NOT LIKE '%@growagric.com')";
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);

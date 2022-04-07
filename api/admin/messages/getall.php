@@ -33,13 +33,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $result1 = $admin->getAllFarmersWithMessages();
             $theFarmers = $result1->fetchAll(PDO::FETCH_ASSOC); // the farmer's id, firstname, lastname, and email
 
-            $result2 = $admin->getAllAdminMessages();
+            $result2 = $admin->getAllAdminMessages(); // selects all from messages
             $theMessages = $result2->fetchAll(PDO::FETCH_ASSOC);
 
             for ($i = 0; $i < count($theFarmers); $i++) { // this is filtering only farmers with messages.
 
-                $_farmer_email = $theFarmers[$i]['_from'];
-    
+                $_farmer_email = $theFarmers[$i]['email'];
+                file_put_contents('php://stderr', "CHECKING messages for: " . $_farmer_email . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
                 $theFarmers[$i]['messages'] = array_values(array_filter($theMessages, function($_message) use ($_farmer_email)
                 {
                     return $_message['_from'] == $_farmer_email || $_message['_to'] == $_farmer_email;
