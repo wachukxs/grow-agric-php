@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // returns an object, $row is an object
                 $row = $doc_result->fetch(PDO::FETCH_ASSOC);
 
-                file_put_contents('php://stderr', "Uploaded farmer custom $target_path to" . getenv("GROW_AGRIC_HOST_NAME") . " as $destination_file" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', "Uploaded farmer custom document to $target_path" . getenv("GROW_AGRIC_HOST_NAME") . " as $destination_file" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
                 file_put_contents('php://stderr', "URL is as $url" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 

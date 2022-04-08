@@ -208,7 +208,8 @@ class Admin
 
             $signup_text = "Thank you for signing up on GrowAgric. Join farmers across Kenya in accessing finance, learning materials, and record keeping for your farm.";
             
-            $invitation_text = "Your friend and colleague, {farmerfriendname}, is inviting you to join GrowAgric. GrowAgric helps farmers like you across Kenya in accessing finance, learning materials, and record keeping for your farm.";
+            // work on $invitation_text
+            $invitation_text = "Hi {farmerfriendname}, {farmername} is inviting you to join GrowAgric. GrowAgric provides farmers like you with working capital, insureance, traning, record managemnt tools for your farm, and connection to bulk buyers.";
 
             $password_reset_text = "Click the <b>Reset password</b> link below to reset your password.";
 

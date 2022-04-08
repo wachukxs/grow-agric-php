@@ -21,7 +21,7 @@ $data = json_decode(file_get_contents('php://input'));
 
 */
 file_put_contents('php://stderr', print_r("\n\n[7287248===>] \n", TRUE));
-file_put_contents('php://stderr', print_r($data, TRUE));
+// file_put_contents('php://stderr', print_r($data, TRUE));
 file_put_contents('php://stderr', print_r("\n\n[37835686<===] \n", TRUE));
 
 
@@ -84,7 +84,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data->farmeridfileinput,
             $data->farmerexistinginsurancefileinput,
             $data->farmerpreviousfarmingrecordsfileinput,
-            $data->otheranimalkeptinfarm
+            $data->otheranimalkeptinfarm,
+            $data->givenfarmerthecicinsuranceformtofill
 
         );
 
@@ -105,7 +106,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 array(
                     'message' => 'Operation failed',
                     'response' => 'NOT OK',
-                    'response_code' => http_response_code()
+                    'response_code' => http_response_code(),
+                    'save_details' => $result
                 )
             );
         }

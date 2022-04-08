@@ -54,7 +54,7 @@ class Records
             file_put_contents('php://stderr', "\nfile ext is: " . $ext . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
             $new_file_name = $this->generateRandomString() . '.' . $ext; // https://stackoverflow.com/a/14600743/9259701
-            file_put_contents('php://stderr', $new_file_name, FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', "uploading new name: $new_file_name \n", FILE_APPEND | LOCK_EX);
 
             $target_path = './' . $new_file_name;
 
@@ -81,7 +81,7 @@ class Records
                     $mediaid = $this->recordUploadedMedia($url, $table, $farmerid, $row_id);
                 }
                 
-                file_put_contents('php://stderr', "Uploaded $url to" . "\n" . "\n", FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', "Uploaded as $url" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
                 return $mediaid;
             } else {
@@ -119,6 +119,8 @@ class Records
             $r = $stmt->execute();
 
             if ($r) {
+
+                file_put_contents('php://stderr', print_r('Just successfully ran recordFieldAgentFarmVisitUploadedMedia(): ' . "\n", TRUE));
                 $last_insert_id = $this->database_connection->lastInsertId();
                 return $last_insert_id;
                 // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
@@ -1338,7 +1340,7 @@ class Records
     $farmeridfileinput,
     $farmerexistinginsurancefileinput,
     $farmerpreviousfarmingrecordsfileinput,
-    $otheranimalkeptinfarm
+    $otheranimalkeptinfarm, $givenfarmerthecicinsuranceformtofill
     )
     {
         try {
@@ -1382,7 +1384,8 @@ class Records
                 doesfarmerkeeplayers = :_doesfarmerkeeplayers,
                 seenproofthatfarmerhasbuyers = :_seenproofthatfarmerhasbuyers,
                 farmerpobox = :_farmerpobox,
-                otheranimalkeptinfarm = :_otheranimalkeptinfarm
+                otheranimalkeptinfarm = :_otheranimalkeptinfarm,
+                givenfarmerthecicinsuranceformtofill = :_givenfarmerthecicinsuranceformtofill
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -1443,6 +1446,8 @@ class Records
             $sptfhb = empty($seenproofthatfarmerhasbuyers) ? NULL : htmlspecialchars(strip_tags($seenproofthatfarmerhasbuyers));
             $fpob = empty($farmerpobox) ? NULL : htmlspecialchars(strip_tags($farmerpobox));
             $oakif = empty($otheranimalkeptinfarm) ? NULL : htmlspecialchars(strip_tags($otheranimalkeptinfarm));
+
+            $gftcicftf = empty($givenfarmerthecicinsuranceformtofill) ? NULL : htmlspecialchars(strip_tags($givenfarmerthecicinsuranceformtofill));
 
             
 
@@ -1527,6 +1532,8 @@ class Records
             $stmt->bindParam(':_farmerpobox',  $fpob);
 
             $stmt->bindParam(':_otheranimalkeptinfarm',  $oakif);
+
+            $stmt->bindParam(':_givenfarmerthecicinsuranceformtofill',  $gftcicftf);
              
              
              
@@ -1559,6 +1566,8 @@ class Records
                 }
 
                 if (in_array(false, $fileuploadstatusresult, true)) {
+
+                    file_put_contents('php://stderr', print_r("\n\n\none of the uploads failed.\n\n", TRUE));
                     return false;
                 } else {
                     return $last_insert_id;
