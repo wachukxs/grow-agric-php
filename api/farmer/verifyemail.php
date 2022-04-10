@@ -48,6 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 )
              */
 
+            file_put_contents('php://stderr', print_r('using hashing ' . getenv("HASHING_ALGORITHM") . "\n\n", TRUE));
+            file_put_contents('php://stderr', print_r(getenv("HASHING_ALGORITHM"), TRUE));
+
+            file_put_contents('php://stderr', print_r("all list of available hashing algorithm \n\n", TRUE));
+            file_put_contents('php://stderr', print_r(hash_algos(), TRUE));
+            file_put_contents('php://stderr', print_r("end \n\n", TRUE));
+
 
             if ($row) {
                 

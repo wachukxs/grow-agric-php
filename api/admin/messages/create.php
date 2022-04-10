@@ -1,5 +1,5 @@
 <?php
-
+// whatttttttttttttttt?????? https://www.php.net/sockets
 // Headers
 // https://stackoverflow.com/a/17098221
 include_once '../../../config/globals/header.php';
