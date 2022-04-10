@@ -306,7 +306,7 @@ class Admin
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
-            $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ( $emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'GrowAgric Inc. Finance Application Update' : 'Hello!!' )));
+            $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ( $emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'Finance Application Update' : 'Hello!!' )));
             $mail->Body = $this->getEmailTemplateHTML($firstname, $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
@@ -441,7 +441,7 @@ class Admin
             // Create query // we need to specify every column we need, this just selects everything from both table
             $query = 'SELECT *, finance_application_statuses.status 
             FROM finance_applications 
-            LEFT JOIN 
+            RIGHT JOIN -- not LEFT, cause we want only fin applications that got their status inserted by the triggers
             finance_application_statuses 
             ON 
             finance_applications.id = finance_application_statuses.finance_application_id
