@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // loop through // once done, mark as used
                 foreach ($row as $key => $value) {
                     file_put_contents('php://stderr', print_r($value, TRUE));
-                    if (hash(getenv("HASHING_ALGORITHM"), $value['request_id']) == $data->requestid) {
+                    if (hash(hash_algos()[29], $value['request_id']) == $data->requestid) {
                         $it = $value;
                         break;
                     }

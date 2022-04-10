@@ -48,8 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 )
              */
 
-            file_put_contents('php://stderr', print_r('using hashing ' . getenv("HASHING_ALGORITHM") . "\n\n", TRUE));
-            file_put_contents('php://stderr', print_r(getenv("HASHING_ALGORITHM"), TRUE));
+            file_put_contents('php://stderr', print_r('using hashing ' . hash_algos()[29] . "\n\n", TRUE));
+            file_put_contents('php://stderr', print_r(hash_algos()[29], TRUE));
 
             file_put_contents('php://stderr', print_r("all list of available hashing algorithm \n\n", TRUE));
             file_put_contents('php://stderr', print_r(hash_algos(), TRUE));
@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
                 // ger cta link, in this case, password reset link
-                $cta_link = getenv("PROD_BASE_URL") . "/" . "password-reset" . "/" . $row['email'] . "/" . hash(getenv("HASHING_ALGORITHM"), $requestid);
+                $cta_link = getenv("PROD_BASE_URL") . "/" . "password-reset" . "/" . $row['email'] . "/" . hash(hash_algos()[29], $requestid);
 
                 // sending email
                 $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, $cta_link);
