@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $row = $result->fetch(PDO::FETCH_ASSOC);
 
             /**
+             * $row should be
              * Array
                 (
                     [id] => 1
@@ -47,11 +48,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 )
              */
 
-            file_put_contents('php://stderr', print_r("what is row farmerid: " . $row['id'] . "\n\n", TRUE));
-
-            file_put_contents('php://stderr', print_r($row, TRUE));
 
             if ($row) {
+                
+                file_put_contents('php://stderr', print_r("what is row farmerid: " . $row['id'] . "\n\n", TRUE));
+
+                file_put_contents('php://stderr', print_r($row, TRUE));
                 
                 // create reset password request, then send reset password email
                 $requestid = $farmer->createNewFarmerPasswordResetRequest($row['id']);
@@ -74,8 +76,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // 'result' => $row
                     )
                 );
+            } else {
+                http_response_code(400);
+                echo json_encode(
+                    array(
+                        'message' => 'Verification failed',
+                        'response' => 'NOT OK',
+                        'response_code' => http_response_code()
+                    )
+                );
             }
         } else {
+            http_response_code(400);
             echo json_encode(
                 array(
                     'message' => 'Verification returned false',
