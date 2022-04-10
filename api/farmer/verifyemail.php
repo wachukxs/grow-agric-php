@@ -28,32 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $farmer->getFarmerByEmail($data->email);
         if ($result) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
-
-            /**
-             * $row should be
-             * Array
-                (
-                    [id] => 1
-                    [firstname] => Nwachukwu
-                    [lastname] => Ossai
-                    [middlename] => 
-                    [email] => nwachukwuossai@gmail.com
-                    [phonenumber] => 0115335593
-                    [password] => pass
-                    [timejoined] => 2021-09-30 19:54:15
-                    [highesteducationallevel] => Secondary school
-                    [maritalstatus] => Widowed
-                    [age] => 20
-                    [yearsofexperience] => 1
-                )
-             */
-
-            file_put_contents('php://stderr', print_r('using hashing ' . hash_algos()[29] . "\n\n", TRUE));
-            file_put_contents('php://stderr', print_r(hash_algos()[29], TRUE));
-
-            file_put_contents('php://stderr', print_r("all list of available hashing algorithm \n\n", TRUE));
-            file_put_contents('php://stderr', print_r(hash_algos(), TRUE));
-            file_put_contents('php://stderr', print_r("end \n\n", TRUE));
+            // delete password
+            unset($row["password"]);
 
 
             if ($row) {
@@ -73,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $cta_link = getenv("PROD_BASE_URL") . "/" . "password-reset" . "/" . $row['email'] . "/" . hash(hash_algos()[29], $requestid);
 
                 // sending email
-                $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, $cta_link);
+                $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, NULL, $cta_link);
 
                 echo json_encode(
                     array(

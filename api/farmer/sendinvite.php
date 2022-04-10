@@ -37,33 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             
         }
-        
-
-        /**
-         * Array
-            (
-                [0] => stdClass Object
-                    (
-                        [invitedfullname] => Nwachukwu Ossai
-                        [invitedemail] => nwachukwuossai@gmail.com
-                        [invitedphonenumber] => +254115335593
-                        [invitedbyfarmerid]: [this.farmerDetails.personalInfo.id],
-                        [invitedbyfarmerfullname]: 
-                    )
-
-                [1] => stdClass Object
-                    (
-                        [invitedfullname] => Nwachukwu Ossai
-                        [invitedemail] => nwachukwuossai@gmail.com
-                        [invitedphonenumber] => +254115335593
-                        [invitedbyfarmerid]: [this.farmerDetails.personalInfo.id],
-                        [invitedbyfarmerfullname]: 
-                    )
-
-            )
-         */
-
-
 
         echo json_encode(
             array(

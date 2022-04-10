@@ -31,6 +31,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $row["updated_data"] = $result1->fetch(PDO::FETCH_ASSOC);
 
+            $result2 = $finance->getFarmerEmailAndFirstnameFromFinanceApplicationID($data->finance_application_id);
+            $farmerRow = $result2->fetch(PDO::FETCH_ASSOC);
+
+            file_put_contents('php://stderr', "\ndate of creation " . $farmerRow['created_on'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+
+            // send email
+            $admin->sendMail($farmerRow['firstname'], Emailing::FINANCE_APPLICATION_UPDATE, $farmerRow['email'], NULL, NULL, NULL, $farmerRow['created_on']);
+
             http_response_code();
             echo json_encode($row);
         } else {

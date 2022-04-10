@@ -191,7 +191,7 @@ class Finance
             // Create query
         $query = 'SELECT * 
             FROM finance_applications 
-            RIGHT OUTER JOIN 
+            LEFT JOIN 
             finance_application_statuses 
             ON 
             finance_applications.id = finance_application_statuses.finance_application_id
@@ -213,5 +213,30 @@ class Finance
             file_put_contents('php://stderr', print_r('ERROR running Finance.php -> selectSingleFinanceRegistrationStatusByID(): ' . $err->getMessage() . "\n", TRUE));
             return $err;
         }
+    }
+
+    public function getFarmerEmailAndFirstnameFromFinanceApplicationID($fin_app_id)
+    {
+        try {
+            $query = "SELECT farmers.firstname, farmers.email, DATE_FORMAT(finance_applications.created_on, '%W the %D of %M %Y') AS created_on FROM `finance_applications`
+                        LEFT JOIN farmers
+                        ON farmers.id = finance_applications.farmerid
+                        WHERE finance_applications.id = ?
+            ";
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->bindParam(1, $fin_app_id);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
     }
 }

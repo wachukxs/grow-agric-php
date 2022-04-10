@@ -1,4 +1,5 @@
 <?php
+    # can open http://localhost:8888/grow-agric-php/
     require "vendor/autoload.php";
 
     $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__); // https://github.com/vlucas/phpdotenv#putenv-and-getenv

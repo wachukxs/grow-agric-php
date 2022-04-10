@@ -193,7 +193,7 @@ class Admin
 
     
 
-    public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL)
+    public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL)
     {
         /**
          * include their emails for easy logins?
@@ -209,9 +209,12 @@ class Admin
             $signup_text = "Thank you for signing up on GrowAgric. Join farmers across Kenya in accessing finance, learning materials, and record keeping for your farm.";
             
             // work on $invitation_text
-            $invitation_text = "Hi {farmerfriendname}, {farmername} is inviting you to join GrowAgric. GrowAgric provides farmers like you with working capital, insureance, traning, record managemnt tools for your farm, and connection to bulk buyers.";
+            $invitation_text = "Hi {farmerfriendname}, {fullname} is inviting you to join GrowAgric. GrowAgric provides farmers like you with working capital, insureance, traning, record managemnt tools for your farm, and connection to bulk buyers.";
 
             $password_reset_text = "Click the <b>Reset password</b> link below to reset your password.";
+
+
+            $finance_application_status_update_text = "There is an update to the finance application you made on {dateoffinanceapplication}. Please log in and navigate to 'Register for Finance' to see your application status under 'Finance Registration History'";
 
             $login_cta_text = "Login";
             $signup_cta_text = "Verify email";
@@ -241,7 +244,15 @@ class Admin
                 $emailbody = str_replace("{cta}", $reset_password_cta, $emailbody);
 
                 // -- get reset password link
+                $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
+            } else if ($emailtype == Emailing::FINANCE_APPLICATION_UPDATE) {
+                $emailbody = str_replace("{body}", $finance_application_status_update_text, $email_template);
+                $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
 
+                $emailbody = str_replace("{dateoffinanceapplication}", $date_of_finance_application, $emailbody);
+
+                $emailbody = str_replace("{cta}", $login_cta_text, $emailbody);
+                
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             }
             
@@ -260,7 +271,7 @@ class Admin
     /**
      * needs refactoring : either do separate methods for emailing different scenarios: or do if checks to make sure the correct data is provided for each scenarios
      */
-    public function sendMail($firstname, $emailtype, $sendtoemail, $invitedby = NULL, $lastname = NULL, $fullname = NULL, $cta_link = "https://farmers.growagric.com")
+    public function sendMail($firstname, $emailtype, $sendtoemail, $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL, $cta_link = "https://farmers.growagric.com")
     {
         //Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
@@ -295,8 +306,8 @@ class Admin
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
-            $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ( $emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ( $emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : 'Hello!!' ));
-            $mail->Body = $this->getEmailTemplateHTML($firstname, $emailtype, $cta_link, $invitedby, $lastname, $fullname); // 'This is the HTML message body <b>in bold!</b>';
+            $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ( $emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'GrowAgric Inc. Finance Application Update' : 'Hello!!' )));
+            $mail->Body = $this->getEmailTemplateHTML($firstname, $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             if ($mail->send()) {
