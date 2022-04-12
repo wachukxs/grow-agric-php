@@ -463,14 +463,12 @@ class Farmer {
 
             file_put_contents('php://stderr', print_r('Seeing farmed items ' . "\n", TRUE));
 
-            file_put_contents('php://stderr', print_r($farmeditems));
-
             // Ensure safe data
             $fn = htmlspecialchars(strip_tags($fullname));
             $fi = htmlspecialchars(strip_tags($farmeditems)); // implode(',', get_object_vars($farmeditems))
             $e = htmlspecialchars(strip_tags($email));
 
-            $ph = htmlspecialchars(strip_tags($phonenumber)); // implode(',', get_object_vars($farmeditems))
+            $ph = htmlspecialchars(strip_tags($phonenumber));
             $cl = htmlspecialchars(strip_tags($countrylocation));
 
             // Bind parameters to prepared stmt
