@@ -20,15 +20,19 @@ file_put_contents('php://stderr', print_r("Trying to add farmer to wait list\n",
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($data->fullname, $data->email, $data->farmeditems)
+    if (isset($data->fullname, $data->email, $data->farmeditems, $data->phonenumber, $data->countrylocation)
     &&
     !empty($data->fullname)
     &&
     !empty($data->farmeditems)
     &&
     !empty($data->email)
+    &&
+    !empty($data->phonenumber)
+    &&
+    !empty($data->countrylocation)
 ) {
-    $result = $farmer->addToWaitingList($data->fullname, $data->email, $data->farmeditems);
+    $result = $farmer->addToWaitingList($data->fullname, $data->email, $data->farmeditems, $data->phonenumber, $data->countrylocation);
     echo json_encode(
         array(
             'message' => 'Farmer added to wait list',

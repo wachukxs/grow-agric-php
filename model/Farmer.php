@@ -447,13 +447,15 @@ class Farmer {
     }
 
 
-    public function addToWaitingList($fullname, $email, $farmeditems) {
+    public function addToWaitingList($fullname, $email, $farmeditems, $phonenumber, $countrylocation) {
         try {
             $query = 'INSERT INTO waiting_list' . '
                 SET
                 fullname = :full_name,
                 farmeditems = :farmed_items,
-                email = :_email
+                email = :_email,
+                phonenumber = :phonenumber,
+                countrylocation = :countrylocation
             ';
 
             // Prepare the query statement
@@ -468,10 +470,15 @@ class Farmer {
             $fi = htmlspecialchars(strip_tags($farmeditems)); // implode(',', get_object_vars($farmeditems))
             $e = htmlspecialchars(strip_tags($email));
 
+            $ph = htmlspecialchars(strip_tags($phonenumber)); // implode(',', get_object_vars($farmeditems))
+            $cl = htmlspecialchars(strip_tags($countrylocation));
+
             // Bind parameters to prepared stmt
             $stmt->bindParam(':full_name', $fn);
             $stmt->bindParam(':farmed_items', $fi);
             $stmt->bindParam(':_email', $e);
+            $stmt->bindParam(':phonenumber', $ph);
+            $stmt->bindParam(':countrylocation', $cl);
             
             $r = $stmt->execute(); // returns true/false
             if ($r) {
