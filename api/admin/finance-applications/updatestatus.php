@@ -14,7 +14,7 @@ include_once '../../../model/Finance.php';
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
-// Instantiate Course object
+// Instantiate Admin n Finance object
 $admin = new Admin($a_database_connection);
 $finance = new Finance($a_database_connection);
 
@@ -35,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $farmerRow = $result2->fetch(PDO::FETCH_ASSOC);
 
             file_put_contents('php://stderr', "\ndate of creation " . $farmerRow['created_on'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
-
 
             // send email
             $admin->sendMail($farmerRow['firstname'], Emailing::FINANCE_APPLICATION_UPDATE, $farmerRow['email'], NULL, NULL, NULL, $farmerRow['created_on']);

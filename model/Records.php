@@ -172,16 +172,15 @@ class Records
     }
 
     // Create new chicken input record, an entry
-    public function createChickenInputRecord($farmid, $chicken_supplier, $other_chicken_supplier, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
+    public function createChickenInputRecord($farmid, $chicken_supplier, $other_chicken_supplier, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
     {
         try {
             $query = 'INSERT INTO inputs_records_chicken 
                 SET
-                farm_id = :_farmid,
+                farmid = :_farmid,
                 chicken_supplier = :_chickensupplier,
                 other_chicken_supplier = :_otherchickensupplier,
                 farmerid = :_farmerid,
-                input_type = :_inputtype,
                 notes = :_notes,
                 price = :_price,
                 purchase_date = :_purchasedate,
@@ -194,7 +193,6 @@ class Records
             $frmid = htmlspecialchars(strip_tags($farmid));
             $cs = htmlspecialchars(strip_tags($chicken_supplier));
             $ocs = htmlspecialchars(strip_tags($other_chicken_supplier));
-            $it = htmlspecialchars(strip_tags($input_type));
             $n = htmlspecialchars(strip_tags($notes));
             $p = htmlspecialchars(strip_tags(str_replace(',', '', $price)));
 
@@ -208,7 +206,6 @@ class Records
             $stmt->bindParam(':_chickensupplier', $cs);
             $stmt->bindParam(':_otherchickensupplier', $ocs);
             $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_inputtype', $it);
             $stmt->bindParam(':_notes', $n);
             $stmt->bindParam(':_price', $p);
             $stmt->bindParam(':_purchasedate', $pd);
@@ -273,18 +270,17 @@ class Records
 
 
     // Create new feeds input record, an entry
-    public function createFeedsInputRecord($farmid, $feed_supplier, $other_feed_supplier, $feed_type, $input_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
+    public function createFeedsInputRecord($farmid, $feed_supplier, $other_feed_supplier, $feed_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
     {
 
         try {
             $query = 'INSERT INTO inputs_records_feeds 
                 SET
-                farm_id = :_farmid,
+                farmid = :_farmid,
                 feed_supplier = :_feedsupplier,
                 other_feed_supplier = :_other_feed_supplier,
                 feed_type = :_feedtype,
                 farmerid = :_farmerid,
-                input_type = :_inputtype,
                 notes = :_notes,
                 price = :_price,
                 purchase_date = :_purchasedate,
@@ -298,7 +294,6 @@ class Records
             $fs = htmlspecialchars(strip_tags($feed_supplier));
             $ofs = htmlspecialchars(strip_tags($other_feed_supplier));
             $ft = htmlspecialchars(strip_tags($feed_type));
-            $it = htmlspecialchars(strip_tags($input_type));
             $n = htmlspecialchars(strip_tags($notes));
             $p = htmlspecialchars(strip_tags(str_replace(',', '', $price)));
 
@@ -313,7 +308,6 @@ class Records
             $stmt->bindParam(':_other_feed_supplier', $ofs);
             $stmt->bindParam(':_feedtype', $ft);
             $stmt->bindParam(':_farmerid', $fi);
-            $stmt->bindParam(':_inputtype', $it);
             $stmt->bindParam(':_notes', $n);
             $stmt->bindParam(':_price', $p);
             $stmt->bindParam(':_purchasedate', $pd);
@@ -1105,7 +1099,7 @@ class Records
         return $stmt;
     }
 
-    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $disease, $vet_name, $farmid, $farmerid, $documents)
+    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $otherdiagonsis, $disease, $vet_name, $farmid, $farmerid, $documents)
     {
         try {
             // date can be auto filled in db though
@@ -1117,7 +1111,8 @@ class Records
                 disease = :_disease,
                 vet_name = :_vet_name,
                 farmid = :_farmid,
-                farmerid = :_farmerid
+                farmerid = :_farmerid,
+                otherdiagonsis = :_otherdiagonsis 
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -1127,6 +1122,7 @@ class Records
             $fid = htmlspecialchars(strip_tags($farmid));
             $n = htmlspecialchars(strip_tags($notes));
             $dia = htmlspecialchars(strip_tags($diagonsis));
+            $odia = htmlspecialchars(strip_tags($otherdiagonsis));
 
             $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
             $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -1138,6 +1134,7 @@ class Records
             $stmt->bindParam(':_farmerid', $fi);
             $stmt->bindParam(':_notes', $n);
             $stmt->bindParam(':_diagonsis', $dia);
+            $stmt->bindParam(':_otherdiagonsis', $odia);
             $stmt->bindParam(':_disease', $dis);
             $stmt->bindParam(':_vet_name', $vn);
             $stmt->bindParam(':_farmid', $fid);

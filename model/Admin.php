@@ -216,6 +216,29 @@ class Admin
 
             $finance_application_status_update_text = "There is an update to the finance application you made on {dateoffinanceapplication}. Please log in and navigate to 'Register for Finance' to see your application status under 'Finance Registration History'";
 
+            $finance_application_submission_text = "<p>
+            Thanks for applying for finance (on {dateoffinanceapplication}) with GrowAgric Inc.
+          </p>
+          <p>
+            A member of our team will provide you with an update on your application shortly.
+          </p>
+          <p>In the interim, you can:</p>
+          <ul class='offered-actions'>
+            <li>
+              <a target='_blank' href='https://farmers.growagric.com/dashboard/learning'>Access training materials</a>
+            </li>
+            <li>
+              <a target='_blank' href='https://farmers.growagric.com/dashboard/records'>
+                Add\Update your farm records
+              </a>
+            </li>
+            <li>
+              <a target='_blank' href='https://farmers.growagric.com/dashboard'>
+                Go to your Dashboard
+              </a>
+            </li>
+          </ul>";
+
             $login_cta_text = "Login";
             $signup_cta_text = "Verify email";
             $invite_cta_text = "Sign up now";
@@ -252,6 +275,15 @@ class Admin
                 $emailbody = str_replace("{dateoffinanceapplication}", $date_of_finance_application, $emailbody);
 
                 $emailbody = str_replace("{cta}", $login_cta_text, $emailbody);
+                
+                $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
+            } else if ($emailtype == Emailing::FINANCE_APPLICATION_SUBMISSION) { // we should be checking if the string we want to replace exists
+                $emailbody = str_replace("{body}", $finance_application_submission_text, $email_template);
+                $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
+
+                $emailbody = str_replace("{dateoffinanceapplication}", $date_of_finance_application, $emailbody); // should we include the date they applied???
+
+                $emailbody = str_replace("{cta}", "Or $login_cta_text", $emailbody);
                 
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             }
