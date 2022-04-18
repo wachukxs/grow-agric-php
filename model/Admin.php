@@ -39,10 +39,10 @@ class Admin
     }
 
 
-    public function sendMessage($_message, $_time_sent, $_from, $_to, $farmerid)
+    public function sendMessage($_message, $_time_sent, $_from, $_to, $farmerid, $subject)
     {
         try {
-            file_put_contents('php://stderr', print_r("\n\n" . 'actually sending email' . "\n", TRUE));
+            file_put_contents('php://stderr', print_r("\n\n" . 'recording a message' . "\n", TRUE));
 
             $query = 'INSERT INTO `messages`
                 SET
@@ -50,6 +50,7 @@ class Admin
                 the_message = :_the_message,
                 farmerid = :_farmerid,
                 _to = :_to,
+                subject = :_subject,
                 time_sent = :_time_sent
             ';
 
@@ -60,6 +61,7 @@ class Admin
             $f = htmlspecialchars(strip_tags($_from));
             $t = htmlspecialchars(strip_tags($_to));
             $fi = htmlspecialchars(strip_tags($farmerid));
+            $s = htmlspecialchars(strip_tags($subject));
 
             $date1 = new DateTime($_time_sent); // Seems this isn't doing timezone conversion and is not accurate
             $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -71,6 +73,7 @@ class Admin
             $stmt->bindParam(':_to', $t);
             $stmt->bindParam(':_time_sent', $d);
             $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_subject', $s);
 
             $r = $stmt->execute();
 
@@ -100,7 +103,7 @@ class Admin
 
             // we should be escaping farmerid
         
-            $query = 'SELECT * FROM `messages` WHERE `_from` = :farmeremail OR `_to` = :farmeremail';
+            $query = 'SELECT subject, messages.* FROM `messages` WHERE `_from` = :farmeremail OR `_to` = :farmeremail';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);

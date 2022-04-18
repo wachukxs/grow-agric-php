@@ -40,7 +40,6 @@ try {
     $saved_courses = $farmer->getSavedCoursesForFarmer($_GET["farmerid"]);
     $row1["saved_courses"] = $saved_courses->fetchAll(PDO::FETCH_ASSOC);
 
-
     $result = array_merge($row1, $row2);
     echo json_encode($result);
 } catch (\Throwable $err) {

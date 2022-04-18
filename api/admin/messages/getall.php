@@ -28,7 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         if (isset($_GET["farmeremail"])) {
             $result1 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
 
+            $result2 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
+
             $row["messages"] = $result1->fetchAll(PDO::FETCH_ASSOC); //
+            $row["_messages"] = $result2->fetchAll(PDO::FETCH_GROUP);
         } else {
             $result1 = $admin->getAllFarmersWithMessages();
             $theFarmers = $result1->fetchAll(PDO::FETCH_ASSOC); // the farmer's id, firstname, lastname, and email

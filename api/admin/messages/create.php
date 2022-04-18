@@ -21,7 +21,7 @@ file_put_contents('php://stderr', print_r('Trying to create and send message' . 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (
-        isset($data->farmerid, $data->message, $data->to, $data->from)
+        isset($data->farmerid, $data->message, $data->to, $data->from, $data->subject)
         &&
         !empty($data->message)
         &&
@@ -29,11 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         &&
         !empty($data->from)
         &&
+        !empty($data->subject)
+        &&
         !empty($data->farmerid)
     ) {
 
         // try to check their credentials
-        $result = $admin->sendMessage($data->message, $data->timesent, $data->from, $data->to, $data->farmerid);
+        $result = $admin->sendMessage($data->message, $data->timesent, $data->from, $data->to, $data->farmerid, $data->subject);
 
         if ($result) {
             
