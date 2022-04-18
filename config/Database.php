@@ -43,7 +43,7 @@
             } catch (PDOException $e) {
                 file_put_contents('php://stderr', print_r('Connection Error:' . $e->getMessage() . "\n", TRUE));
             } catch (Throwable $th) {
-                file_put_contents('php://stderr', print_r($th->getMessage() . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Another Connection Error:' . $th->getMessage() . "\n", TRUE));
                 throw $th;
             }
 
