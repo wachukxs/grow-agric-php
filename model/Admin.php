@@ -152,9 +152,14 @@ class Admin
             LEFT JOIN farmers
             ON messages.farmerid = farmers.id
             
-            WHERE farmers.email IN (SELECT DISTINCT messages._from FROM messages WHERE messages._from NOT LIKE '%@growagric.com')
-            OR
-            farmers.email IN (SELECT DISTINCT messages._to FROM messages WHERE messages._to NOT LIKE '%@growagric.com')";
+            WHERE 
+            (
+                farmers.email IN (SELECT DISTINCT messages._from FROM messages WHERE messages._from NOT LIKE '%@growagric.com')
+                OR
+                farmers.email IN (SELECT DISTINCT messages._to FROM messages WHERE messages._to NOT LIKE '%@growagric.com')
+            )
+            ORDER BY messages.time_sent ASC
+            ";
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -475,7 +480,11 @@ class Admin
         try {
             // Create query // we need to specify every column we need, this just selects everything from both table
             $query = '
-                SELECT * FROM `messages` WHERE `id` = :id
+            SELECT farmers.email, farmers.firstname, farmers.lastname, messages.*
+            FROM `messages` 
+            LEFT JOIN farmers
+            ON messages.farmerid = farmers.id
+            WHERE messages.`id` = :id
             ';
 
             // Prepare statement

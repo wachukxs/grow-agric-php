@@ -4,6 +4,9 @@
 
 // Headers
 // https://stackoverflow.com/a/17098221
+
+use function PHPSTORM_META\type;
+
 include_once '../../../config/globals/header.php';
 
 // Resources
@@ -57,18 +60,37 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
             
 
+            $_d = array();
+            // https://stackoverflow.com/a/7575010/9259701
             foreach ($_f as $_key => $_item) {
-                $arr = array();
                 foreach ($_item as $key => $item) {
-                    file_put_contents('php://stderr', print_r("\n\n" . 'filtering' . "key: $key\n", TRUE));
-                    file_put_contents('php://stderr', print_r($_item, TRUE));
-                    $arr[$item['subject']][$key] = $item;
+                    $_d[$_key][$item['subject']][$key+1] = $item;
                 }
-                $_f[$_key] = $arr;
             }
 
 
-            $row["_messages"] = $_f;
+            $row["_messages"] = $_d; // de-commisioned ... we should delete
+
+
+
+            $result4 = $admin->getAllFarmersWithMessagesV2();
+            $_h = $result4->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC);
+
+            $_n = array();
+            foreach ($_h as $_key => $_item) {
+                foreach ($_item as $key => $item) {
+                    $_n[$_key][$item['subject']][$key] = $item;
+                }
+
+                foreach ($_n as $_key => $_item) { // clearning it up
+                    foreach ($_item as $key => $item) {
+                        $_n[$_key][$key] = array_values($item); // make it an array for FrontEnd
+                    }
+                    
+                }
+            }
+            
+            $row["new_messages"] = $_n;
 
             $result0 = $admin->getAllFarmersWithoutMessages();
             $row["no_messages"] = $result0->fetchAll(PDO::FETCH_ASSOC);
