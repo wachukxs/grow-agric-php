@@ -25,14 +25,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $row = array();
         $result1;
 
-        if (isset($_GET["farmeremail"])) {
+        if (isset($_GET["farmeremail"])) { // for farmers
             $result1 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
 
             $result2 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
 
             $row["messages"] = $result1->fetchAll(PDO::FETCH_ASSOC); //
             $row["_messages"] = $result2->fetchAll(PDO::FETCH_GROUP);
-        } else {
+        } else { // for admin
             $result1 = $admin->getAllFarmersWithMessages();
             $theFarmers = $result1->fetchAll(PDO::FETCH_ASSOC); // the farmer's id, firstname, lastname, and email
 
@@ -51,6 +51,24 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             }
 
             $row["messages"] = $theFarmers;
+
+            $result3 = $admin->getAllFarmersWithMessagesV2();
+            $_f = $result3->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC|PDO::FETCH_GROUP); // grouped by farmerid, and subject
+
+            
+
+            foreach ($_f as $_key => $_item) {
+                $arr = array();
+                foreach ($_item as $key => $item) {
+                    file_put_contents('php://stderr', print_r("\n\n" . 'filtering' . "key: $key\n", TRUE));
+                    file_put_contents('php://stderr', print_r($_item, TRUE));
+                    $arr[$item['subject']][$key] = $item;
+                }
+                $_f[$_key] = $arr;
+            }
+
+
+            $row["_messages"] = $_f;
 
             $result0 = $admin->getAllFarmersWithoutMessages();
             $row["no_messages"] = $result0->fetchAll(PDO::FETCH_ASSOC);
