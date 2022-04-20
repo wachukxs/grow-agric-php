@@ -59,12 +59,27 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $_f = $result3->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_ASSOC|PDO::FETCH_GROUP); // grouped by farmerid, and subject
 
             
-
             $_d = array();
             // https://stackoverflow.com/a/7575010/9259701
             foreach ($_f as $_key => $_item) {
+                $_d[$_key]['no_of_unreads'] = 0;
                 foreach ($_item as $key => $item) {
-                    $_d[$_key][$item['subject']][$key+1] = $item;
+                    $_d[$_key]['messages'][$item['subject']]['msgs'][$key+1] = $item;
+                    
+
+                    if ($item['message_seen_by_recipient'] == false || $item['time_read'] == NULL) {
+                        $_d[$_key]['no_of_unreads'] = $_d[$_key]['no_of_unreads'] + 1;
+
+                        if (array_key_exists('unreads', $_d[$_key]['messages'][$item['subject']])) {
+                            $_d[$_key]['messages'][$item['subject']]['unreads'] = $_d[$_key]['messages'][$item['subject']]['unreads'] + 1 ;
+                        } else {
+                            $_d[$_key]['messages'][$item['subject']]['unreads'] = 1;
+                        }
+                    } else {
+                        if (!array_key_exists('unreads', $_d[$_key]['messages'][$item['subject']])) {
+                            $_d[$_key]['messages'][$item['subject']]['unreads'] = 0;
+                        }
+                    }
                 }
             }
 

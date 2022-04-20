@@ -226,7 +226,6 @@ class Admin
     }
 
     
-
     public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL)
     {
         /**
@@ -706,7 +705,7 @@ class Admin
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Farm.php->editExistingCourse error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->editExistingCourse error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -746,7 +745,7 @@ class Admin
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Farm.php->editExistingModule error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->editExistingModule error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -830,6 +829,54 @@ class Admin
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('Admin.php->getAllCourses error: ' . $err->getMessage() . "\n", TRUE));
             return $err;
+        }
+    }
+
+    public function updateReadReceipts($subject, $farmerid, $timeread)
+    {
+        try {
+            // Create query
+            $query = 'UPDATE messages 
+                SET 
+                message_seen_by_recipient = true,
+                time_read = :_time_read
+                WHERE
+                message_seen_by_recipient = false
+                AND
+                time_read IS NULL
+                AND
+                subject = :_subject
+                AND
+                farmerid = :_farmerid
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $s = htmlspecialchars(strip_tags($subject));
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            $date1 = new DateTime($timeread); // Seems this isn't doing timezone conversion and is not accurate
+            $tr = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_time_read', $tr);
+            $stmt->bindParam(':_subject', $s);
+            $stmt->bindParam(':_farmerid', $fid);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed message receipts read update query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute message receipts read update query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Admin.php->updateReadReceipts error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
         }
     }
 }
