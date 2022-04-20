@@ -45,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             for ($i = 0; $i < count($theFarmers); $i++) { // this is filtering only farmers with messages.
 
                 $_farmer_email = $theFarmers[$i]['email'];
-                file_put_contents('php://stderr', "CHECKING messages for: " . $_farmer_email . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
                 $theFarmers[$i]['messages'] = array_values(array_filter($theMessages, function($_message) use ($_farmer_email)
                 {
@@ -93,13 +92,39 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
             $_n = array();
             foreach ($_h as $_key => $_item) {
+                $_n[$_key]['no_of_unreads'] = 0;
                 foreach ($_item as $key => $item) {
-                    $_n[$_key][$item['subject']][$key] = $item;
+                    $_n[$_key]['messages'][$item['subject']]['msgs'][$key] = $item;
+
+                    file_put_contents('php://stderr', "-whyyyyyy are we not seeing this " . $item['_to'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+                    if (($item['message_seen_by_recipient'] == false || $item['time_read'] == NULL) && stripos($item['_to'], "@growagric.com")) { // and _to fields does have @growagric
+                        $_n[$_key]['no_of_unreads'] = $_n[$_key]['no_of_unreads'] + 1;
+
+                        if (array_key_exists('unreads', $_n[$_key]['messages'][$item['subject']])) {
+                            $_n[$_key]['messages'][$item['subject']]['unreads'] = $_n[$_key]['messages'][$item['subject']]['unreads'] + 1 ;
+                        } else {
+                            $_n[$_key]['messages'][$item['subject']]['unreads'] = 1;
+                        }
+                    } else {
+                        if (!array_key_exists('unreads', $_n[$_key]['messages'][$item['subject']])) {
+                            $_n[$_key]['messages'][$item['subject']]['unreads'] = 0;
+                        }
+                    }
                 }
 
                 foreach ($_n as $_key => $_item) { // clearning it up
                     foreach ($_item as $key => $item) {
-                        $_n[$_key][$key] = array_values($item); // make it an array for FrontEnd
+
+                        if ($key == "messages") {
+
+                            foreach ($item as $key_ => $item_) {
+
+                                $_n[$_key]['messages'][$key_]['msgs'] = array_values($_n[$_key]['messages'][$key_]['msgs']); // make it an array for FrontEnd
+
+                            }
+                        }
+   
                     }
                     
                 }
