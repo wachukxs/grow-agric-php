@@ -247,9 +247,9 @@ class Admin
             $password_reset_text = "Click the <b>Reset password</b> link below to reset your password.";
 
 
-            $finance_application_status_update_text = "There is an update to the finance application you made on {dateoffinanceapplication}. Please log in and navigate to 'Register for Finance' to see your application status under 'Finance Registration History'";
+            $finance_application_status_update_text = "There is an update to the finance application you made on {dateoffinanceapplication}. Please log in and navigate to 'Register for Finance' to see your application status under 'Finance Registration History'.";
 
-            $new_admin_message_update_text = "You've been sent a new message. Please log in and navigate to 'Messages' to see the message";
+            $new_admin_message_update_text = "You've been sent a new message. Please log in and navigate to 'Messages' to see the message.";
 
 
             $finance_application_submission_text = "
