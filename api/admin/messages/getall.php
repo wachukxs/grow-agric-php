@@ -29,12 +29,46 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $result1;
 
         if (isset($_GET["farmeremail"])) { // for farmers
+
+            // unused ... depreciated
+            // $result2 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
+            // $row["_messages"] = $result2->fetchAll(PDO::FETCH_GROUP);
+
+            
             $result1 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
 
-            $result2 = $admin->getAllFarmerMessages($_GET["farmeremail"]);
+            $_r = $result1->fetchAll(PDO::FETCH_GROUP); //
+            $_q = array();
+            $_q['no_of_unreads'] = 0;
 
-            $row["messages"] = $result1->fetchAll(PDO::FETCH_ASSOC); //
-            $row["_messages"] = $result2->fetchAll(PDO::FETCH_GROUP);
+            foreach ($_r as $_key => $_item) {
+                $_q['msgs'][$_key]['messages'] = $_item;
+
+                foreach ($_item as $key => $item) {
+    
+                    // file_put_contents('php://stderr', "-whyyyyyy are we not seeing this " . "\n" . "\n", FILE_APPEND | LOCK_EX);
+    
+                    // file_put_contents('php://stderr', print_r($item, TRUE) , FILE_APPEND | LOCK_EX);
+    
+                    if (($item['message_seen_by_recipient'] == false || $item['time_read'] == NULL) && stripos($item['_from'], "@growagric.com")) { // and _from fields does have @growagric
+                        $_q['no_of_unreads'] = $_q['no_of_unreads'] + 1;
+    
+                        if (array_key_exists('unreads', $_q['msgs'][$_key])) {
+                            $_q['msgs'][$_key]['unreads'] = $_q['msgs'][$_key]['unreads'] + 1 ;
+                        } else {
+                            $_q['msgs'][$_key]['unreads'] = 1;
+                        }
+                    } else {
+                        if (!array_key_exists('unreads', $_q['msgs'][$_key])) {
+                            $_q['msgs'][$_key]['unreads'] = 0;
+                        }
+                    }
+                }
+            }
+            
+
+
+            $row["messages"] = $_q;
         } else { // for admin
             $result1 = $admin->getAllFarmersWithMessages();
             $theFarmers = $result1->fetchAll(PDO::FETCH_ASSOC); // the farmer's id, firstname, lastname, and email
