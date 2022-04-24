@@ -75,7 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                     );
 
                     // send the farmer an email.
-                    $admin->sendMail($firstname, Emailing::SIGNUP, $email);
+                    if (getenv("CURR_ENV") == "production") {
+                        $admin->sendMail($firstname, Emailing::SIGNUP, $email);
+                    }
 
                     echo json_encode(
                         array(

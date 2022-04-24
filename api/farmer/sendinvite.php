@@ -32,7 +32,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 file_put_contents('php://stderr', print_r($invite->invitedfullname, TRUE));
 
-                $admin->sendMail(NULL, Emailing::INVITE, $invite->invitedemail, $invite->invitedbyfarmerfullname, NULL, $invite->invitedfullname);
+                if (getenv("CURR_ENV") == "production") {
+                    $admin->sendMail(NULL, Emailing::INVITE, $invite->invitedemail, $invite->invitedbyfarmerfullname, NULL, $invite->invitedfullname);
+                }
             }
         } else {
             

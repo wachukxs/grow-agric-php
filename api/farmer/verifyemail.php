@@ -49,7 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $cta_link = getenv("PROD_BASE_URL") . "/" . "password-reset" . "/" . $row['email'] . "/" . hash(hash_algos()[29], $requestid);
 
                 // sending email
-                $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, NULL, $cta_link);
+                if (getenv("CURR_ENV") == "production") {
+                    $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, NULL, $cta_link);
+                }
 
                 echo json_encode(
                     array(
