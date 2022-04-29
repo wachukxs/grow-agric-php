@@ -812,6 +812,7 @@ class Records
     {
 
         try {
+            // should we select rows that don't have farmid as NULL ?
             $query = 'SELECT * FROM sales_farmer_customer
                 WHERE
                 farmerid = :_farmerid

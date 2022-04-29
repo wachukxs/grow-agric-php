@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $data->dateneeded, $data->medicinesandvaccinescost, // no longer collected
         $data->projectedsales);
 
-        if ($result instanceof Throwable || $result) {
+        if ($result instanceof Throwable) {
             
             http_response_code(400);
             echo json_encode(

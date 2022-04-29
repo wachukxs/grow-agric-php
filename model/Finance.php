@@ -68,26 +68,26 @@ class Finance
             // Create query
 
             $query = 'INSERT INTO ' . $this->table . '
-        SET
-        farmerid = :farmerid, 
-        farmid = :farmid,
-        farmbirdcapacity = :farmbirdcapacity,
-        currentfarmproduction = :currentfarmproduction,
-        averagemortalityrate = :averagemortalityrate,
-        numberofchickensmoneyisfor = :numberofchickensmoneyisfor,
-        numberofstaff = :numberofstaff,
-        preferredchickssupplier = :preferredchickssupplier,
-        preferredfeedsssupplier = :preferredfeedsssupplier,
-        otherpreferredchickssupplier = :otherpreferredchickssupplier,
-        otherpreferredfeedsssupplier = :otherpreferredfeedsssupplier,
-        howmuchrequired = :howmuchrequired,
-        chickscost = :chickscost,
-        feedscost = :feedscost,
-        broodingcost = :broodingcost,
-        dateneeded = :dateneeded,
-        medicinesandvaccinescost = :medicinesandvaccinescost,
-        projectedsales = :projectedsales
-    ';
+                SET
+                farmerid = :farmerid, 
+                farmid = :farmid,
+                farmbirdcapacity = :farmbirdcapacity,
+                currentfarmproduction = :currentfarmproduction,
+                averagemortalityrate = :averagemortalityrate,
+                numberofchickensmoneyisfor = :numberofchickensmoneyisfor,
+                numberofstaff = :numberofstaff,
+                preferredchickssupplier = :preferredchickssupplier,
+                preferredfeedsssupplier = :preferredfeedsssupplier,
+                otherpreferredchickssupplier = :otherpreferredchickssupplier,
+                otherpreferredfeedsssupplier = :otherpreferredfeedsssupplier,
+                howmuchrequired = :howmuchrequired,
+                chickscost = :chickscost,
+                feedscost = :feedscost,
+                broodingcost = :broodingcost,
+                dateneeded = :dateneeded,
+                medicinesandvaccinescost = :medicinesandvaccinescost,
+                projectedsales = :projectedsales
+            ';
 
             // Prepare statement
             $stmt = $this->database_connection->prepare($query);
