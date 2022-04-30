@@ -1100,7 +1100,7 @@ class Records
         return $stmt;
     }
 
-    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $otherdiagonsis, $disease, $vet_name, $farmid, $farmerid, $documents)
+    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $otherdiagonsis, $vet_name, $farmid, $farmerid, $documents)
     {
         try {
             // date can be auto filled in db though
@@ -1109,7 +1109,6 @@ class Records
                 notes = :_notes,
                 date = :_date,
                 diagonsis = :_diagonsis,
-                disease = :_disease,
                 vet_name = :_vet_name,
                 farmid = :_farmid,
                 farmerid = :_farmerid,
@@ -1128,7 +1127,6 @@ class Records
             $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
             $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
 
-            $dis = htmlspecialchars(strip_tags($disease));
             $vn = htmlspecialchars(strip_tags($vet_name));
 
             // Bind parameters to prepared stmt
@@ -1136,7 +1134,6 @@ class Records
             $stmt->bindParam(':_notes', $n);
             $stmt->bindParam(':_diagonsis', $dia);
             $stmt->bindParam(':_otherdiagonsis', $odia);
-            $stmt->bindParam(':_disease', $dis);
             $stmt->bindParam(':_vet_name', $vn);
             $stmt->bindParam(':_farmid', $fid);
             $stmt->bindParam(':_date', $d);
@@ -1278,6 +1275,56 @@ class Records
             return $query_statement;
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('ERROR in getAllFarmerUploadedDocuments(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage();
+        }
+    }
+
+    public function getFarmerRefferals($farmerid)
+    {
+        try {
+            $query = 'SELECT * FROM `howwewereheardof`
+                WHERE howwewereheardof.farmerid = ?
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $fi);
+
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getFarmerRefferal(): ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage();
+        }
+    }
+
+    public function getFarmerRefferalByID($id)
+    {
+        try {
+            $query = 'SELECT * FROM `howwewereheardof`
+                WHERE howwewereheardof.id = ?
+            ';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($id));
+
+            // Bind parameters to prepared stmt
+            $query_statement->bindParam(1, $fi);
+
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getFarmerRefferalByID(): ' . $err->getMessage() . "\n", TRUE));
             return $err->getMessage();
         }
     }

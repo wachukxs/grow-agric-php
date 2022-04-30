@@ -493,6 +493,45 @@ class Farmer {
         }
     }
 
+
+    public function saveRefferal($farmerid, $howfarmerheardaboutus, $whoreferredfarmer, $othersourcefarmerheardusfrom) {
+        try {
+            $query = 'INSERT INTO howwewereheardof' . '
+                SET
+                farmerid = :farmerid,
+                whoreferredfarmer = :whoreferredfarmer,
+                howfarmerheardaboutus = :howfarmerheardaboutus,
+                othersourcefarmerheardusfrom = :othersourcefarmerheardusfrom
+            ';
+
+            // Prepare the query statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+            $hfhau = htmlspecialchars(strip_tags($howfarmerheardaboutus)); // implode(',', get_object_vars($farmeditems))
+            $wrf = htmlspecialchars(strip_tags($whoreferredfarmer));
+            $osfhuf = htmlspecialchars(strip_tags($othersourcefarmerheardusfrom));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+            $stmt->bindParam(':whoreferredfarmer', $wrf);
+            $stmt->bindParam(':howfarmerheardaboutus', $hfhau);
+            $stmt->bindParam(':othersourcefarmerheardusfrom', $osfhuf);
+            
+            $r = $stmt->execute(); // returns true/false
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+            } else {
+                return false;
+            }
+        } catch (\PDOException $err) {
+            file_put_contents('php://stderr', print_r('ERROR Trying to add farmer to wait list: ' . $err->getMessage() . "\n", TRUE));
+            return $err->getMessage(); // false;
+            // throw $th;
+        }
+    }
+
     // why are we not returning boolean of fail?
     public function addLearningData($courseid, $currentpage, $readendtime, $readstarttime, $totalpages, $farmerid) {
         try {

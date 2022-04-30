@@ -66,6 +66,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                 $result6 = $records->getAllFarmerUploadedDocuments($row1["id"]);
                 $row6 = $result6->fetchAll(PDO::FETCH_ASSOC);
 
+                $result7 = $records->getFarmerRefferals($row1["id"]);
+                $row7 = $result7->fetchAll(PDO::FETCH_ASSOC);
+
                 $farmer_details_arr["personalInfo"] = $row1;
                 
                 // add chickenhouses to farms
@@ -82,6 +85,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                 $farmer_details_arr["financeApplications"] = $row5;
 
                 $farmer_details_arr["uploadedDocuments"] = $row6;
+
+                $farmer_details_arr["reffered"] = $row7;
 
                 echo json_encode(
                     array(

@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($data as &$value) {
             // insert the record [details]
             // $notes, $_date, $diagonsis, $disease, $vet_name, $farmid, $farmerid
-            $result = $records->addFarmerDiseasesInputRecord($value->notes, $value->date, $value->diagonsis, $value->otherdiagonsis, $value->disease, $value->vet_name, $value->farmid, $value->farmerid, $value->documents);
+            $result = $records->addFarmerDiseasesInputRecord($value->notes, $value->date, $value->diagonsis, $value->otherdiagonsis, $value->vet_name, $value->farmid, $value->farmerid, $value->documents);
         
             // returns an int [last insert id], $result is an int/string
 
