@@ -171,6 +171,183 @@ class Records
         }
     }
 
+    public function getMinDateOfRecords($farmerid)
+    {
+        $earliestDate = 'SELECT MIN(entry_date0) AS "mindate" FROM
+        (
+            SELECT MIN(`entry_date`) as entry_date0 FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
+              UNION
+              SELECT MIN(`entry_date`) as entry_date1 FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+              UNION
+              SELECT MIN(`entry_date`) as entry_date2  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+              UNION
+              SELECT MIN(`entry_date`) as entry_date3  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+              UNION
+              SELECT MIN(`entry_date`) as entry_date4  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+              UNION
+              SELECT MIN(`entry_date`) as entry_date5 FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
+              UNION
+              SELECT MIN(`entry_date`) as entry_date6 FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+              UNION
+              SELECT MIN(`entry_date`) as entry_date7 FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+         ) AS dates';
+
+        $stmt = $this->database_connection->prepare($earliestDate);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function totalFarmerFarms($farmerid)
+    {
+        $query = "SELECT COUNT(*) as totalfarms FROM `farms` WHERE `farms`.`farmerid` = :farmerid";
+
+        $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+    }
+
+    public function sumsOfRecords($farmerid)
+    {
+        $recordsSums = 'SELECT SUM(sum0) AS "sums" FROM
+                    (
+                        SELECT COUNT(*) as sum0 FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
+                          UNION
+                          SELECT COUNT(*) as sum1 FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+                          UNION
+                          SELECT COUNT(*) as sum2  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+                          UNION
+                          SELECT COUNT(*) as sum3  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+                          UNION
+                          SELECT COUNT(*) as sum4  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+                          UNION
+                          SELECT COUNT(*) as sum5 FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
+                          UNION
+                          SELECT COUNT(*) as sum6 FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+                          UNION
+                          SELECT COUNT(*) as sum7 FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+                     ) AS sums';
+
+
+            $stmt = $this->database_connection->prepare($recordsSums);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+    }
+
+    public function totalRecordsOfFarmers($farmerid)
+    {
+        $totalPerTable = "SELECT COUNT(*) as 'sum', 'mortalities' as name FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
+                    UNION
+                    SELECT COUNT(*) as sum1, 'medicines' as name FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+                    UNION
+                    SELECT COUNT(*) as sum2, 'labour' as name  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+                    UNION
+                    SELECT COUNT(*) as sum3, 'income and expenses' as name  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+                    UNION
+                    SELECT COUNT(*) as sum4, 'chicken' as name  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+                    UNION
+                    SELECT COUNT(*) as sum5, 'diseases' as name FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
+                    UNION
+                    SELECT COUNT(*) as sum6, 'brooding' as name FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+                    UNION
+                    SELECT COUNT(*) as sum7, 'feeds' as name FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+                    ";
+
+
+            $stmt = $this->database_connection->prepare($totalPerTable);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+    }
+
+    public function profitAndLoss($farmerid)
+    {
+        $profitOrLoss = "SELECT `input_records_income_expenses`.type, SUM(`input_records_income_expenses`.amount) as 'sum'
+        FROM `input_records_income_expenses`
+        WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+        GROUP BY `input_records_income_expenses`.type";
+
+        $stmt = $this->database_connection->prepare($profitOrLoss);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function getMaxDateOfRecord($farmerid)
+    {
+        $lastestDate = 'SELECT MAX(entry_date0) AS "maxdate" FROM
+        (
+            SELECT MAX(`entry_date`) as entry_date0 FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
+              UNION
+              SELECT MAX(`entry_date`) as entry_date1 FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+              UNION
+              SELECT MAX(`entry_date`) as entry_date2  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+              UNION
+              SELECT MAX(`entry_date`) as entry_date3  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+              UNION
+              SELECT MAX(`entry_date`) as entry_date4  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+              UNION
+              SELECT MAX(`entry_date`) as entry_date5 FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
+              UNION
+              SELECT MAX(`entry_date`) as entry_date6 FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+              UNION
+              SELECT MAX(`entry_date`) as entry_date7 FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+        ) AS dates';
+
+        
+
+
+        $stmt = $this->database_connection->prepare($lastestDate);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+
+    }
+
     // Create new chicken input record, an entry
     public function createChickenInputRecord($farmid, $chicken_supplier, $other_chicken_supplier, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
     {
