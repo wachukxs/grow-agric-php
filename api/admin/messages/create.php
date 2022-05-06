@@ -23,13 +23,13 @@ file_put_contents('php://stderr', print_r('Trying to create and send message' . 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (
-        isset($data->farmerid, $data->message, $data->to, $data->from, $data->subject)
+        isset($data->farmerid, $data->the_message, $data->_to, $data->_from, $data->subject)
         &&
-        !empty($data->message)
+        !empty($data->the_message)
         &&
-        !empty($data->to)
+        !empty($data->_to)
         &&
-        !empty($data->from)
+        !empty($data->_from)
         &&
         !empty($data->subject)
         &&
@@ -37,16 +37,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ) {
 
         // try to check their credentials
-        $result = $admin->sendMessage($data->message, $data->timesent, $data->from, $data->to, $data->farmerid, $data->subject);
+        $result = $admin->sendMessage($data->the_message, $data->time_sent, $data->_from, $data->_to, $data->farmerid, $data->subject);
 
         $result2 = $farmer->getAllFarmersPersonalInfo($data->farmerid);
         $farmerRow = $result2->fetch(PDO::FETCH_ASSOC);
 
-        file_put_contents('php://stderr', "\nfarmer first name " . $farmerRow['firstname'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
+        // file_put_contents('php://stderr', "\nfarmer first name " . $farmerRow['firstname'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
 
         if ($result) {
 
+            // remove special char fix.
             $result['the_message'] = htmlspecialchars_decode($result['the_message'], ENT_QUOTES);
             
             echo json_encode(
