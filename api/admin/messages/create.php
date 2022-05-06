@@ -42,10 +42,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result2 = $farmer->getAllFarmersPersonalInfo($data->farmerid);
         $farmerRow = $result2->fetch(PDO::FETCH_ASSOC);
 
-        file_put_contents('php://stderr', "\nfarmer first name" . $farmerRow['firstname'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
+        file_put_contents('php://stderr', "\nfarmer first name " . $farmerRow['firstname'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
 
         if ($result) {
+
+            $result['the_message'] = htmlspecialchars_decode($result['the_message'], ENT_QUOTES);
             
             echo json_encode(
                 array(
