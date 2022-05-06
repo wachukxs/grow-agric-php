@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     
                     // file_put_contents('php://stderr', print_r($item, TRUE) , FILE_APPEND | LOCK_EX);
     
-                    $item['the_message'] = htmlspecialchars_decode($item['the_message']); // let's not see terrible special chars
+                    $item['the_message'] = htmlspecialchars_decode($item['the_message'], ENT_QUOTES); // let's not see terrible special chars
                     if (($item['message_seen_by_recipient'] == false || $item['time_read'] == NULL) && stripos($item['_from'], "@growagric.com")) { // and _from fields does have @growagric
                         $_q['no_of_unreads'] = $_q['no_of_unreads'] + 1;
     
@@ -139,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
                     file_put_contents('php://stderr', "-whyyyyyy are we not seeing this " . $item['_to'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
-                    $item['the_message'] = htmlspecialchars_decode($item['the_message']); // let's not see terrible special chars
+                    $item['the_message'] = htmlspecialchars_decode($item['the_message'], ENT_QUOTES); // let's not see terrible special chars
                     if (($item['message_seen_by_recipient'] == false || $item['time_read'] == NULL) && stripos($item['_to'], "@growagric.com")) { // and _to fields does have @growagric
                         $_n[$_key]['no_of_unreads'] = $_n[$_key]['no_of_unreads'] + 1;
 
