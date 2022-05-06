@@ -20,17 +20,6 @@ $a_database_connection = $database_connection->connect();
 // Instantiate Course object
 $admin = new Admin($a_database_connection);
 
-class Message {
-    public function __construct() {
-        $this->the_message = htmlspecialchars_decode($this->the_message);
-    }
-}
-
-function message()
-{
-    
-}
-
 // WE should def do some authentication
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     

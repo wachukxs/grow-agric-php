@@ -10,6 +10,49 @@ include_once '../../model/Farmer.php';
 include_once '../../model/Farm.php';
 include_once '../../model/Records.php';
 
+class Farmm {
+    public $farmcountylocation;
+    public $farmsubcountylocation;
+    public $farmwardlocation;
+    public $yearsfarming;
+    public $numberofemployees;
+    public $haveinsurance;
+    public $insurer;
+    public $farmeditems;
+    public $otherfarmeditems;
+    public $challengesfaced;
+    public $otherchallengesfaced;
+    public $multiplechickenhouses;
+    public $id;
+    public $farmerid;
+    public $deleted;
+    
+    public function __construct()
+    {
+        if ($this->farmcountylocation) {
+            $this->farmcountylocation = htmlspecialchars_decode($this->farmcountylocation);
+        }
+        if ($this->farmsubcountylocation) {
+            $this->farmsubcountylocation = htmlspecialchars_decode($this->farmsubcountylocation);
+        }
+        if ($this->farmwardlocation) {
+            $this->farmwardlocation = htmlspecialchars_decode($this->farmwardlocation);
+        }
+    }
+
+    // public function farmm($farmcountylocation, $farmsubcountylocation, $farmwardlocation, $yearsfarming, $numberofemployees, $haveinsurance, $insurer, $farmeditems, $otherfarmeditems, $challengesfaced, $otherchallengesfaced, $multiplechickenhouses, $id, $farmerid, $deleted)
+    // {
+    //     if ($farmsubcountylocation) {
+    //         $this->farmsubcountylocation = htmlspecialchars_decode($farmsubcountylocation);
+    //     }
+
+    //     return array($this);
+        
+    // }
+}
+
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
     // Instantiate Database to get a connection
     $database_connection = new Database();
@@ -52,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
 
                 // fetch the farms associated with the farmer
                 $result2 = $farm->getAllFarmsByFarmerID($row1["id"]);
-                $row2 = $result2->fetchAll(PDO::FETCH_ASSOC); // should check if $row2 is an array too, or some form of validation
+                $row2 = $result2->fetchAll(PDO::FETCH_CLASS, "Farmm"); // should check if $row2 is an array too, or some form of validation
 
                 $result3 = $records->getAllFarmerEmployees($row1["id"]);
                 $row3 = $result3->fetchAll(PDO::FETCH_ASSOC);
@@ -73,9 +116,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
                 
                 // add chickenhouses to farms
                 foreach ($row2 as $key => $_farm) {
-                    $row2[$key]["chickenhouses"] = array();
-                    $r = $farm->getAllFarmChickenHousesByFarmID($_farm["id"]);
-                    $row2[$key]["chickenhouses"] = $r->fetchAll(PDO::FETCH_ASSOC);
+
+                    $row2[$key]->chickenhouses = array();
+                    $r = $farm->getAllFarmChickenHousesByFarmID($_farm->id);
+                    $row2[$key]->chickenhouses = $r->fetchAll(PDO::FETCH_ASSOC);
+
+                    // uncommenting since we started useing pdo::fetch_func
+                    // $row2[$key]["chickenhouses"] = array();
+                    // $r = $farm->getAllFarmChickenHousesByFarmID($_farm["id"]);
+                    // $row2[$key]["chickenhouses"] = $r->fetchAll(PDO::FETCH_ASSOC);
                 }
 
                 $farmer_details_arr["farms"] = $row2;
