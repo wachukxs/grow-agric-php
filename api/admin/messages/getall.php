@@ -57,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     // file_put_contents('php://stderr', print_r($item, TRUE) , FILE_APPEND | LOCK_EX);
     
                     $item['the_message'] = htmlspecialchars_decode($item['the_message'], ENT_QUOTES); // let's not see terrible special chars
+                    $item[4] = htmlspecialchars_decode($item[4], ENT_QUOTES);
                     if (($item['message_seen_by_recipient'] == false || $item['time_read'] == NULL) && stripos($item['_from'], "@growagric.com")) { // and _from fields does have @growagric
                         $_q['no_of_unreads'] = $_q['no_of_unreads'] + 1;
     
