@@ -91,6 +91,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $row = $farms_result->fetchAll(PDO::FETCH_ASSOC);
                 
                 foreach ($row as $key => $_farm) {
+
+                    // fix, don't wanna see htmls special chars
+                    $row[$key]["farmcountylocation"] = htmlspecialchars_decode($row[$key]["farmcountylocation"], ENT_QUOTES);
+                    $row[$key]["farmsubcountylocation"] = htmlspecialchars_decode($row[$key]["farmsubcountylocation"], ENT_QUOTES);
+                    $row[$key]["farmwardlocation"] = htmlspecialchars_decode($row[$key]["farmwardlocation"], ENT_QUOTES);
+
+
                     $row[$key]["chickenhouses"] = array();
                     $r = $farm->getAllFarmChickenHousesByFarmID($_farm["id"]);
                     $row[$key]["chickenhouses"] = $r->fetchAll(PDO::FETCH_ASSOC);
@@ -165,6 +172,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // returns an array, $row is an array
                 $row = $farm_result->fetch(PDO::FETCH_ASSOC);
+
+                // fix, don't wanna see htmls special chars
+                $row["farmcountylocation"] = htmlspecialchars_decode($row["farmcountylocation"], ENT_QUOTES);
+                $row["farmsubcountylocation"] = htmlspecialchars_decode($row["farmsubcountylocation"], ENT_QUOTES);
+                $row["farmwardlocation"] = htmlspecialchars_decode($row["farmwardlocation"], ENT_QUOTES);
+                
                 $row["chickenhouses"] = $farm->getAllFarmChickenHousesByFarmID($row->id);
 
                 if (is_array($row)) { // gettype($row) == "array"
