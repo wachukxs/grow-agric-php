@@ -42,7 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $result6 = $records->totalFarmerFarms($_GET["farmerid"]);
             $row1["farms"] = $result6->fetch(PDO::FETCH_ASSOC);
 
-            
+            $result7 = $records->totalFarmerEmployess($_GET["farmerid"]);
+            $row1["employees"] = $result7->fetch(PDO::FETCH_ASSOC);
+
+            $result8 = $records->totalSalaryPaidByFarmer($_GET["farmerid"]);
+            $row1["salary"] = $result8->fetch(PDO::FETCH_ASSOC);
     
             // get total income & expense
     

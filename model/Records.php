@@ -222,6 +222,40 @@ class Records
             return $stmt;
     }
 
+    public function totalFarmerEmployess($farmerid)
+    {
+        $query = "SELECT COUNT(*) as totalemployees FROM `farmer_employees` WHERE `farmer_employees`.`farmerid` = :farmerid";
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function totalSalaryPaidByFarmer($farmerid)
+    {
+        $query = "SELECT SUM(`salary`) AS totalsalarypaid FROM `input_records_labour` WHERE `input_records_labour`.farmerid = :farmerid";
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
     public function sumsOfRecords($farmerid)
     {
         $recordsSums = 'SELECT SUM(sum0) AS "sums" FROM
