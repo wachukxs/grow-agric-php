@@ -454,12 +454,9 @@ class Records
     {
 
         try {
-            // SELECT * FROM `inputs_records_chicken` WHERE `farmerid` = 1 AND input_type = 'Chicken'
-            $query = 'SELECT * FROM inputs_records_chicken
+            $query = 'SELECT * FROM `inputs_records_chicken`
                 WHERE
                 farmerid = :_farmerid
-                AND 
-                input_type = "Chicken"
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -559,8 +556,6 @@ class Records
             $query = 'SELECT * FROM inputs_records_feeds
                 WHERE
                 farmerid = :_farmerid
-                AND 
-                input_type = "Feeds"
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -1109,9 +1104,11 @@ class Records
     public function getAllFarmerSalesInputRecords($farmerid)
     {
 
-        $query = 'SELECT * FROM sales_farmer_sales
-                WHERE
-                farmerid = :_farmerid
+        $query = 'SELECT `sales_farmer_sales`.*,sales_farmer_customer.customerfullname FROM `sales_farmer_sales`
+        LEFT JOIN sales_farmer_customer
+        ON sales_farmer_sales.customer_id = sales_farmer_customer.id
+                        WHERE
+                        `sales_farmer_sales`.farmerid = :_farmerid
             ';
 
         $stmt = $this->database_connection->prepare($query);
