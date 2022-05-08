@@ -25,7 +25,7 @@ Array
     [0] => stdClass Object
         (
             [date] => 2022-01-18T21:00:00.000Z
-            [diagonsis] => Thelol
+            [diagnosis] => Thelol
             [disease] => Shared
             [vet_name] => C'mon
             [documents] => 
@@ -50,8 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_array = array();
         foreach ($data as &$value) {
             // insert the record [details]
-            // $notes, $_date, $diagonsis, $disease, $vet_name, $farmid, $farmerid
-            $result = $records->addFarmerDiseasesInputRecord($value->notes, $value->date, $value->diagonsis, $value->otherdiagonsis, $value->vet_name, $value->farmid, $value->farmerid, $value->documents);
+            // $notes, $_date, $diagnosis, $disease, $vet_name, $farmid, $farmerid
+            $result = $records->addFarmerDiseasesInputRecord($value->notes, $value->date, $value->diagnosis, $value->otherdiagnosis, $value->vet_name, $value->farmid, $value->farmerid, $value->documents);
         
             // returns an int [last insert id], $result is an int/string
 

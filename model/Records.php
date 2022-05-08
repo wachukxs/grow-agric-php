@@ -1308,7 +1308,7 @@ class Records
         return $stmt;
     }
 
-    public function addFarmerDiseasesInputRecord($notes, $_date, $diagonsis, $otherdiagonsis, $vet_name, $farmid, $farmerid, $documents)
+    public function addFarmerDiseasesInputRecord($notes, $_date, $diagnosis, $otherdiagnosis, $vet_name, $farmid, $farmerid, $documents)
     {
         try {
             // date can be auto filled in db though
@@ -1316,11 +1316,11 @@ class Records
                 SET
                 notes = :_notes,
                 date = :_date,
-                diagonsis = :_diagonsis,
+                diagnosis = :_diagnosis,
                 vet_name = :_vet_name,
                 farmid = :_farmid,
                 farmerid = :_farmerid,
-                otherdiagonsis = :_otherdiagonsis 
+                otherdiagnosis = :_otherdiagnosis 
             ';
 
             $stmt = $this->database_connection->prepare($query);
@@ -1329,8 +1329,8 @@ class Records
             $fi = htmlspecialchars(strip_tags($farmerid));
             $fid = htmlspecialchars(strip_tags($farmid));
             $n = htmlspecialchars(strip_tags($notes));
-            $dia = htmlspecialchars(strip_tags($diagonsis));
-            $odia = htmlspecialchars(strip_tags($otherdiagonsis));
+            $dia = htmlspecialchars(strip_tags($diagnosis));
+            $odia = htmlspecialchars(strip_tags($otherdiagnosis));
 
             $date1 = new DateTime($_date); // Seems this isn't doing timezone conversion and is not accurate
             $d = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -1340,8 +1340,8 @@ class Records
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_farmerid', $fi);
             $stmt->bindParam(':_notes', $n);
-            $stmt->bindParam(':_diagonsis', $dia);
-            $stmt->bindParam(':_otherdiagonsis', $odia);
+            $stmt->bindParam(':_diagnosis', $dia);
+            $stmt->bindParam(':_otherdiagnosis', $odia);
             $stmt->bindParam(':_vet_name', $vn);
             $stmt->bindParam(':_farmid', $fid);
             $stmt->bindParam(':_date', $d);
