@@ -516,16 +516,50 @@ class Admin
         }
     }
 
+    public function allTotalRecordsOfFarmers()
+    {
+        $allTotalPerTable = "SELECT COUNT(*) as 'sum', input_records_mortalities.farmerid, 'mortalities' as name FROM `input_records_mortalities` GROUP BY farmerid
+        UNION
+        SELECT COUNT(*) as sum1, input_records_medicines.farmerid, 'medicines' as name FROM `input_records_medicines` GROUP BY farmerid
+        UNION
+        SELECT COUNT(*) as sum2, input_records_labour.farmerid, 'labour' as name  FROM `input_records_labour` GROUP BY farmerid
+        UNION
+        SELECT COUNT(*) as sum3, input_records_income_expenses.farmerid, 'income and expenses' as name  FROM `input_records_income_expenses` GROUP BY farmerid
+        UNION
+        SELECT COUNT(*) as sum4, inputs_records_chicken.farmerid, 'chicken' as name  FROM `inputs_records_chicken` GROUP BY farmerid
+        UNION
+        SELECT COUNT(*) as sum5, input_records_diseases.farmerid, 'diseases' as name FROM `input_records_diseases` GROUP BY farmerid
+        UNION
+        SELECT COUNT(*) as sum6, input_records_brooding.farmerid, 'brooding' as name FROM `input_records_brooding` GROUP BY farmerid
+        UNION
+        SELECT COUNT(*) as sum7, inputs_records_feeds.farmerid, 'feeds' as name FROM `inputs_records_feeds` GROUP BY farmerid
+                    ";
+
+
+            $stmt = $this->database_connection->prepare($allTotalPerTable);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+    }
+
     public function getAllFinanceApplications()
     {
         try {
-            // Create query // we need to specify every column we need, this just selects everything from both table
-            $query = 'SELECT *, finance_application_statuses.status 
+            // adding farmer profile to query, -------- !!!!!!!!
+            $query = 'SELECT finance_applications.*, finance_application_statuses.status, farmers.*
             FROM finance_applications 
             RIGHT JOIN -- not LEFT, cause we want only fin applications that got their status inserted by the triggers
             finance_application_statuses 
             ON 
             finance_applications.id = finance_application_statuses.finance_application_id
+            
+            LEFT JOIN
+            farmers
+            ON
+            farmers.id = finance_applications.farmerid
+            
+            WHERE finance_application_statuses.finance_application_id IS NOT NULL
             ';
 
             // Prepare statement

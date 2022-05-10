@@ -54,6 +54,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $result4 = $admin->getAllFarmers();
         $response["farmers"] = $result4->fetchAll(PDO::FETCH_ASSOC);
 
+        $result5 = $admin->allTotalRecordsOfFarmers();
+        $response["learning_data"] = $result5->fetchAll(PDO::FETCH_ASSOC);
+
         echo json_encode(
             array(
                 'message' => 'Good request, no errors',
