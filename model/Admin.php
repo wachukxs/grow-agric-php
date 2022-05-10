@@ -321,7 +321,7 @@ class Admin
 
                 $emailbody = str_replace("{dateoffinanceapplication}", $date_of_finance_application, $emailbody); // should we include the date they applied???
 
-                $emailbody = str_replace("{cta}", "Or $login_cta_text", $emailbody);
+                $emailbody = str_replace("{cta}", "Or " . $login_cta_text, $emailbody);
                 
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             } else if ($emailtype == Emailing::NEW_MESSAGE_UPDATE) { // we should be checking if the string we want to replace exists
