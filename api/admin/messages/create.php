@@ -64,7 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // only use this if block after testing in local
         if (getenv("CURR_ENV") == "production") {
             file_put_contents('php://stderr', print_r('Sending message email update cause we\'re in prod.' . "\n", TRUE));
-            $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
+           
+            // commenting out because it's spaming users.
+            // $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
         }  
 
 
