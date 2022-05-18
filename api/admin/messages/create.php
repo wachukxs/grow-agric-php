@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (getenv("CURR_ENV") == "production") {
             file_put_contents('php://stderr', print_r('Sending message email update cause we\'re in prod.' . "\n", TRUE));
            
-            // commenting out because it's spaming users.
+            // commenting out because it's spaming users. ... actually did the logic wrongly, we should only send if the message was from admin, and if they haven't been sent an email in 2 days
             // $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
         }  
 
