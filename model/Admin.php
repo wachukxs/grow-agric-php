@@ -603,9 +603,11 @@ class Admin
     public function getAllFarmers()
     {
         try {
-            // Create query
-            $query = 'SELECT * FROM `farmers`
-            ';
+            // Create query -- do not pick "Chuks Nwa" in prod
+            $query = 'SELECT * FROM `farmers` '
+            . ( getenv("CURR_ENV") == "production" ? "WHERE id != 3" : "")
+
+            ;
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
