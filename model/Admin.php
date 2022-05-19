@@ -605,7 +605,7 @@ class Admin
         try {
             // Create query -- do not pick "Chuks Nwa" in prod
             $query = 'SELECT * FROM `farmers` '
-            . ( getenv("CURR_ENV") == "production" ? "WHERE id != 3" : "")
+            // . ( getenv("CURR_ENV") == "production" ? "WHERE id != 3" : "") // not a good enough fix
 
             ;
 
