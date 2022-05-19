@@ -562,6 +562,7 @@ class Admin
             farmers.id = finance_applications.farmerid
             
             WHERE finance_application_statuses.finance_application_id IS NOT NULL
+            AND finance_applications.farmerid IS NOT NULL
             ';
 
             // Prepare statement
