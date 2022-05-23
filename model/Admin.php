@@ -436,7 +436,7 @@ class Admin
 
                 (SELECT COUNT(*) FROM farmers) AS no_farmers,
                                     
-                (SELECT COUNT(*) FROM finance_applications) AS no_finance_applications,
+                (SELECT COUNT(*) FROM finance_applications WHERE finance_applications.farmerid IS NOT NULL AND finance_applications.farmid IS NOT NULL) AS no_finance_applications,
                 
                 (SELECT COUNT(*) FROM farms) AS no_farms,
                 
