@@ -17,10 +17,10 @@ $allowed_domains = [
     'http://localhost:4007',
 ];
 // output to debug console/output
-file_put_contents('php://stderr', print_r('Checking origin ' . $origin . ' for CORS access' . "\n", TRUE)); // or var_export($foo, true)
+// file_put_contents('php://stderr', print_r('Checking origin ' . $origin . ' for CORS access' . "\n", TRUE)); // or var_export($foo, true)
 
 if (isset($origin) && in_array($origin, $allowed_domains)) {
-    file_put_contents('php://stderr', print_r('Valid CORS access for ' . $origin . "\n", TRUE));
+    // file_put_contents('php://stderr', print_r('Valid CORS access for ' . $origin . "\n", TRUE));
     header('Access-Control-Allow-Origin: ' . $origin);
 } else {
     file_put_contents('php://stderr', print_r('Invalid CORS access for ' . $origin . ". Trying fallback\n", TRUE));
