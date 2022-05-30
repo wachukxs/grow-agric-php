@@ -930,4 +930,87 @@ class Admin
             return false;
         }
     }
+
+    public function getAllFieldAgentFarmVisits()
+    {
+        try {
+            $query = 'SELECT
+
+            -- fieldagents_farm_visits details
+            `fieldagents_farm_visits`.`id` AS "farmvisitid"
+            ,`fieldagents_farm_visits`.`fieldagentid`,`fieldagents_farm_visits`.`farmerid`,`fieldagents_farm_visits`.`farmid`
+            ,`fieldagents_farm_visits`.`farmvisittype`
+            ,`fieldagents_farm_visits`.`didchickengainnecessaryrequiredweight`,`fieldagents_farm_visits`.`numberofdeadchickensincelastvisit`
+            ,`fieldagents_farm_visits`.`totalmortalitytodate`
+            ,`fieldagents_farm_visits`.`additionalobservations`,`fieldagents_farm_visits`.`advicegiventofarmer`
+            ,`fieldagents_farm_visits`.`dateofnextvisit`
+            ,`fieldagents_farm_visits`.`numberofchickenthatcanfitthecurrentchickenhouse`,`fieldagents_farm_visits`.`numberoffinancedchicken`
+            ,`fieldagents_farm_visits`.`farmernumberofchildren`,`fieldagents_farm_visits`.`farmernumberofchildrenlessthan18`
+            ,`fieldagents_farm_visits`.`isfarmingontrack`,`fieldagents_farm_visits`.`farmernumberofoccupants`,`fieldagents_farm_visits`.`numberofpeopleworkingonfarm`
+            
+            ,`fieldagents_farm_visits`.`farmermobiledevicetype`,`fieldagents_farm_visits`.`numberofchickenaddedbysupplierondelivery`,`fieldagents_farm_visits`.`numberofdeadchicksondayofdelivery`
+            
+            ,`fieldagents_farm_visits`.`nameofinsurer`,`fieldagents_farm_visits`.`datefarmercanstartfarmingwithus`,`fieldagents_farm_visits`.`otherfarmedanimals`
+            
+            ,`fieldagents_farm_visits`.`opinionofhowmanychickenweshouldfinancefarmerfor`,`fieldagents_farm_visits`.`howmuchfinancingisthefarmerseeking`
+            ,`fieldagents_farm_visits`.`farmerhousebuildingmaterial`,`fieldagents_farm_visits`.`dateofvisit`,`fieldagents_farm_visits`.`doesfarmerhavepreviousfarmingrecords`
+            ,`fieldagents_farm_visits`.`farmerchickenhousebuildingmaterial`,`fieldagents_farm_visits`.`doesfarmerhaveexistinginsurance`
+            
+            ,`fieldagents_farm_visits`.`seenevidenceofexistinginsurance`,`fieldagents_farm_visits`.`hasfarmerobtainedstampedvetreportwithvetregistrationnumber`
+            ,`fieldagents_farm_visits`.`takencopiesoffarmeridsordocumentsandphonenumber`
+            
+            ,`fieldagents_farm_visits`.`doesfarmerkeeplayers`,`fieldagents_farm_visits`.`seenproofthatfarmerhasbuyers`
+            ,`fieldagents_farm_visits`.`takencopiesorphotosoffarmerpreviousfarmingrecords`,`fieldagents_farm_visits`.`didfarmerfillcicinsuranceformcorrectly`,`fieldagents_farm_visits`.`givenfarmerthecicinsuranceformtofill`
+            ,`fieldagents_farm_visits`.`farmerpobox`,`fieldagents_farm_visits`.`farmerproofofbuyersfileinput`,`fieldagents_farm_visits`.`farmerpincertfileinput`
+            ,`fieldagents_farm_visits`.`farmeridfileinput`,`fieldagents_farm_visits`.`farmerexistinginsurancefileinput`
+            ,`fieldagents_farm_visits`.`farmerpreviousfarmingrecordsfileinput`,`fieldagents_farm_visits`.`otheranimalkeptinfarm`,`fieldagents_farm_visits`.`date_of_entry`
+            
+
+            -- farmers details
+            ,`farmers`.`firstname` AS "farmerfirstname",`farmers`.`lastname` AS "farmerlastname"
+            ,`farmers`.`middlename` AS "farmermiddlename",`farmers`.`email` AS "farmeremail",`farmers`.`phonenumber`
+            ,`farmers`.`timejoined`,`farmers`.`highesteducationallevel`
+            ,`farmers`.`maritalstatus`,`farmers`.`age`,`farmers`.`yearsofexperience`
+
+
+            -- farms details
+            ,`farms`.`farmcountylocation`,`farms`.`farmsubcountylocation`,`farms`.`farmwardlocation`
+            ,`farms`.`yearsfarming`,`farms`.`numberofemployees`,`farms`.`haveinsurance`
+            ,`farms`.`insurer`,`farms`.`id`,`farms`.`farmeditems`
+            ,`farms`.`otherfarmeditems`,`farms`.`challengesfaced`
+            ,`farms`.`otherchallengesfaced`,`farms`.`multiplechickenhouses`
+
+            -- fieldagents
+            ,`fieldagents`.`firstname` AS "fieldagentfirstname",`fieldagents`.`lastname` AS "fieldagentlastname",
+            `fieldagents`.`lastlogintime`,`fieldagents`.`email` AS "fieldagentemail"
+            ,`fieldagents`.`assignedsubcounties`
+            
+
+            FROM `fieldagents_farm_visits`
+            
+            LEFT JOIN fieldagents
+            ON `fieldagents_farm_visits`.`fieldagentid` = fieldagents.id
+            
+            LEFT JOIN farmers
+            ON fieldagents_farm_visits.farmerid = farmers.id
+            
+            LEFT JOIN farms
+            ON fieldagents_farm_visits.farmid = farms.id
+            
+            WHERE farms.`deleted` = false
+            ';
+
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFieldAgentFarmVisits error: ' . $err->getMessage() . "\n", TRUE));
+            return $err;
+        }
+    }
 }
