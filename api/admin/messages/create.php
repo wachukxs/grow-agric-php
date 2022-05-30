@@ -64,9 +64,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // only use this if block after testing in local
         if (getenv("CURR_ENV") == "production") {
             file_put_contents('php://stderr', print_r('Sending message email update cause we\'re in prod.' . "\n", TRUE));
-           
-            // commenting out because it's spaming users. ... actually did the logic wrongly, we should only send if the message was from admin, and if they haven't been sent an email in 2 days
-            // $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
+            // if it is sent by admin
+            if (strpos($data->_from, 'growagric.com')) {
+                file_put_contents('php://stderr', "\nwho sent the message:::: " . $data->_from . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+                // we should only send if the message was from admin, and if they haven't been sent an email in 2 days
+                $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
+            } else {
+                file_put_contents('php://stderr', "\nwho sent the message:::: " . $data->_from . " well not adminnn\n" . "\n", FILE_APPEND | LOCK_EX);
+            }
+          
         }  
 
 
