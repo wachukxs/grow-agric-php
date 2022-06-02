@@ -15,6 +15,7 @@ $allowed_domains = [
     'http://localhost:4009',
     'http://localhost:4011',
     'http://localhost:4007',
+    'https://grow-agric-farmers-testing.netlify.app'
 ];
 // output to debug console/output
 // file_put_contents('php://stderr', print_r('Checking origin ' . $origin . ' for CORS access' . "\n", TRUE)); // or var_export($foo, true)
