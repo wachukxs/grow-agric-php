@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // send email
             if (getenv("CURR_ENV") == "production") {
-                $admin->sendMail($farmerRow['firstname'], Emailing::FINANCE_APPLICATION_UPDATE, $farmerRow['email'], NULL, NULL, NULL, $farmerRow['created_on']);    
+                $admin->sendMail($farmerRow['firstname'], Emailing::FINANCE_APPLICATION_UPDATE, $farmerRow['email'], NULL, NULL, NULL, $farmerRow['created_on']);
             }
             
             http_response_code();

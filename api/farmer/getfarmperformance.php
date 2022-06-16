@@ -27,9 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $result1 = $records->getMinDateOfRecords($_GET["farmerid"]);
             $row1["mindate"] = $result1->fetch(PDO::FETCH_ASSOC);
     
+            // number of the total records saved by farmer
             $result2 = $records->sumsOfRecords($_GET["farmerid"]);
             $row1["recordssum"] = $result2->fetch(PDO::FETCH_ASSOC);
     
+            // array of all the records farmer have saved
             $result3 = $records->totalRecordsOfFarmers($_GET["farmerid"]);
             $row1["totalrecordssaved"] = $result3->fetchAll(PDO::FETCH_ASSOC);
 
@@ -47,6 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
             $result8 = $records->totalSalaryPaidByFarmer($_GET["farmerid"]);
             $row1["salary"] = $result8->fetch(PDO::FETCH_ASSOC);
+
+            $result9 = $records->getAllSalesTotalByFarmer($_GET["farmerid"]);
+            $row1["salessum"] = $result9->fetch(PDO::FETCH_ASSOC);
     
             // get total income & expense
     

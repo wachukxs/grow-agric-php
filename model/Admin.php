@@ -1013,4 +1013,45 @@ class Admin
             return $err;
         }
     }
+
+    public function getIncompleteFarmerProfiles()
+    {
+        $query = '
+        SELECT farmers.id AS "farmerid", DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) AS "_timejoined"
+        ,`farmers`.`timejoined`
+        , `farmers`.`email`, `farmers`.`firstname`, `farmers`.`lastname` 
+                FROM `farmers` 
+                LEFT JOIN profile_completion_email_reminders
+                ON farmers.id = profile_completion_email_reminders.farmerid
+                
+                WHERE 
+                
+                (`farmers`.`firstname` IS NULL OR `farmers`.`firstname` = "" OR `farmers`.`firstname` = " ")
+                OR
+                (`farmers`.`lastname` IS NULL OR `farmers`.`lastname` = "" OR `farmers`.`lastname` = " ")
+                OR
+                (`farmers`.`phonenumber` IS NULL OR `farmers`.`phonenumber` = "" OR `farmers`.`phonenumber` = " ")
+                OR
+                (`farmers`.`age` IS NULL OR `farmers`.`age` = "" OR `farmers`.`age` = " ")
+                OR
+                (`farmers`.`maritalstatus` IS NULL OR `farmers`.`maritalstatus` = "" OR `farmers`.`maritalstatus` = " ")
+                OR
+                (`farmers`.`yearsofexperience` IS NULL OR `farmers`.`yearsofexperience` = "" OR `farmers`.`yearsofexperience` = " ")
+                OR
+                (`farmers`.`highesteducationallevel` IS NULL OR `farmers`.`highesteducationallevel` = "" OR `farmers`.`highesteducationallevel` = " ")
+                
+                
+                
+                AND DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
+
+                AND farmers.id NOT IN (
+                    SELECT profile_completion_email_reminders.farmerid FROM profile_completion_email_reminders
+                    )
+                -- WHERE "_timejoined" > 200
+                -- put % of completion
+                -- include fields they are yet to fill out
+        
+        
+        ';
+    }
 }

@@ -261,21 +261,21 @@ class Records
         $recordsSums = 'SELECT SUM(sum0) AS "sums" FROM
                     (
                         SELECT COUNT(*) as sum0 FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
-                          UNION
-                          SELECT COUNT(*) as sum1 FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
-                          UNION
-                          SELECT COUNT(*) as sum2  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
-                          UNION
-                          SELECT COUNT(*) as sum3  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
-                          UNION
-                          SELECT COUNT(*) as sum4  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
-                          UNION
-                          SELECT COUNT(*) as sum5 FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
-                          UNION
-                          SELECT COUNT(*) as sum6 FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
-                          UNION
-                          SELECT COUNT(*) as sum7 FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
-                     ) AS sums';
+                        UNION
+                        SELECT COUNT(*) as sum1 FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+                        UNION
+                        SELECT COUNT(*) as sum2  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+                        UNION
+                        SELECT COUNT(*) as sum3  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+                        UNION
+                        SELECT COUNT(*) as sum4  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+                        UNION
+                        SELECT COUNT(*) as sum5 FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
+                        UNION
+                        SELECT COUNT(*) as sum6 FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+                        UNION
+                        SELECT COUNT(*) as sum7 FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+                    ) AS sums';
 
 
             $stmt = $this->database_connection->prepare($recordsSums);
@@ -322,6 +322,28 @@ class Records
             $r = $stmt->execute();
 
             return $stmt;
+    }
+
+
+    public function getAllSalesTotalByFarmer($farmerid)
+    {
+        $query = "SELECT SUM(`sales_farmer_sales`.`price` * `sales_farmer_sales`.`quantity`) AS 'sum'
+        FROM `sales_farmer_sales`
+        WHERE `sales_farmer_sales`.`farmerid` = :farmerid
+        ";
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+
     }
 
     public function profitAndLoss($farmerid)
