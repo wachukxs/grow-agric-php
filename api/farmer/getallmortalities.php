@@ -19,11 +19,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $result1 = $records->getAllFarmerMortalitiesInputRecords($_GET["farmerid"]);
         $row1["mortalities"] = $result1->fetchAll(PDO::FETCH_ASSOC);
 
-        $result1 = $records->calculateTotalIncome($_GET["farmerid"]);
-        $row1["totalincome"] = $result1->fetch(PDO::FETCH_ASSOC);
+        $result2 = $records->calculateTotalIncome($_GET["farmerid"]);
+        $row1["totalincome"] = $result2->fetch(PDO::FETCH_ASSOC);
 
-        $result1 = $records->calculateTotalExpense($_GET["farmerid"]);
-        $row1["totalexpense"] = $result1->fetch(PDO::FETCH_ASSOC);
+        $result3 = $records->calculateTotalExpense($_GET["farmerid"]);
+        $row1["totalexpense"] = $result3->fetch(PDO::FETCH_ASSOC);
+
+        $result4 = $records->getAllSalesTotalByFarmer($_GET["farmerid"]);
+        $row1["totalsales"] = $result4->fetch(PDO::FETCH_ASSOC);
 
         // get total income & expense
 
