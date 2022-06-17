@@ -375,7 +375,7 @@ class Admin
             // $mail->addAddress('ellen@example.com');               //Name is optional
             $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
             // $mail->addCC('cc@example.com');
-            // $mail->addBCC('bcc@example.com');
+            $mail->addBCC(getenv("GROW_AGRIC_DEV_EMAIL"));
 
             //Attachments
             //$mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
