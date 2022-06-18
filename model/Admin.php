@@ -375,7 +375,7 @@ class Admin
             // $mail->addAddress('ellen@example.com');               //Name is optional
             $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
             // $mail->addCC('cc@example.com');
-            $mail->addBCC(getenv("GROW_AGRIC_DEV_EMAIL"));
+            $mail->addBCC(getenv("GROW_AGRIC_DEV_EMAIL")); // and | or we save every email we send out
 
             //Attachments
             //$mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
@@ -561,8 +561,16 @@ class Admin
             ON
             farmers.id = finance_applications.farmerid
             
+            LEFT JOIN
+            farms
+            ON
+            finance_applications.farmid = farms.id
+            
             WHERE finance_application_statuses.finance_application_id IS NOT NULL
             AND finance_applications.farmerid IS NOT NULL
+            -- and for farms that have not been deleted
+            
+            AND farms.deleted = false
             ';
 
             // Prepare statement
@@ -584,6 +592,8 @@ class Admin
         try {
             // Create query
             $query = 'SELECT * FROM `farms`
+            -- show only farms that have not been deleted
+            WHERE farms.deleted = false
             ';
 
             // Prepare statement
