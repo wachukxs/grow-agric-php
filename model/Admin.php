@@ -435,8 +435,25 @@ class Admin
             $query = 'SELECT 
 
                 (SELECT COUNT(*) FROM farmers) AS no_farmers,
-                                    
-                (SELECT COUNT(*) FROM finance_applications WHERE finance_applications.farmerid IS NOT NULL AND finance_applications.farmid IS NOT NULL) AS no_finance_applications,
+                -- should we utlize existing queries? ... this is similar to getAllFinanceApplications() method query         
+                (
+                    SELECT COUNT(*) 
+                    FROM finance_applications
+
+                    RIGHT JOIN -- not LEFT, cause we want only fin applications that got their status inserted by the triggers
+                    finance_application_statuses 
+                    ON 
+                    finance_applications.id = finance_application_statuses.finance_application_id
+
+                    LEFT JOIN
+                    farms
+                    ON
+                    finance_applications.farmid = farms.id
+
+                    WHERE finance_applications.farmerid IS NOT NULL 
+                    AND finance_applications.farmid IS NOT NULL
+                    AND farms.deleted = false
+                ) AS no_finance_applications,
                 
                 (SELECT COUNT(*) FROM farms) AS no_farms,
                 
@@ -591,10 +608,19 @@ class Admin
     {
         try {
             // Create query
-            $query = 'SELECT * FROM `farms`
-            -- show only farms that have not been deleted
+            // $query = 'SELECT * FROM `farms`
+            // -- show only farms that have not been deleted
+            // WHERE farms.deleted = false
+            // ';
+
+            $query = "SELECT COUNT(farm_chicken_houses.farmid) AS 'no_of_chickenhouses', `farms`.* FROM `farms`
+
+            LEFT JOIN farm_chicken_houses
+            ON farms.id = farm_chicken_houses.farmid
+            
             WHERE farms.deleted = false
-            ';
+            
+            GROUP BY farms.id";
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -604,7 +630,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFinanceApplications error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarms error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
@@ -655,7 +681,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getModule error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getModuleByID error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
