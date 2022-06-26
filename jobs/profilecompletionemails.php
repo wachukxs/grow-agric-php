@@ -98,11 +98,11 @@ try {
             );
 
             $database_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            file_put_contents('php://stderr', print_r('Connection successful' . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('db Connection successful in job execution' . "\n", TRUE));
         } catch (PDOException $e) {
-            file_put_contents('php://stderr', print_r('Connection Error:' . $e->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('db Connection Error in job execution:' . $e->getMessage() . "\n", TRUE));
         } catch (Throwable $th) {
-            file_put_contents('php://stderr', print_r('Another Connection Error:' . $th->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Another db Connection Error in job execution:' . $th->getMessage() . "\n", TRUE));
             throw $th;
         }
 
@@ -192,6 +192,8 @@ try {
             $mail->Subject = 'Complete Your Profile';
             $mail->Body = _getEmailTemplateHTML($farmers_with_incomplete_profiles[$i]['firstname'], InnerEmailing::INCOMPLETE_PROFILE, $cta_link); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+            file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_incomplete_profiles[$i]['firstname'] . " with email " . $farmers_with_incomplete_profiles[$i]['email'] . "\n", TRUE));
 
             echo $farmers_with_incomplete_profiles[$i]['firstname'] ;
             // if ($mail->send()) {
