@@ -391,6 +391,34 @@ class Course {
         }
     }
 
+    /**
+     * TODO: complete this query
+     */
+    public function getCoursesCompletionRateForFarmers()
+    {
+        $query = "SELECT ANY_VALUE(lc.`mediatype`) AS mediatype, 
+        ANY_VALUE(lc.`name`) AS name, 
+        ANY_VALUE(lc.`description`) AS description, 
+        ANY_VALUE(lc.`id`) AS courseid, 
+        ANY_VALUE(lc.`url`) as url, 
+        ANY_VALUE(lc.`moduleid`) AS moduleid, 
+        IF(MAX(ll.`totalpages`) = MAX(ll.`currentpage`), true, false) AS completed,
+        
+        CASE WHEN MAX(ll.`totalpages`) = MAX(ll.`currentpage`) 
+        THEN 'COMPLETED'
+        WHEN MAX(ll.`currentpage`) > 0 AND MAX(ll.`totalpages`) > MAX(ll.`currentpage`) THEN 'IN PROGRESS'
+        
+        ELSE 'NOT STARTED' END AS completion_rate,
+        
+        MAX(ll.end) AS last_time, ll.farmerid AS farmerid, 
+        ( SELECT currentpage FROM learning_info WHERE learning_info.end = MAX(ll.end) LIMIT 1 ) AS last_page 
+        FROM learning_courses lc 
+        LEFT JOIN learning_info ll 
+        ON lc.id = ll.course_id 
+        GROUP BY ll.course_id, ll.farmerid"
+        ;
+    }
+
     public function getAllCourses()
     {
         try {

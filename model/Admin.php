@@ -246,7 +246,6 @@ class Admin
 
             $password_reset_text = "Click the <b>Reset password</b> link below to reset your password.";
 
-
             $finance_application_status_update_text = "There is an update to the finance application you made on {dateoffinanceapplication}. Please log in and navigate to 'Register for Finance' to see your application status under 'Finance Registration History'.";
 
             $new_admin_message_update_text = "You've been sent a new message. Please log in and navigate to 'Messages' to see the message.";
@@ -286,7 +285,7 @@ class Admin
             if ($emailtype == Emailing::SIGNUP) {
                 $emailbody = str_replace("{body}", $signup_text, $email_template);
                 $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
-                $emailbody = str_replace("{cta}", $login_cta_text, $emailbody); // tOdO: replace login_cta_text with signup_cta_text
+                $emailbody = str_replace("{cta}", $login_cta_text, $emailbody);
 
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             } else if ($emailtype == Emailing::INVITE) {
@@ -339,7 +338,7 @@ class Admin
             return $emailbody;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r("\n\n" . 'emailing error::::::' . "\n", TRUE));
+            file_put_contents('php://stderr', print_r("\n\n" . 'composing email body error::::::' . "\n", TRUE));
             file_put_contents('php://stderr', print_r($err, TRUE));
             return false;
         }
