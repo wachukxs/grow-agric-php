@@ -1056,8 +1056,8 @@ class Admin
         ,`farmers`.`timejoined`
         , `farmers`.`email`, `farmers`.`firstname`, `farmers`.`lastname` 
                 FROM `farmers` 
-                LEFT JOIN profile_completion_email_reminders
-                ON farmers.id = profile_completion_email_reminders.farmerid
+                LEFT JOIN email_reminders
+                ON farmers.id = email_reminders.farmerid
                 
                 WHERE 
                 
@@ -1080,7 +1080,7 @@ class Admin
                 AND DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
 
                 AND farmers.id NOT IN (
-                    SELECT profile_completion_email_reminders.farmerid FROM profile_completion_email_reminders
+                    SELECT email_reminders.farmerid FROM email_reminders
                     )
                 -- WHERE "_timejoined" > 200
                 -- put % of completion

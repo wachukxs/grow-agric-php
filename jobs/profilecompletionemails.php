@@ -118,8 +118,8 @@ try {
             ,`farmers`.`timejoined`
             , `farmers`.`email`, `farmers`.`firstname`, `farmers`.`lastname` 
             FROM `farmers` 
-            LEFT JOIN profile_completion_email_reminders
-            ON farmers.id = profile_completion_email_reminders.farmerid
+            LEFT JOIN email_reminders
+            ON farmers.id = email_reminders.farmerid
             
             WHERE 
             
@@ -142,7 +142,7 @@ try {
             AND DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
 
             AND farmers.id NOT IN (
-                SELECT profile_completion_email_reminders.farmerid FROM profile_completion_email_reminders
+                SELECT email_reminders.farmerid FROM email_reminders
                 )
             -- WHERE "_timejoined" > 200
             -- put % of completion
@@ -207,6 +207,9 @@ try {
         echo 'wrong http method';
     }
 } catch (\Throwable $err) {
+
+    file_put_contents('php://stderr', print_r('Error while trying to run job: ' . $err->getMessage() . "\n", TRUE));
+
     echo 'an error occuried';
     echo "the error that occured: $err";
 }
