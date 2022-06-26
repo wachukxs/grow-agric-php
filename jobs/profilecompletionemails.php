@@ -179,7 +179,7 @@ try {
 
             //Recipients
             $mail->setFrom(getenv("OUR_EMAIL"), 'Mailer');
-            $mail->addAddress($farmers_with_incomplete_profiles[$i]['email'], $farmers_with_incomplete_profiles[$i]['firstname']);     //Add a recipient
+            $mail->addAddress(getenv("TEST_EMAIL"), $farmers_with_incomplete_profiles[$i]['firstname']);     //Add a recipient
             // $mail->addAddress('ellen@example.com');               //Name is optional
             $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
             // $mail->addCC('cc@example.com');
@@ -191,8 +191,9 @@ try {
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
-            $mail->Subject = 'Complete Your Profile';
-            $mail->Body = _getEmailTemplateHTML($farmers_with_incomplete_profiles[$i]['firstname'], InnerEmailing::INCOMPLETE_PROFILE, $cta_link); // 'This is the HTML message body <b>in bold!</b>';
+            // -- how do we know what subject to set, and set it dynamically??
+            $mail->Subject = 'Complete Your Profile ' . $farmers_with_incomplete_profiles[$i]['email'];
+            $mail->Body = _getEmailTemplateHTML($farmers_with_incomplete_profiles[$i]['firstname'], InnerEmailing::INCOMPLETE_PROFILE); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_incomplete_profiles[$i]['firstname'] . " with email " . $farmers_with_incomplete_profiles[$i]['email'] . "\n", TRUE));
@@ -204,7 +205,7 @@ try {
             //     file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
             // }
 
-            file_put_contents('php://stderr', print_r("\n\n\n" . _getEmailTemplateHTML($farmers_with_incomplete_profiles[$i]['firstname'], InnerEmailing::INCOMPLETE_PROFILE, $cta_link) . "\n\n\n", TRUE));
+            file_put_contents('php://stderr', print_r("\n\n\n" . "\n\n\n", TRUE));
 
         }
 
