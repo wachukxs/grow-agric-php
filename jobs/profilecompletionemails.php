@@ -1,5 +1,6 @@
 <?
 // Headers
+header('Content-Type: application/json; charset=utf-8');
 // https://stackoverflow.com/a/17098221
 include_once '../config/globals/header.php';
 
@@ -61,6 +62,12 @@ function _getEmailTemplateHTML($full_or_first_name, $emailtype, $cta_link = "htt
 try {
 
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
+        $output_info = array(
+            "errors" => false,
+            "error_message" => "",
+            "farmers" => array()
+        );
+
         // Database parameters
         $database_host;
         $database_port; // initialize for local
@@ -199,10 +206,10 @@ try {
             file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_incomplete_profiles[$i]['firstname'] . " with email " . $farmers_with_incomplete_profiles[$i]['email'] . "\n", TRUE));
 
             if ($i < 1 && $mail->send()) { // send only one email for now
-                echo $farmers_with_incomplete_profiles[$i]['firstname'] ;
+                $output_info["farmers"][$farmers_with_incomplete_profiles[$i]['firstname']] = "SENT";
                 file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
             } else {
-                echo 'faileedddd';
+                $output_info["farmers"][$farmers_with_incomplete_profiles[$i]['firstname']] = "NOT_SENT";
                 file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
             }
 
@@ -210,15 +217,21 @@ try {
 
         }
 
-        echo 'done';
+        echo json_encode($output_info);
 
     } else {
-        echo 'wrong http method';
+        $output_info["errors"] = true;
+        $output_info["error_message"] = 'wrong http method used';
+        echo json_encode($output_info);
     }
 } catch (\Throwable $err) {
 
     file_put_contents('php://stderr', print_r('Error while trying to run job: ' . $err->getMessage() . "\n", TRUE));
 
-    echo 'an error occuried';
-    echo "the error that occured: $err";
+    // echo 'an error occuried';
+    // echo "the error that occured: $err";
+
+    $output_info["errors"] = true;
+    $output_info["error_message"] = $err->getMessage();
+    echo json_encode($output_info);
 }
