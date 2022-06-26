@@ -208,4 +208,5 @@ try {
     }
 } catch (\Throwable $err) {
     echo 'an error occuried';
+    echo "the error that occured: $err";
 }
