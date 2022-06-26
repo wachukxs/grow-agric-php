@@ -159,6 +159,8 @@ try {
 
         $farmers_with_incomplete_profiles = $query_statement->fetchAll(PDO::FETCH_ASSOC);
 
+        //Create an instance; passing `true` enables exceptions
+        $mail = new PHPMailer(true);
         for ($i = 0; $i < count($farmers_with_incomplete_profiles); $i++) {
             # send mail
             //Server settings
@@ -201,6 +203,9 @@ try {
             // } else {
             //     file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
             // }
+
+            file_put_contents('php://stderr', print_r("\n\n\n" . _getEmailTemplateHTML($farmers_with_incomplete_profiles[$i]['firstname'], InnerEmailing::INCOMPLETE_PROFILE, $cta_link) . "\n\n\n", TRUE));
+
         }
 
         echo 'done';
