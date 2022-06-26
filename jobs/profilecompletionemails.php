@@ -198,12 +198,13 @@ try {
 
             file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_incomplete_profiles[$i]['firstname'] . " with email " . $farmers_with_incomplete_profiles[$i]['email'] . "\n", TRUE));
 
-            echo $farmers_with_incomplete_profiles[$i]['firstname'] ;
-            // if ($mail->send()) {
-            //     file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
-            // } else {
-            //     file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
-            // }
+            if ($i < 1 && $mail->send()) { // send only one email for now
+                echo $farmers_with_incomplete_profiles[$i]['firstname'] ;
+                file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
+            } else {
+                echo 'faileedddd';
+                file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
+            }
 
             file_put_contents('php://stderr', print_r("\n\n\n" . "\n\n\n", TRUE));
 
