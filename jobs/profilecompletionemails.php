@@ -207,4 +207,5 @@ try {
         echo 'wrong http method';
     }
 } catch (\Throwable $err) {
+    echo 'an error occuried';
 }
