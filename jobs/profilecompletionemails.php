@@ -224,7 +224,7 @@ try {
 
             //Recipients
             $mail->setFrom(getenv("OUR_EMAIL"), 'Mailer');
-            $mail->addAddress($farmers_with_incomplete_profiles[$i]['email'], $farmers_with_incomplete_profiles[$i]['firstname']);     //Add a recipient
+            $mail->addAddress(getenv("TEST_EMAIL"), $farmers_with_incomplete_profiles[$i]['firstname']);     //Add a recipient
             // $mail->addAddress('ellen@example.com');               //Name is optional
             $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
             // $mail->addCC('cc@example.com');
