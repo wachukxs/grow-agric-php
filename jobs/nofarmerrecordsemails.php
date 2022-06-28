@@ -188,7 +188,7 @@ try {
 
 
 
-        $no_records_query = 'SELECT f.id, f.firstname, f.lastname, f.email
+        $no_records_query = 'SELECT f.id AS "farmerid", f.firstname, f.lastname, f.email
             , COALESCE(records_mortalities.input_records_mortalities_count, 0) AS records_mortalities_count
             , COALESCE(records_medicines.input_records_medicines_count, 0) AS records_medicines_count
             , COALESCE(records_labour.input_records_labour_count, 0) AS records_labour_count
