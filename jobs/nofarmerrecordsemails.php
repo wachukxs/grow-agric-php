@@ -117,8 +117,8 @@ function _saveFarmerEmailReminder($farmerid, $emailtype)
     $et = htmlspecialchars(strip_tags($emailtype));
 
     // Bind parameters to prepared stmt
-    $stmt->bindParam(':_email_type', $n);
-    $stmt->bindParam(':_farmerid', $desc);
+    $stmt->bindParam(':_email_type', $et);
+    $stmt->bindParam(':_farmerid', $fid);
 
     $r = $stmt->execute();
 
