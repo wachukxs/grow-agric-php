@@ -363,7 +363,7 @@ try {
 
             //Recipients
             $mail->setFrom(getenv("OUR_EMAIL"), 'Mailer');
-            $mail->addAddress(getenv("TEST_EMAIL"), $farmers_with_no_records[$i]['firstname']);     //Add a recipient
+            $mail->addAddress($farmers_with_no_records[$i]['email'], $farmers_with_no_records[$i]['firstname']);     //Add a recipient [in test mode, send to getenv("TEST_EMAIL")]
             // $mail->addAddress('ellen@example.com');               //Name is optional
             $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
             // $mail->addCC('cc@example.com');
@@ -383,7 +383,7 @@ try {
             // not put farmer emails
             file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_no_records[$i]['firstname'] . " with email " . $farmers_with_no_records[$i]['email'] . "\n", TRUE));
 
-            if ($i < 1 && $mail->send()) { // send only one email for now
+            if (getenv("CURR_ENV") == "production" && $mail->send()) { // 
                 // save into the db that it has been sent
                 _saveFarmerEmailReminder($farmers_with_no_records[$i]['farmerid'], "NO_FARM_RECORDS");
 
