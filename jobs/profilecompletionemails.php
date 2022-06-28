@@ -20,6 +20,57 @@ class InnerEmailing
     const NO_FARM_RECORDS = "NO_FARM_RECORDS";
 }
 
+
+function _getDb()
+{
+    // Database parameters
+    $database_host = NULL;
+    $database_port = NULL; // initialize for local
+    $database_name = NULL;
+    $database_username = NULL;
+    $database_password = NULL;
+    $database_connection = NULL;
+
+    // must be public [& not __construct, cause it'll return a Database data type not PDO], else we can't call it elsewhere
+
+    # should this block be in a constructor method or sth?
+    if (getenv("CURR_ENV") == "production") {
+        file_put_contents('php://stderr', print_r('Using prod database connection' . "\n", TRUE));
+        $database_host = getenv("GROW_AGRIC_HOST_NAME");
+        $database_name = getenv("GROW_AGRIC_DATABASE_NAME_PROD"); // eventually dynamically set to prod/test
+        $database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME");
+        $database_password = getenv("GROW_AGRIC_DATABASE_PASSWORD");
+        $database_port = '3306'; // re-assign if in prod
+    } else {
+        file_put_contents('php://stderr', print_r('Using local database connection' . "\n", TRUE));
+        $database_host = getenv("GROW_AGRIC_HOST_NAME_LOCAL"); // getenv("GROW_AGRIC_HOST_NAME");
+        $database_name = getenv("GROW_AGRIC_DATABASE_NAME_TEST"); // eventually dynamically set to prod/test
+        $database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME_TEST");
+        $database_password = getenv("GROW_AGRIC_DATABASE_PASSWORD_TEST");
+        $database_port = '8889';
+    }
+
+
+    try {
+        $database_connection = new PDO(
+            'mysql:host=' . $database_host . ';dbname=' . $database_name . ';port=' . $database_port,
+            $database_username,
+            $database_password
+        );
+
+        $database_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        file_put_contents('php://stderr', print_r('db Connection successful in job execution' . "\n", TRUE));
+    } catch (PDOException $e) {
+        file_put_contents('php://stderr', print_r('db Connection Error in job execution:' . $e->getMessage() . "\n", TRUE));
+    } catch (Throwable $th) {
+        file_put_contents('php://stderr', print_r('Another db Connection Error in job execution:' . $th->getMessage() . "\n", TRUE));
+        throw $th;
+    }
+
+    return $database_connection;
+
+}
+
 // if they're both (incomplete profile, and no farm records, send a different, message? ... no.)
 function _getEmailTemplateHTML($full_or_first_name, $emailtype, $cta_link = "https://farmers.growagric.com")
 {
@@ -59,6 +110,39 @@ function _getEmailTemplateHTML($full_or_first_name, $emailtype, $cta_link = "htt
     
 }
 
+function _saveFarmerEmailReminder($farmerid, $emailtype)
+{
+    file_put_contents('php://stderr', print_r("\n\n" . 'saving that we sent a farmer a no farm records reminder' . "\n", TRUE));
+
+    $query = 'INSERT INTO `messages`
+        SET
+        email_type = :_email_type,
+        farmerid = :_farmerid,
+    ';
+
+    $database_connection = _getDb();
+
+    $stmt = $database_connection->prepare($query);
+
+    // Ensure safe data
+    $fid = htmlspecialchars(strip_tags($farmerid));
+    $et = htmlspecialchars(strip_tags($emailtype));
+
+    // Bind parameters to prepared stmt
+    $stmt->bindParam(':_email_type', $n);
+    $stmt->bindParam(':_farmerid', $desc);
+
+    $r = $stmt->execute();
+
+    if ($r) {
+        return $database_connection->lastInsertId();
+        // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
+    } else {
+        return false;
+    }
+}
+
+
 try {
 
     if ($_SERVER["REQUEST_METHOD"] == "GET") {
@@ -68,56 +152,6 @@ try {
             "error_message" => "",
             "farmers" => array()
         );
-
-        // Database parameters
-        $database_host;
-        $database_port; // initialize for local
-        $database_name;
-        $database_username;
-        $database_password;
-        $database_connection;
-
-        // must be public [& not __construct, cause it'll return a Database data type not PDO], else we can't call it elsewhere
-
-        # should this block be in a constructor method or sth?
-        if (getenv("CURR_ENV") == "production") {
-            file_put_contents('php://stderr', print_r('Using prod database connection' . "\n", TRUE));
-            $database_host = getenv("GROW_AGRIC_HOST_NAME");
-            $database_name = getenv("GROW_AGRIC_DATABASE_NAME_PROD"); // eventually dynamically set to prod/test
-            $database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME");
-            $database_password = getenv("GROW_AGRIC_DATABASE_PASSWORD");
-            $database_port = '3306'; // re-assign if in prod
-        } else {
-            file_put_contents('php://stderr', print_r('Using local database connection' . "\n", TRUE));
-            $database_host = getenv("GROW_AGRIC_HOST_NAME_LOCAL"); // getenv("GROW_AGRIC_HOST_NAME");
-            $database_name = getenv("GROW_AGRIC_DATABASE_NAME_TEST"); // eventually dynamically set to prod/test
-            $database_username = getenv("GROW_AGRIC_DATABASE_USER_NAME_TEST");
-            $database_password = getenv("GROW_AGRIC_DATABASE_PASSWORD_TEST");
-            $database_port = '8889';
-        }
-
-
-        $database_connection = null;
-        try {
-            $database_connection = new PDO(
-                'mysql:host=' . $database_host . ';dbname=' . $database_name . ';port=' . $database_port,
-                $database_username,
-                $database_password
-            );
-
-            $database_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            file_put_contents('php://stderr', print_r('db Connection successful in job execution' . "\n", TRUE));
-        } catch (PDOException $e) {
-            file_put_contents('php://stderr', print_r('db Connection Error in job execution:' . $e->getMessage() . "\n", TRUE));
-        } catch (Throwable $th) {
-            file_put_contents('php://stderr', print_r('Another db Connection Error in job execution:' . $th->getMessage() . "\n", TRUE));
-            throw $th;
-        }
-
-
-
-
-
 
 
 
@@ -158,6 +192,8 @@ try {
             
             
         ';
+
+        $database_connection = _getDb();
 
         // Prepare statement
         $query_statement = $database_connection->prepare($incomplete_profile_query);
@@ -208,6 +244,9 @@ try {
             file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_incomplete_profiles[$i]['firstname'] . " with email " . $farmers_with_incomplete_profiles[$i]['email'] . "\n", TRUE));
 
             if ($i < 1 && $mail->send()) { // send only one email for now
+                // save into the db that it has been sent
+                _saveFarmerEmailReminder($farmers_with_no_records[$i]['farmerid'], "INCOMPLETE_PROFILE");
+
                 $output_info["farmers"][$farmers_with_incomplete_profiles[$i]['email']] = "SENT";
                 file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
             } else {
