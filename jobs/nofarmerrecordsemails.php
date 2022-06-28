@@ -102,7 +102,7 @@ function _saveFarmerEmailReminder($farmerid, $emailtype)
 {
     file_put_contents('php://stderr', print_r("\n\n" . 'saving that we sent a farmer a no farm records reminder' . "\n", TRUE));
 
-    $query = 'INSERT INTO `messages`
+    $query = 'INSERT INTO `email_reminders`
         SET
         email_type = :_email_type,
         farmerid = :_farmerid,
@@ -136,6 +136,7 @@ try {
         $output_info = array(
             "time" => date("Y/m/d h:i:sa e"),
             "errors" => false,
+            "type" => "NO_FARM_RECORDS",
             "error_message" => "",
             "farmers" => array()
         );
