@@ -84,12 +84,10 @@ class Admin
                 $_row = $_result->fetch(PDO::FETCH_ASSOC);
 
                 return $_row;
-
             } else {
                 file_put_contents('php://stderr', print_r('DID created THe MessAGE ' . "\n", TRUE));
                 return false;
             }
-
         } catch (\Throwable $err) {
             //throw $err;
             file_put_contents('php://stderr', print_r('Admin.php->sendMessage error: ' . $err->getMessage() . "\n", TRUE));
@@ -102,7 +100,7 @@ class Admin
         try {
 
             // we should be escaping farmerid
-        
+
             $query = 'SELECT subject, messages.* FROM `messages` WHERE `_from` = :farmeremail OR `_to` = :farmeremail';
 
             // Prepare statement
@@ -127,7 +125,7 @@ class Admin
     public function getAllAdminMessages()
     {
         try {
-        
+
             $query = 'SELECT * FROM `messages` -- RIGHT JOIN `farmers` ON `farmers`.`email` = `messages`.`_from`';
 
             // Prepare statement
@@ -225,7 +223,7 @@ class Admin
         }
     }
 
-    
+
     public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL)
     {
         /**
@@ -240,7 +238,7 @@ class Admin
             // $email_template = preg_replace(array("/\n/", "/\s/"), '', $email_template); // would the email be too long?
 
             $signup_text = "Thank you for signing up on GrowAgric. Join farmers across Kenya in accessing finance, learning materials, and record keeping for your farm.";
-            
+
             // work on $invitation_text
             $invitation_text = "Hi {farmerfriendname}, {fullname} is inviting you to join GrowAgric. GrowAgric provides farmers like you with working capital, insureance, traning, record managemnt tools for your farm, and connection to bulk buyers.";
 
@@ -281,7 +279,7 @@ class Admin
             $invite_cta_text = "Sign up now";
 
             $reset_password_cta = "Reset password";
-            
+
             if ($emailtype == Emailing::SIGNUP) {
                 $emailbody = str_replace("{body}", $signup_text, $email_template);
                 $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
@@ -312,7 +310,7 @@ class Admin
                 $emailbody = str_replace("{dateoffinanceapplication}", $date_of_finance_application, $emailbody);
 
                 $emailbody = str_replace("{cta}", $login_cta_text, $emailbody);
-                
+
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             } else if ($emailtype == Emailing::FINANCE_APPLICATION_SUBMISSION) { // we should be checking if the string we want to replace exists
                 $emailbody = str_replace("{body}", $finance_application_submission_text, $email_template);
@@ -321,17 +319,17 @@ class Admin
                 $emailbody = str_replace("{dateoffinanceapplication}", $date_of_finance_application, $emailbody); // should we include the date they applied???
 
                 $emailbody = str_replace("{cta}", "Or " . $login_cta_text, $emailbody);
-                
+
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             } else if ($emailtype == Emailing::NEW_MESSAGE_UPDATE) { // we should be checking if the string we want to replace exists
                 $emailbody = str_replace("{body}", $new_admin_message_update_text, $email_template);
                 $emailbody = str_replace("{fullname}", $fullname ? $fullname : $firstname, $emailbody);
 
                 $emailbody = str_replace("{cta}", $login_cta_text, $emailbody);
-                
+
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             }
-            
+
 
             // replace in email template string
 
@@ -359,7 +357,9 @@ class Admin
             //Server settings
             // uncomment to see email report/output
             $mail->SMTPDebug = SMTP::DEBUG_OFF;                      //Enable or disable verbose debug output
-            $mail->Debugoutput = function($str, $level) {file_put_contents('php://stderr', print_r("\n\n" . $str . "\n", TRUE));};
+            $mail->Debugoutput = function ($str, $level) {
+                file_put_contents('php://stderr', print_r("\n\n" . $str . "\n", TRUE));
+            };
             $mail->isSMTP();                                            //Send using SMTP
             $mail->Host       = getenv("OUR_EMAIL_REGION");   //Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
@@ -382,24 +382,23 @@ class Admin
 
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
-            $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ( $emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'Finance Application Update' : 'Hello!!' )));
+            $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ($emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'Finance Application Update' : 'Hello!!')));
             $mail->Body = $this->getEmailTemplateHTML($firstname, $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             if ($mail->send()) {
-                
-            return true;
+
+                return true;
                 file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
             } else {
                 return false;
-                
+
                 file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
             }
-
         } catch (\Throwable $err) {
             //throw $err;
 
-            file_put_contents('php://stderr', print_r ("Message could not be sent. Mailer Error: {$mail->ErrorInfo}") );
+            file_put_contents('php://stderr', print_r("Message could not be sent. Mailer Error: {$mail->ErrorInfo}"));
             // file_put_contents('php://stderr', print_r('Admin.php->sendMail error: ' . $mail->ErrorInfo . "\n", TRUE));
             return false;
         }
@@ -430,7 +429,7 @@ class Admin
     public function getReviewInfo()
     {
         try {
-        
+
             $query = 'SELECT 
 
                 (SELECT COUNT(*) FROM farmers) AS no_farmers,
@@ -456,8 +455,7 @@ class Admin
                 
                 (SELECT COUNT(*) FROM farms) AS no_farms,
                 
-                (SELECT COUNT(*) FROM waiting_list) AS no_waiting_list'
-            ;
+                (SELECT COUNT(*) FROM waiting_list) AS no_waiting_list';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -552,11 +550,11 @@ class Admin
                     ";
 
 
-            $stmt = $this->database_connection->prepare($allTotalPerTable);
+        $stmt = $this->database_connection->prepare($allTotalPerTable);
 
-            $r = $stmt->execute();
+        $r = $stmt->execute();
 
-            return $stmt;
+        return $stmt;
     }
 
     public function getAllFinanceApplications()
@@ -640,7 +638,7 @@ class Admin
         try {
             // Create query -- do not pick "Chuks Nwa" in prod
             $query = 'SELECT * FROM `farmers` '
-            // . ( getenv("CURR_ENV") == "production" ? "WHERE id != 3" : "") // not a good enough fix
+                // . ( getenv("CURR_ENV") == "production" ? "WHERE id != 3" : "") // not a good enough fix
 
             ;
 
@@ -751,9 +749,9 @@ class Admin
                 name = :name 
                 '
                 .
-                ($mediatype ? ',mediatype = :mediatype' : '' )
+                ($mediatype ? ',mediatype = :mediatype' : '')
                 .
-                ($url ? ',url = :url' : '' )
+                ($url ? ',url = :url' : '')
                 .
                 '
                 WHERE
@@ -1087,6 +1085,192 @@ class Admin
                 -- include fields they are yet to fill out
         
         
+        ';
+    }
+
+    public function getFarmersWithoutRecords()
+    {
+        $willNotUseQuery = 'SELECT farmers.id, farmers.firstname, farmers.lastname, farmers.email
+            , COUNT(input_records_mortalities.farmerid) AS "input_records_mortalities_count"
+            , COUNT(input_records_medicines.farmerid) AS "input_records_medicines_count"
+            , COUNT(input_records_labour.farmerid) AS "input_records_labour_count"
+            , COUNT(input_records_income_expenses.farmerid) AS "input_records_income_expenses_count"
+            , COUNT(input_records_diseases.farmerid) AS "input_records_diseases_count"
+            , COUNT(input_records_brooding.farmerid) AS "input_records_brooding_count"
+            , COUNT(inputs_records_feeds.farmerid) AS "inputs_records_feeds_count"
+            , COUNT(inputs_records_chicken.farmerid) AS "inputs_records_chicken_count"
+            
+            FROM farmers
+            
+            LEFT JOIN input_records_mortalities
+            ON input_records_mortalities.farmerid = farmers.id
+            
+            LEFT JOIN input_records_medicines
+            ON input_records_medicines.farmerid = farmers.id
+            
+            LEFT JOIN input_records_labour
+            ON input_records_labour.farmerid = farmers.id
+            
+            LEFT JOIN input_records_income_expenses
+            ON input_records_income_expenses.farmerid = farmers.id
+            
+            LEFT JOIN input_records_diseases
+            ON input_records_diseases.farmerid = farmers.id
+            
+            LEFT JOIN input_records_brooding
+            ON input_records_brooding.farmerid = farmers.id
+            
+            LEFT JOIN inputs_records_feeds
+            ON inputs_records_feeds.farmerid = farmers.id
+            
+            LEFT JOIN inputs_records_chicken
+            ON inputs_records_chicken.farmerid = farmers.id
+            
+            GROUP BY farmers.id
+        ';
+
+
+        // from https://stackoverflow.com/a/12464135/9259701
+        $query = 'SELECT f.id, f.firstname, f.lastname, f.email
+            , COALESCE(records_mortalities.input_records_mortalities_count, 0) AS records_mortalities_count
+            , COALESCE(records_medicines.input_records_medicines_count, 0) AS records_medicines_count
+            , COALESCE(records_labour.input_records_labour_count, 0) AS records_labour_count
+            , COALESCE(records_income_expenses.input_records_income_expenses_count, 0) AS records_income_expenses_count
+            , COALESCE(records_diseases.input_records_diseases_count, 0) AS records_diseases_count
+            
+            , COALESCE(records_brooding.input_records_brooding_count, 0) AS records_brooding_count
+            , COALESCE(records_feeds.inputs_records_feeds_count, 0) AS records_feeds_count
+            , COALESCE(records_chicken.inputs_records_chicken_count, 0) AS records_chicken_count
+            
+            FROM farmers f
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_mortalities_count"
+            FROM input_records_mortalities
+            GROUP BY input_records_mortalities.farmerid
+            
+            
+            ) records_mortalities
+            ON records_mortalities.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_medicines_count"
+            FROM
+            input_records_medicines
+            GROUP BY input_records_medicines.farmerid
+            
+            ) records_medicines
+            ON records_medicines.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_labour_count"
+            FROM
+            input_records_labour
+            GROUP BY input_records_labour.farmerid
+            
+            ) records_labour
+            ON records_labour.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_income_expenses_count"
+            FROM
+            input_records_income_expenses
+            GROUP BY input_records_income_expenses.farmerid
+            
+            ) records_income_expenses
+            ON records_income_expenses.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_diseases_count"
+            FROM
+            input_records_diseases
+            GROUP BY input_records_diseases.farmerid
+            
+            ) records_diseases
+            ON records_diseases.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_brooding_count"
+            FROM
+            input_records_brooding
+            GROUP BY input_records_brooding.farmerid
+            
+            ) records_brooding
+            ON records_brooding.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "inputs_records_feeds_count"
+            FROM
+            inputs_records_feeds
+            GROUP BY inputs_records_feeds.farmerid
+            
+            ) records_feeds
+            ON records_feeds.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "inputs_records_chicken_count"
+            FROM
+            inputs_records_chicken
+            GROUP BY inputs_records_chicken.farmerid
+            
+            ) records_chicken
+            ON records_chicken.farmerid = f.id
+            
+            
+            WHERE DATEDIFF(CURRENT_TIMESTAMP(), f.`timejoined`) > 7
+            
+            AND f.id NOT IN (
+            
+                SELECT farmers.id 
+                    FROM `farmers` 
+                    LEFT JOIN email_reminders
+                    ON farmers.id = email_reminders.farmerid
+                    
+                    WHERE 
+                    
+                    (`farmers`.`firstname` IS NULL OR `farmers`.`firstname` = "" OR `farmers`.`firstname` = " ")
+                    OR
+                    (`farmers`.`lastname` IS NULL OR `farmers`.`lastname` = "" OR `farmers`.`lastname` = " ")
+                    OR
+                    (`farmers`.`phonenumber` IS NULL OR `farmers`.`phonenumber` = "" OR `farmers`.`phonenumber` = " ")
+                    OR
+                    (`farmers`.`age` IS NULL OR `farmers`.`age` = "" OR `farmers`.`age` = " ")
+                    OR
+                    (`farmers`.`maritalstatus` IS NULL OR `farmers`.`maritalstatus` = "" OR `farmers`.`maritalstatus` = " ")
+                    OR
+                    (`farmers`.`yearsofexperience` IS NULL OR `farmers`.`yearsofexperience` = "" OR `farmers`.`yearsofexperience` = " ")
+                    OR
+                    (`farmers`.`highesteducationallevel` IS NULL OR `farmers`.`highesteducationallevel` = "" OR `farmers`.`highesteducationallevel` = " ")
+                    
+                    
+                    
+                    AND DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
+
+                    AND farmers.id NOT IN (
+                        SELECT email_reminders.farmerid FROM email_reminders
+                    )
+                    -- WHERE "_timejoined" > 200 -- DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`)
+                    -- put % of completion
+                    -- include fields they are yet to fill out
+            
+            )
+            
+            AND (
+                records_mortalities.input_records_mortalities_count IS NULL
+                AND records_medicines.input_records_medicines_count IS NULL
+                AND records_labour.input_records_labour_count IS NULL
+                AND records_income_expenses.input_records_income_expenses_count IS NULL 
+                AND records_diseases.input_records_diseases_count IS NULL
+                AND records_brooding.input_records_brooding_count IS NULL
+                AND records_feeds.inputs_records_feeds_count IS NULL
+                AND records_chicken.inputs_records_chicken_count IS NULL
+            )
+
+            AND DATEDIFF(CURRENT_TIMESTAMP(), f.`timejoined`) > 7
+
+            AND f.id NOT IN (
+                SELECT email_reminders.farmerid FROM email_reminders WHERE email_reminders.email_type = "NO_FARM_RECORDS"
+            )
         ';
     }
 }

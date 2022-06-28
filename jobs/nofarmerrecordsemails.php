@@ -26,21 +26,10 @@ function _getEmailTemplateHTML($full_or_first_name, $emailtype, $cta_link = "htt
     try {
         $email_template = file_get_contents(__DIR__ . "/../assets/email.template.html");
 
-        $incomplete_profile_text = "It has been over a week since you signed up on GrowAgric and are yet to complete your profile. Please complete your profile so you can access financing and learning materials for your farms, record keeping and view your farm performance overtime.";
-
         $no_farm_records_text = "You are yet to add any farm records for your farms. Please add records so you can view your farm performance, get insights, and apply for finance.";
-
-        $incomplete_profile_cta_text = "Login to complete your profile";
         $no_farm_records_cta_text = "Login to add farm records";
 
-        if ($emailtype == InnerEmailing::INCOMPLETE_PROFILE) { // we should be checking if the string we want to replace exists
-            $emailbody = str_replace("{body}", $incomplete_profile_text, $email_template);
-            $emailbody = str_replace("{fullname}", $full_or_first_name, $emailbody);
-
-            $emailbody = str_replace("{cta}", $incomplete_profile_cta_text, $emailbody);
-            
-            $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
-        } else if ($emailtype == InnerEmailing::NO_FARM_RECORDS) { // we should be checking if the string we want to replace exists
+        if ($emailtype == InnerEmailing::NO_FARM_RECORDS) { // we should be checking if the string we want to replace exists
             $emailbody = str_replace("{body}", $no_farm_records_text, $email_template);
             $emailbody = str_replace("{fullname}", $full_or_first_name, $emailbody);
 
@@ -116,60 +105,159 @@ try {
 
 
 
+        $no_records_query = 'SELECT f.id, f.firstname, f.lastname, f.email
+            , COALESCE(records_mortalities.input_records_mortalities_count, 0) AS records_mortalities_count
+            , COALESCE(records_medicines.input_records_medicines_count, 0) AS records_medicines_count
+            , COALESCE(records_labour.input_records_labour_count, 0) AS records_labour_count
+            , COALESCE(records_income_expenses.input_records_income_expenses_count, 0) AS records_income_expenses_count
+            , COALESCE(records_diseases.input_records_diseases_count, 0) AS records_diseases_count
+            
+            , COALESCE(records_brooding.input_records_brooding_count, 0) AS records_brooding_count
+            , COALESCE(records_feeds.inputs_records_feeds_count, 0) AS records_feeds_count
+            , COALESCE(records_chicken.inputs_records_chicken_count, 0) AS records_chicken_count
+            
+            FROM farmers f
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_mortalities_count"
+            FROM input_records_mortalities
+            GROUP BY input_records_mortalities.farmerid
+            
+            
+            ) records_mortalities
+            ON records_mortalities.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_medicines_count"
+            FROM
+            input_records_medicines
+            GROUP BY input_records_medicines.farmerid
+            
+            ) records_medicines
+            ON records_medicines.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_labour_count"
+            FROM
+            input_records_labour
+            GROUP BY input_records_labour.farmerid
+            
+            ) records_labour
+            ON records_labour.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_income_expenses_count"
+            FROM
+            input_records_income_expenses
+            GROUP BY input_records_income_expenses.farmerid
+            
+            ) records_income_expenses
+            ON records_income_expenses.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_diseases_count"
+            FROM
+            input_records_diseases
+            GROUP BY input_records_diseases.farmerid
+            
+            ) records_diseases
+            ON records_diseases.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "input_records_brooding_count"
+            FROM
+            input_records_brooding
+            GROUP BY input_records_brooding.farmerid
+            
+            ) records_brooding
+            ON records_brooding.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "inputs_records_feeds_count"
+            FROM
+            inputs_records_feeds
+            GROUP BY inputs_records_feeds.farmerid
+            
+            ) records_feeds
+            ON records_feeds.farmerid = f.id
+            
+            LEFT JOIN 
+            (SELECT farmerid, COUNT(*) AS "inputs_records_chicken_count"
+            FROM
+            inputs_records_chicken
+            GROUP BY inputs_records_chicken.farmerid
+            
+            ) records_chicken
+            ON records_chicken.farmerid = f.id
+            
+            
+            WHERE DATEDIFF(CURRENT_TIMESTAMP(), f.`timejoined`) > 7
+            
+            AND f.id NOT IN (
+            
+                SELECT farmers.id 
+                    FROM `farmers` 
+                    LEFT JOIN email_reminders
+                    ON farmers.id = email_reminders.farmerid
+                    
+                    WHERE 
+                    
+                    (`farmers`.`firstname` IS NULL OR `farmers`.`firstname` = "" OR `farmers`.`firstname` = " ")
+                    OR
+                    (`farmers`.`lastname` IS NULL OR `farmers`.`lastname` = "" OR `farmers`.`lastname` = " ")
+                    OR
+                    (`farmers`.`phonenumber` IS NULL OR `farmers`.`phonenumber` = "" OR `farmers`.`phonenumber` = " ")
+                    OR
+                    (`farmers`.`age` IS NULL OR `farmers`.`age` = "" OR `farmers`.`age` = " ")
+                    OR
+                    (`farmers`.`maritalstatus` IS NULL OR `farmers`.`maritalstatus` = "" OR `farmers`.`maritalstatus` = " ")
+                    OR
+                    (`farmers`.`yearsofexperience` IS NULL OR `farmers`.`yearsofexperience` = "" OR `farmers`.`yearsofexperience` = " ")
+                    OR
+                    (`farmers`.`highesteducationallevel` IS NULL OR `farmers`.`highesteducationallevel` = "" OR `farmers`.`highesteducationallevel` = " ")
+                    
+                    
+                    
+                    AND DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
 
+                    AND farmers.id NOT IN (
+                        SELECT email_reminders.farmerid FROM email_reminders
+                    )
+                    -- WHERE "_timejoined" > 200 -- DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`)
+                    -- put % of completion
+                    -- include fields they are yet to fill out
+            
+            )
+            
+            AND (
+                records_mortalities.input_records_mortalities_count IS NULL
+                AND records_medicines.input_records_medicines_count IS NULL
+                AND records_labour.input_records_labour_count IS NULL
+                AND records_income_expenses.input_records_income_expenses_count IS NULL 
+                AND records_diseases.input_records_diseases_count IS NULL
+                AND records_brooding.input_records_brooding_count IS NULL
+                AND records_feeds.inputs_records_feeds_count IS NULL
+                AND records_chicken.inputs_records_chicken_count IS NULL
+            )
 
+            AND DATEDIFF(CURRENT_TIMESTAMP(), f.`timejoined`) > 7
 
-
-
-        $incomplete_profile_query = '
-            SELECT farmers.id AS "farmerid", DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) AS "_timejoined"
-            ,`farmers`.`timejoined`
-            , `farmers`.`email`, `farmers`.`firstname`, `farmers`.`lastname` 
-            FROM `farmers` 
-            LEFT JOIN email_reminders
-            ON farmers.id = email_reminders.farmerid
-            
-            WHERE 
-            
-            (`farmers`.`firstname` IS NULL OR `farmers`.`firstname` = "" OR `farmers`.`firstname` = " ")
-            OR
-            (`farmers`.`lastname` IS NULL OR `farmers`.`lastname` = "" OR `farmers`.`lastname` = " ")
-            OR
-            (`farmers`.`phonenumber` IS NULL OR `farmers`.`phonenumber` = "" OR `farmers`.`phonenumber` = " ")
-            OR
-            (`farmers`.`age` IS NULL OR `farmers`.`age` = "" OR `farmers`.`age` = " ")
-            OR
-            (`farmers`.`maritalstatus` IS NULL OR `farmers`.`maritalstatus` = "" OR `farmers`.`maritalstatus` = " ")
-            OR
-            (`farmers`.`yearsofexperience` IS NULL OR `farmers`.`yearsofexperience` = "" OR `farmers`.`yearsofexperience` = " ")
-            OR
-            (`farmers`.`highesteducationallevel` IS NULL OR `farmers`.`highesteducationallevel` = "" OR `farmers`.`highesteducationallevel` = " ")
-            
-            
-            
-            AND DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
-
-            AND farmers.id NOT IN (
-                SELECT email_reminders.farmerid FROM email_reminders
-                )
-            -- WHERE "_timejoined" > 200
-            -- put % of completion
-            -- include fields they are yet to fill out
-            
-            
+            AND f.id NOT IN (
+                SELECT email_reminders.farmerid FROM email_reminders WHERE email_reminders.email_type = "NO_FARM_RECORDS"
+            )
         ';
 
         // Prepare statement
-        $query_statement = $database_connection->prepare($incomplete_profile_query);
+        $query_statement = $database_connection->prepare($no_records_query);
 
         // Execute query statement
         $query_statement->execute();
 
-        $farmers_with_incomplete_profiles = $query_statement->fetchAll(PDO::FETCH_ASSOC);
+        $farmers_with_no_records = $query_statement->fetchAll(PDO::FETCH_ASSOC);
 
         //Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
-        for ($i = 0; $i < count($farmers_with_incomplete_profiles); $i++) {
+        for ($i = 0; $i < count($farmers_with_no_records); $i++) {
             # send mail
             //Server settings
             // uncomment to see email report/output
@@ -187,7 +275,7 @@ try {
 
             //Recipients
             $mail->setFrom(getenv("OUR_EMAIL"), 'Mailer');
-            $mail->addAddress($farmers_with_incomplete_profiles[$i]['email'], $farmers_with_incomplete_profiles[$i]['firstname']);     //Add a recipient
+            $mail->addAddress(getenv("TEST_EMAIL"), $farmers_with_no_records[$i]['firstname']);     //Add a recipient
             // $mail->addAddress('ellen@example.com');               //Name is optional
             $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
             // $mail->addCC('cc@example.com');
@@ -200,18 +288,18 @@ try {
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             // -- how do we know what subject to set, and set it dynamically??
-            $mail->Subject = 'Complete Your Profile';
-            $mail->Body = _getEmailTemplateHTML($farmers_with_incomplete_profiles[$i]['firstname'], InnerEmailing::INCOMPLETE_PROFILE); // 'This is the HTML message body <b>in bold!</b>';
+            $mail->Subject = 'Add Farm Records';
+            $mail->Body = _getEmailTemplateHTML($farmers_with_no_records[$i]['firstname'], InnerEmailing::NO_FARM_RECORDS); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             // not put farmer emails
-            file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_incomplete_profiles[$i]['firstname'] . " with email " . $farmers_with_incomplete_profiles[$i]['email'] . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_no_records[$i]['firstname'] . " with email " . $farmers_with_no_records[$i]['email'] . "\n", TRUE));
 
             if ($i < 1 && $mail->send()) { // send only one email for now
-                $output_info["farmers"][$farmers_with_incomplete_profiles[$i]['email']] = "SENT";
+                $output_info["farmers"][$farmers_with_no_records[$i]['email']] = "SENT";
                 file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
             } else {
-                $output_info["farmers"][$farmers_with_incomplete_profiles[$i]['email']] = "NOT_SENT";
+                $output_info["farmers"][$farmers_with_no_records[$i]['email']] = "NOT_SENT";
                 file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
             }
 
