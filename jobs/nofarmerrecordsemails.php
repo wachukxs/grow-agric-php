@@ -105,7 +105,7 @@ function _saveFarmerEmailReminder($farmerid, $emailtype)
     $query = 'INSERT INTO `email_reminders`
         SET
         email_type = :_email_type,
-        farmerid = :_farmerid,
+        farmerid = :_farmerid
     ';
 
     $database_connection = _getDb();
