@@ -327,7 +327,7 @@ class Records
 
     public function getAllSalesTotalByFarmer($farmerid)
     {
-        $query = "SELECT SUM(`sales_farmer_sales`.`price` * `sales_farmer_sales`.`quantity`) AS 'sum'
+        $query = "SELECT SUM(`sales_farmer_sales`.`price`) AS 'sum'
         FROM `sales_farmer_sales`
         WHERE `sales_farmer_sales`.`farmerid` = :farmerid
         ";
