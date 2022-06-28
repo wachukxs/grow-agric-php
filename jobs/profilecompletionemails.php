@@ -246,7 +246,7 @@ try {
 
             if ($i < 1 && $mail->send()) { // send only one email for now
                 // save into the db that it has been sent
-                _saveFarmerEmailReminder($farmers_with_no_records[$i]['farmerid'], "INCOMPLETE_PROFILE");
+                _saveFarmerEmailReminder($farmers_with_incomplete_profiles[$i]['farmerid'], "INCOMPLETE_PROFILE");
 
                 $output_info["farmers"][$farmers_with_incomplete_profiles[$i]['email']] = "SENT";
                 file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
