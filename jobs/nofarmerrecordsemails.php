@@ -265,10 +265,11 @@ try {
             ON records_feeds.farmerid = f.id
             
             LEFT JOIN 
-            (SELECT farmerid, COUNT(*) AS "inputs_records_chicken_count"
-            FROM
-            inputs_records_chicken
-            GROUP BY inputs_records_chicken.farmerid
+            (
+                SELECT farmerid, COUNT(*) AS "inputs_records_chicken_count"
+                FROM
+                inputs_records_chicken
+                GROUP BY inputs_records_chicken.farmerid
             
             ) records_chicken
             ON records_chicken.farmerid = f.id
@@ -279,12 +280,18 @@ try {
             AND f.id NOT IN (
             
                 SELECT farmers.id 
-                    FROM `farmers` 
-                    LEFT JOIN email_reminders
-                    ON farmers.id = email_reminders.farmerid
-                    
-                    WHERE 
-                    
+                FROM `farmers` 
+                LEFT JOIN email_reminders
+                ON farmers.id = email_reminders.farmerid
+                
+                WHERE 
+
+                DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
+                
+                AND 
+
+                (
+
                     (`farmers`.`firstname` IS NULL OR `farmers`.`firstname` = "" OR `farmers`.`firstname` = " ")
                     OR
                     (`farmers`.`lastname` IS NULL OR `farmers`.`lastname` = "" OR `farmers`.`lastname` = " ")
@@ -299,16 +306,14 @@ try {
                     OR
                     (`farmers`.`highesteducationallevel` IS NULL OR `farmers`.`highesteducationallevel` = "" OR `farmers`.`highesteducationallevel` = " ")
                     
-                    
-                    
-                    AND DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`) > 7
-
-                    AND farmers.id NOT IN (
-                        SELECT email_reminders.farmerid FROM email_reminders
-                    )
-                    -- WHERE "_timejoined" > 200 -- DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`)
-                    -- put % of completion
-                    -- include fields they are yet to fill out
+                )
+                
+                
+                AND email_reminders.farmerid IS NULL
+                
+                -- WHERE "_timejoined" > 200 -- DATEDIFF(CURRENT_TIMESTAMP(), `farmers`.`timejoined`)
+                -- put % of completion
+                -- include fields they are yet to fill out
             
             )
             
