@@ -237,7 +237,7 @@ class Admin
             // causing damaged html message
             // $email_template = preg_replace(array("/\n/", "/\s/"), '', $email_template); // would the email be too long?
 
-            $signup_text = "Thank you for signing up on GrowAgric. Join farmers across Kenya in accessing finance, learning materials, and record keeping for your farm.";
+            $signup_text = "Thank you for signing up with GrowAgric. Join farmers across Kenya in accessing finance, learning materials, and record keeping for your farm.";
 
             // work on $invitation_text
             $invitation_text = "Hi {farmerfriendname}, {fullname} is inviting you to join GrowAgric. GrowAgric provides farmers like you with working capital, insureance, traning, record managemnt tools for your farm, and connection to bulk buyers.";
@@ -383,7 +383,7 @@ class Admin
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ($emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'Finance Application Update' : 'Hello!!')));
-            $mail->Body = $this->getEmailTemplateHTML($firstname, $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application); // 'This is the HTML message body <b>in bold!</b>';
+            $mail->Body = $this->getEmailTemplateHTML(trim($firstname), $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             if ($mail->send()) {
