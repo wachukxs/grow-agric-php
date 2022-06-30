@@ -355,7 +355,7 @@ class Admin
         } catch (\Throwable $err) {
             //throw $err;
             file_put_contents('php://stderr', print_r("\n\n" . 'composing email body error::::::' . "\n", TRUE));
-            file_put_contents('php://stderr', print_r($err));
+            file_put_contents('php://stderr', print_r($err, TRUE));
             return false;
         }
     }
