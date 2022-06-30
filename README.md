@@ -28,3 +28,4 @@ sendmail_path = /usr/sbin/sendmail -t -i
 ## Rules,
 
 Don't pick out farms that have been deleted
+print_r() must always have the TRUE argument
