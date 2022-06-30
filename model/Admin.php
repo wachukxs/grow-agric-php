@@ -4,6 +4,9 @@
 require __DIR__ . "/../vendor/autoload.php"; // https://stackoverflow.com/a/44623787/9259701
 file_put_contents('php://stderr', "Hitting Admin.php" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
+include_once 'Farmer.php';
+include_once '../config/Database.php';
+
 //Import PHPMailer classes into the global namespace
 //These must be at the top of your script, not inside a function
 use PHPMailer\PHPMailer\PHPMailer;
@@ -42,7 +45,7 @@ class Admin
     public function sendMessage($_message, $_time_sent, $_from, $_to, $farmerid, $subject)
     {
         try {
-            file_put_contents('php://stderr', print_r("\n\n" . 'recording a message' . "\n", TRUE));
+            file_put_contents('php://stderr', print_r("\n\n" . 'recording a message' . "\n"));
 
             $query = 'INSERT INTO `messages`
                 SET
@@ -79,18 +82,18 @@ class Admin
 
             if ($r) {
 
-                file_put_contents('php://stderr', print_r('created THe MessAGE ' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('created THe MessAGE ' . "\n"));
                 $_result = $this->getSingleChatMessage($this->database_connection->lastInsertId());
                 $_row = $_result->fetch(PDO::FETCH_ASSOC);
 
                 return $_row;
             } else {
-                file_put_contents('php://stderr', print_r('DID created THe MessAGE ' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('DID created THe MessAGE ' . "\n"));
                 return false;
             }
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->sendMessage error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->sendMessage error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -117,7 +120,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmerMessages error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmerMessages error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -137,7 +140,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getAllAdminMessages error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllAdminMessages error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -168,7 +171,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithMessages error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithMessages error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -194,7 +197,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithMessages error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithMessages error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -218,13 +221,13 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithoutMessages error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmersWithoutMessages error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
 
 
-    public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL)
+    public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL, $farmerid, $farmeremail)
     {
         /**
          * include their emails for easy logins?
@@ -302,6 +305,21 @@ class Admin
                 $emailbody = str_replace("{cta}", $reset_password_cta, $emailbody);
 
                 // -- get reset password link
+                // Instantiate Database to get a connection
+                $database_connection = new Database();
+                $a_database_connection = $database_connection->connect();
+                // Instantiate farmer object
+                $farmer = new Farmer($a_database_connection);
+                // create reset password request, then send reset password email
+                $requestid = $farmer->createNewFarmerPasswordResetRequest($farmerid);
+
+                // get hash of request id, hash(HASHING_ALGORITHM, 4), if hash is ...
+                // email/hash
+
+
+                // ger cta link, in this case, password reset link
+                $cta_link = getenv("PROD_BASE_URL") . "/" . "password-reset" . "/" . $farmeremail . "/" . hash(hash_algos()[29], $requestid);
+                
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             } else if ($emailtype == Emailing::FINANCE_APPLICATION_UPDATE) {
                 $emailbody = str_replace("{body}", $finance_application_status_update_text, $email_template);
@@ -336,8 +354,8 @@ class Admin
             return $emailbody;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r("\n\n" . 'composing email body error::::::' . "\n", TRUE));
-            file_put_contents('php://stderr', print_r($err, TRUE));
+            file_put_contents('php://stderr', print_r("\n\n" . 'composing email body error::::::' . "\n"));
+            file_put_contents('php://stderr', print_r($err));
             return false;
         }
     }
@@ -345,20 +363,20 @@ class Admin
     /**
      * needs refactoring : either do separate methods for emailing different scenarios: or do if checks to make sure the correct data is provided for each scenarios
      */
-    public function sendMail($firstname, $emailtype, $sendtoemail, $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL, $cta_link = "https://farmers.growagric.com")
+    public function sendMail($firstname, $emailtype, $sendtoemail, $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL, $cta_link = "https://farmers.growagric.com", $farmerid = NULL)
     {
         //Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
 
         try {
-            file_put_contents('php://stderr', print_r("\n\n" . 'actually sending email' . "\n", TRUE));
+            file_put_contents('php://stderr', print_r("\n\n" . 'actually sending email' . "\n"));
 
 
             //Server settings
             // uncomment to see email report/output
             $mail->SMTPDebug = SMTP::DEBUG_OFF;                      //Enable or disable verbose debug output
             $mail->Debugoutput = function ($str, $level) {
-                file_put_contents('php://stderr', print_r("\n\n" . $str . "\n", TRUE));
+                file_put_contents('php://stderr', print_r("\n\n" . $str . "\n"));
             };
             $mail->isSMTP();                                            //Send using SMTP
             $mail->Host       = getenv("OUR_EMAIL_REGION");   //Set the SMTP server to send through
@@ -383,23 +401,22 @@ class Admin
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ($emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'Finance Application Update' : 'Hello!!')));
-            $mail->Body = $this->getEmailTemplateHTML(trim($firstname), $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application); // 'This is the HTML message body <b>in bold!</b>';
+            $mail->Body = $this->getEmailTemplateHTML(trim($firstname), $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application, $farmerid, $sendtoemail); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             if ($mail->send()) {
 
                 return true;
-                file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n"));
             } else {
                 return false;
 
-                file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n"));
             }
         } catch (\Throwable $err) {
             //throw $err;
 
-            file_put_contents('php://stderr', print_r("Message could not be sent. Mailer Error: {$mail->ErrorInfo}"));
-            // file_put_contents('php://stderr', print_r('Admin.php->sendMail error: ' . $mail->ErrorInfo . "\n", TRUE));
+            file_put_contents('php://stderr', print_r("Admin.php->sendMail error: Message could not be sent. Mailer Error: {$mail->ErrorInfo}"));
             return false;
         }
     }
@@ -417,7 +434,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllWaitingList error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllWaitingList error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -466,7 +483,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getReviewInfo error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getReviewInfo error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -495,7 +512,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getAdminByEmail error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAdminByEmail error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -525,7 +542,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getSingleChatMessage error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getSingleChatMessage error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -595,7 +612,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFinanceApplications error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFinanceApplications error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -627,7 +644,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFarms error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarms error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -650,7 +667,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmers error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFarmers error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -678,7 +695,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getModuleByID error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getModuleByID error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -706,7 +723,7 @@ class Admin
             return $query_statement;
         } catch (\Throwable $err) {
             //throw $err;
-            file_put_contents('php://stderr', print_r('Admin.php->getCourseByID error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getCourseByID error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -781,15 +798,15 @@ class Admin
 
             // Execute query statement
             if ($stmt->execute()) {
-                file_put_contents('php://stderr', print_r('Executed course module update query' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Executed course module update query' . "\n"));
                 return true;
             } else {
-                file_put_contents('php://stderr', print_r('Failed to Execute course module update query' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Failed to Execute course module update query' . "\n"));
                 return false;
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Admin.php->editExistingCourse error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->editExistingCourse error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -821,15 +838,15 @@ class Admin
 
             // Execute query statement
             if ($stmt->execute()) {
-                file_put_contents('php://stderr', print_r('Executed learning module update query' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Executed learning module update query' . "\n"));
                 return true;
             } else {
-                file_put_contents('php://stderr', print_r('Failed to Execute learning module update query' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Failed to Execute learning module update query' . "\n"));
                 return false;
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Admin.php->editExistingModule error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->editExistingModule error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -871,7 +888,7 @@ class Admin
                 return false;
             }
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllModules error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllModules error: ' . $err->getMessage() . "\n"));
             return $err;
         }
     }
@@ -891,7 +908,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllModules error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllModules error: ' . $err->getMessage() . "\n"));
             return $err;
         }
     }
@@ -911,7 +928,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllCourses error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllCourses error: ' . $err->getMessage() . "\n"));
             return $err;
         }
     }
@@ -951,15 +968,15 @@ class Admin
 
             // Execute query statement
             if ($stmt->execute()) {
-                file_put_contents('php://stderr', print_r('Executed message receipts read update query' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Executed message receipts read update query' . "\n"));
                 return true;
             } else {
-                file_put_contents('php://stderr', print_r('Failed to Execute message receipts read update query' . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Failed to Execute message receipts read update query' . "\n"));
                 return false;
             }
         } catch (\Throwable $err) {
             // throw $err; $err->getMessage()
-            file_put_contents('php://stderr', print_r('Admin.php->updateReadReceipts error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->updateReadReceipts error: ' . $err->getMessage() . "\n"));
             return false;
         }
     }
@@ -1042,7 +1059,7 @@ class Admin
 
             return $query_statement;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Admin.php->getAllFieldAgentFarmVisits error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFieldAgentFarmVisits error: ' . $err->getMessage() . "\n"));
             return $err;
         }
     }

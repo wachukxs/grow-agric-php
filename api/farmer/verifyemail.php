@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // sending email
                 if (getenv("CURR_ENV") == "production") {
-                    $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, NULL, $cta_link);
+                    $admin->sendMail($row['firstname'], Emailing::PASSWORD_RESET, $row['email'], NULL, NULL, NULL, NULL, $cta_link, $row['id']);
                 }
 
                 echo json_encode(
