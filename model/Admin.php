@@ -318,7 +318,7 @@ class Admin
 
 
                 // ger cta link, in this case, password reset link
-                $cta_link = getenv("PROD_BASE_URL") . "/" . "password-reset" . "/" . $farmeremail . "/" . hash(hash_algos()[29], $requestid);
+                $cta_link = getenv("FARMERS_PROD_BASE_URL") . "/" . "password-reset" . "/" . $farmeremail . "/" . hash(hash_algos()[29], $requestid);
                 file_put_contents('php://stderr', print_r("\n\n" . 'creating a new password reset link======' . $cta_link . "\n", TRUE));
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
             } else if ($emailtype == Emailing::FINANCE_APPLICATION_UPDATE) {
