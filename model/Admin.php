@@ -2,7 +2,7 @@
 
 //Load Composer's autoloader
 require __DIR__ . "/../vendor/autoload.php"; // https://stackoverflow.com/a/44623787/9259701
-file_put_contents('php://stderr', "Hitting Admin.php" . "\n" . "\n", TRUE, FILE_APPEND | LOCK_EX);
+file_put_contents('php://stderr', "Hitting Admin.php" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
 include_once 'Farmer.php';
 include_once '../config/Database.php';
