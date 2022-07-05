@@ -5,7 +5,7 @@ require __DIR__ . "/../vendor/autoload.php"; // https://stackoverflow.com/a/4462
 file_put_contents('php://stderr', "Hitting Admin.php" . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
 include_once 'Farmer.php';
-include_once '/../config/Database.php';
+include_once __DIR__ . '/../config/Database.php';
 
 //Import PHPMailer classes into the global namespace
 //These must be at the top of your script, not inside a function
