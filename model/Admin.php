@@ -346,6 +346,7 @@ class Admin
                 $emailbody = str_replace("{cta}", $login_cta_text, $emailbody);
 
                 $emailbody = str_replace("{cta_link}", $cta_link, $emailbody);
+                file_put_contents('php://stderr', print_r("\n\n" . 'created new message update template++++' . "\n", TRUE));
             }
 
 
