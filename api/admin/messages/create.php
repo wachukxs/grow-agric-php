@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         file_put_contents('php://stderr', "\n\n" . " getting all farmer personal info:::: for id " . $data->farmerid . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
-        $result2 = $farmer->getAllFarmersPersonalInfo($data->farmerid);
+        $result2 = $farmer->getSingleFarmerByID($data->farmerid);
         $farmerRow = $result2->fetch(PDO::FETCH_ASSOC);
 
         file_put_contents('php://stderr', $farmerRow, FILE_APPEND | LOCK_EX);
