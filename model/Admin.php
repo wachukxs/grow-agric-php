@@ -227,7 +227,7 @@ class Admin
     }
 
 
-    public function getEmailTemplateHTML($firstname, $emailtype, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL, $farmerid, $farmeremail)
+    public function getEmailTemplateHTML($firstname, $emailtype, $farmerid, $farmeremail, $cta_link = "https://farmers.growagric.com", $invitedby = NULL, $lastname = NULL, $fullname = NULL, $date_of_finance_application = NULL)
     {
         /**
          * include their emails for easy logins?
@@ -402,7 +402,7 @@ class Admin
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
             $mail->Subject = $emailtype == Emailing::SIGNUP ? 'Welcome!' : ($emailtype == Emailing::INVITE ? 'GrowAgric Invitation' : ($emailtype == Emailing::PASSWORD_RESET ? 'Password Reset' : ($emailtype == Emailing::FINANCE_APPLICATION_UPDATE ? 'Finance Application Update' : 'Hello!!')));
-            $mail->Body = $this->getEmailTemplateHTML(trim($firstname), $emailtype, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application, $farmerid, $sendtoemail); // 'This is the HTML message body <b>in bold!</b>';
+            $mail->Body = $this->getEmailTemplateHTML(trim($firstname), $emailtype, $farmerid, $sendtoemail, $cta_link, $invitedby, $lastname, $fullname, $date_of_finance_application); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             if ($mail->send()) {
