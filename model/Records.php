@@ -1938,4 +1938,88 @@ class Records
             return false;
         }
     }
+
+    public function getAllAvailableChicksForSaleByFarmer($farmerid)
+    {
+        try {
+            $query = 'SELECT * FROM `chicks_for_sale`
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllAvailableChicksForSaleByFarmer(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllAvailableChicksForSale()
+    {
+        try {
+            $query = 'SELECT * FROM `chicks_for_sale`
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllAvailableChicksForSale(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function editPurchaseDetailsForProducePurchase($id, $pricepurchasedfor, $datepurchased)
+    {
+        try {
+            // Create query
+            $query = 'UPDATE `chicks_for_sale` 
+                SET 
+                pricepurchasedfor = :_pricepurchasedfor,
+                datepurchased = :_datepurchased
+                WHERE
+                id = :_id
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $_id = htmlspecialchars(strip_tags($id));
+            $ppf = htmlspecialchars(strip_tags($pricepurchasedfor));
+
+            $date1 = new DateTime($datepurchased); // Seems this isn't doing timezone conversion and is not accurate
+            $dp = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_pricepurchasedfor', $ppf);
+            $stmt->bindParam(':_datepurchased', $dp);
+            $stmt->bindParam(':_id', $_id);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed editPurchaseDetailsForProducePurchase update query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute editPurchaseDetailsForProducePurchase update query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Records.php->editPurchaseDetailsForProducePurchase error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
 }

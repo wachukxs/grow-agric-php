@@ -40,7 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Instantiate green homes orders object
             $records = new Records($a_database_connection);
 
-
             $result = $records->createFarmerAvailableSaleForChickens($data->dateavailable, $data->farmcountylocation, $data->farmwardlocation, $data->farmsubcountylocation, $data->numberofchickens, $data->averagekg, $data->farmerid);
             
             if ($result) {
@@ -83,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'message' => 'Bad data provided',
                 'response' => 'NOT OK',
                 'response_code' => http_response_code(), // 400 // setting http code here causes error
-                // write a global function to find out what field is empty in $data
+                // write a global function to find out what field is empty in $data, and just give details about the general error
                 'more_details' => array(
                     'dateavailable' => !empty($data->dateavailable),
                     'farmcountylocation' => !empty($data->farmcountylocation),
