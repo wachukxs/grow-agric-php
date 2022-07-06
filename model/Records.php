@@ -1885,4 +1885,57 @@ class Records
             return false;
         }
     }
+
+    public function createFarmerAvailableSaleForChickens($dateavailable, $farmcountylocation, $farmwardlocation, $farmsubcountylocation, $numberofchickens, $averagekg, $farmerid)
+    {
+        try {
+            $query = 'INSERT INTO chicks_for_sale 
+                SET
+                farmerid = :_farmerid,
+                dateavailable = :_dateavailable,
+                farmcountylocation = :_farmcountylocation,
+                farmwardlocation = :_farmwardlocation,
+                farmsubcountylocation = :_farmsubcountylocation,
+                numberofchickens = :_numberofchickens,
+                averagekg = :_averagekg
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            $date1 = new DateTime($dateavailable); // Seems this isn't doing timezone conversion and is not accurate
+            $da = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+            $fcl = htmlspecialchars(strip_tags($farmcountylocation));
+            $fwl = htmlspecialchars(strip_tags($farmwardlocation));
+            $fscl = htmlspecialchars(strip_tags($farmsubcountylocation));
+            $noc = htmlspecialchars(strip_tags($numberofchickens));
+            $akg = htmlspecialchars(strip_tags($averagekg));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+            $stmt->bindParam(':_dateavailable', $da);
+            $stmt->bindParam(':_farmcountylocation', $fcl);
+            $stmt->bindParam(':_farmwardlocation', $fwl);
+            $stmt->bindParam(':_farmsubcountylocation', $fscl);
+            $stmt->bindParam(':_numberofchickens', $noc);
+            $stmt->bindParam(':_averagekg', $akg);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $this->database_connection->lastInsertId();
+                // $_result = $this->getSingleEmployee($this->database_connection->lastInsertId());
+                // $_row = $_result->fetch(PDO::FETCH_ASSOC);
+                // return $_row;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in createFarmerAvailableSaleForChickens(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
 }
