@@ -261,7 +261,7 @@ class Farmer {
     {
         try {
             // Create query
-            $query = 'SELECT * FROM ' . $this->table . '
+            $query = 'SELECT * FROM `farmers`
                 WHERE
                 email = :_email
             ';
