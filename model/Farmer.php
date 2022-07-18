@@ -257,10 +257,10 @@ class Farmer {
     }
 
     // getSingleFarmerByEmail
-    public function getFarmerByEmail($_email)
+    public function getFarmerWithPasswordByEmail($_email)
     {
         try {
-            // Create query
+            // Create query, we need the password from this query
             $query = 'SELECT * FROM `farmers`
                 WHERE
                 email = :_email
@@ -271,8 +271,8 @@ class Farmer {
 
             $e = htmlspecialchars(strip_tags($_email));
 
-            file_put_contents('php://stderr', print_r('Farmer.php->getFarmerByEmail fetching ...: ' . "\n", TRUE));
-            // file_put_contents('../../logs/api.log', 'Farmer.php->getFarmerByEmail fetching ...: ' . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', print_r('Farmer.php->getFarmerWithPasswordByEmail fetching ...: ' . "\n", TRUE));
+            // file_put_contents('../../logs/api.log', 'Farmer.php->getFarmerWithPasswordByEmail fetching ...: ' . "\n", FILE_APPEND | LOCK_EX);
 
             // Execute query statement
             $query_statement->bindParam(':_email', $e);
@@ -283,8 +283,8 @@ class Farmer {
             return $query_statement;
         } catch (\Throwable $err) {
             // throw $err;
-            // file_put_contents('../../logs/api.log', 'Farmer.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
-            file_put_contents('php://stderr', print_r('Farmer.php->getFarmerByEmail error: ' . $err->getMessage() . "\n", TRUE));
+            // file_put_contents('../../logs/api.log', 'Farmer.php->getFarmerWithPasswordByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', print_r('Farmer.php->getFarmerWithPasswordByEmail error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
 

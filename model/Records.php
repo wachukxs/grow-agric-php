@@ -222,7 +222,7 @@ class Records
             return $stmt;
     }
 
-    public function totalFarmerEmployess($farmerid)
+    public function totalRecordedFarmerEmployees($farmerid)
     {
         $query = "SELECT COUNT(*) as totalemployees FROM `farmer_employees` WHERE `farmer_employees`.`farmerid` = :farmerid";
 
@@ -330,6 +330,35 @@ class Records
         $query = "SELECT SUM(`sales_farmer_sales`.`price`) AS 'sum'
         FROM `sales_farmer_sales`
         WHERE `sales_farmer_sales`.`farmerid` = :farmerid
+        ";
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+
+    }
+
+
+    public function getFarmerTotalNumberOfEmployees($farmerid)
+    {
+        $query = "SELECT SUM(farms.numberofemployees) AS total
+
+        FROM `farmers`
+        
+        LEFT JOIN
+        
+        farms
+        ON farmers.id = farms.farmerid
+        
+        WHERE farmers.id = :farmerid
         ";
 
         $stmt = $this->database_connection->prepare($query);
@@ -1229,6 +1258,58 @@ class Records
         }
     }
 
+    public function calculateTotalInputsCost($farmerid)
+    {
+        // 
+        try {
+            $query = 'SELECT SUM(totalmedicinesprice) as totalcost FROM (
+                SELECT SUM(`input_records_medicines`.`price`) AS totalmedicinesprice FROM `input_records_medicines`
+                WHERE `input_records_medicines`.`farmerid` = :_farmerid
+                
+                UNION
+                
+                SELECT SUM(`input_records_labour`.`salary`) AS totalsalariespaid FROM `input_records_labour`
+                WHERE `input_records_labour`.`farmerid` = :_farmerid
+                
+                UNION
+                
+                SELECT SUM(`input_records_income_expenses`.`amount`) AS totalexpense FROM `input_records_income_expenses`
+                WHERE `input_records_income_expenses`.`type` = "Expense" AND `input_records_income_expenses`.`farmerid` = :_farmerid
+                
+                UNION
+                
+                SELECT SUM(`input_records_brooding`.`amount_spent`) AS totalbroodingamount FROM `input_records_brooding`
+                WHERE `input_records_brooding`.`farmerid` = :_farmerid
+                
+                UNION
+                
+                SELECT SUM(`inputs_records_feeds`.`price`) AS totalfeedsamount FROM `inputs_records_feeds`
+                WHERE `inputs_records_feeds`.`farmerid` = :_farmerid
+                
+                UNION
+                
+                SELECT SUM(`inputs_records_chicken`.`price`) AS totalchickenprice FROM `inputs_records_chicken`
+                WHERE `inputs_records_chicken`.`farmerid` = :_farmerid
+                ) AS sums
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fid);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in calculateTotalExpense(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     public function getSingleMortalityRecordByID($mortalityrecordid)
     {
         try {
@@ -2022,4 +2103,76 @@ class Records
             return false;
         }
     }
+
+    public function selectFarmerFeedsSupplier($farmerid)
+    {
+        try {
+            $query = 'SELECT DISTINCT inputs_records_feeds.feed_supplier as asd FROM `inputs_records_feeds` WHERE inputs_records_feeds.farmerid = ?';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->bindParam(1, $farmerid);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Records.php->selectFarmerChickenSupplier error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function selectFarmerChickenSupplier($farmerid)
+    {
+        try {
+            $query = 'SELECT DISTINCT inputs_records_chicken.chicken_supplier as dfd FROM `inputs_records_chicken` WHERE inputs_records_chicken.farmerid = ?';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->bindParam(1, $farmerid);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Records.php->selectFarmerFeedsSupplier error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    /**
+     * unused queries ...
+     * SELECT
+                lc.`mediatype`, lc.`name`, lc.`description`, lc.`id`, lc.`url`, lc.`moduleid`, MAX(ll.end) AS last_time,
+                (
+                SELECT MAX(currentpage) FROM learning_info
+                ) AS max_page_read,
+                (
+                SELECT MAX(totalpages) FROM learning_info
+                ) AS totalpages,
+                (
+                SELECT currentpage FROM learning_info WHERE learning_info.end = MAX(ll.end)
+                ) AS last_page
+                
+                FROM learning_courses lc
+                
+                LEFT JOIN 
+                learning_info ll
+                
+                ON lc.id = ll.course_id
+                
+                WHERE ll.farmerid = 1
+                
+                GROUP BY ll.course_id
+                
+                HAVING 
+                MAX(ll.`totalpages`) > MAX(ll.`currentpage`)
+
+     */
 }

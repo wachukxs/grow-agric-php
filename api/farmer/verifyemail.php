@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         !empty($data->email)
     ) { // if good data was provided
         // Verify the farmer [email]
-        $result = $farmer->getFarmerByEmail($data->email);
+        $result = $farmer->getFarmerWithPasswordByEmail($data->email);
         if ($result) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
             // delete password

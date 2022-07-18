@@ -36,8 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $farmers_courses_statuses_result = $course->getAllCompletedAndIncompletedCourses();
         $row2 = $farmers_courses_statuses_result->fetchAll(PDO::FETCH_ASSOC);
 
-        $incompleted_courses_result = $course->getAllCourses();
-        $row3 = $incompleted_courses_result->fetchAll(PDO::FETCH_ASSOC);
+        $all_courses_result = $course->getAllCourses();
+        $row3 = $all_courses_result->fetchAll(PDO::FETCH_ASSOC);
 
         $response["personalInfo"] = $row1;
 

@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
         !empty($data->password)
     ) {
         // try to check their credentials
-        $result1 = $farmer->getFarmerByEmail($data->email);
+        $result1 = $farmer->getFarmerWithPasswordByEmail($data->email);
         file_put_contents('php://stderr', print_r($result1, TRUE));
         file_put_contents('php://stderr', print_r(gettype($result1), TRUE));
 
