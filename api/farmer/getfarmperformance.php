@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $row1["mindate"] = $result1->fetch(PDO::FETCH_ASSOC);
     
             // number of the total records saved by farmer
+            // isn't accurate. UNION won't add distinct values.
             $result2 = $records->sumsOfRecords($_GET["farmerid"]);
             $row1["recordssum"] = $result2->fetch(PDO::FETCH_ASSOC);
     

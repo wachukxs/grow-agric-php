@@ -2107,7 +2107,7 @@ class Records
     public function selectFarmerFeedsSupplier($farmerid)
     {
         try {
-            $query = 'SELECT DISTINCT inputs_records_feeds.feed_supplier as asd FROM `inputs_records_feeds` WHERE inputs_records_feeds.farmerid = ?';
+            $query = 'SELECT DISTINCT inputs_records_feeds.feed_supplier as feed_supplier FROM `inputs_records_feeds` WHERE inputs_records_feeds.farmerid = ?';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -2128,7 +2128,7 @@ class Records
     public function selectFarmerChickenSupplier($farmerid)
     {
         try {
-            $query = 'SELECT DISTINCT inputs_records_chicken.chicken_supplier as dfd FROM `inputs_records_chicken` WHERE inputs_records_chicken.farmerid = ?';
+            $query = 'SELECT DISTINCT inputs_records_chicken.chicken_supplier as chicken_supplier FROM `inputs_records_chicken` WHERE inputs_records_chicken.farmerid = ?';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
