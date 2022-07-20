@@ -2021,8 +2021,10 @@ class Records
             $fcl = htmlspecialchars(strip_tags($farmcountylocation));
             $fwl = htmlspecialchars(strip_tags($farmwardlocation));
             $fscl = htmlspecialchars(strip_tags($farmsubcountylocation));
-            $noc = htmlspecialchars(strip_tags($numberofchickens));
-            $akg = htmlspecialchars(strip_tags($averagekg));
+            $noc = htmlspecialchars(strip_tags(str_replace(',', '', $numberofchickens)));
+            // htmlspecialchars(strip_tags($numberofchickens));
+            // htmlspecialchars(strip_tags($averagekg));
+            $akg =  htmlspecialchars(strip_tags(str_replace(',', '', $averagekg)));
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_farmerid', $fi);
