@@ -18,15 +18,17 @@ $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (
-        isset($data->id, $data->pricepurchasedfor, $data->datepurchased)
+        isset($data->id, $data->pricepurchasedfor, $data->datepurchased, $data->quantitybought)
         &&
         !empty($data->datepurchased)
         &&
         !empty($data->pricepurchasedfor)
         &&
+        !empty($data->quantitybought)
+        &&
         !empty($data->id)
     ) {
-        $result = $records->editPurchaseDetailsForProducePurchase($data->id, $data->pricepurchasedfor, $data->datepurchased);
+        $result = $records->editPurchaseDetailsForProducePurchase($data->id, $data->pricepurchasedfor, $data->datepurchased, $data->quantitybought);
             
             if ($result) {
                 echo json_encode(

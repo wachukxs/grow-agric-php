@@ -1967,6 +1967,35 @@ class Records
         }
     }
 
+    public function getSingleAvailableChickenForSaleByID($id)
+    {
+        try {
+            $query = 'SELECT * FROM chicks_for_sale 
+                WHERE
+                id = :id
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $_id = htmlspecialchars(strip_tags($id));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':id', $_id);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                return $stmt;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getSingleAvailableChickenForSaleByID(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     public function createFarmerAvailableSaleForChickens($dateavailable, $farmcountylocation, $farmwardlocation, $farmsubcountylocation, $numberofchickens, $averagekg, $farmerid)
     {
         try {
@@ -2007,10 +2036,10 @@ class Records
             $r = $stmt->execute();
 
             if ($r) {
-                return $this->database_connection->lastInsertId();
-                // $_result = $this->getSingleEmployee($this->database_connection->lastInsertId());
-                // $_row = $_result->fetch(PDO::FETCH_ASSOC);
-                // return $_row;
+                // return $this->database_connection->lastInsertId();
+                $_result = $this->getSingleAvailableChickenForSaleByID($this->database_connection->lastInsertId());
+                $_row = $_result->fetch(PDO::FETCH_ASSOC);
+                return $_row;
             } else {
                 return false;
             }
@@ -2062,14 +2091,15 @@ class Records
         }
     }
 
-    public function editPurchaseDetailsForProducePurchase($id, $pricepurchasedfor, $datepurchased)
+    public function editPurchaseDetailsForProducePurchase($id, $pricepurchasedfor, $datepurchased, $quantitybought)
     {
         try {
             // Create query
             $query = 'UPDATE `chicks_for_sale` 
                 SET 
                 pricepurchasedfor = :_pricepurchasedfor,
-                datepurchased = :_datepurchased
+                datepurchased = :_datepurchased,
+                quantitybought = :_quantitybought
                 WHERE
                 id = :_id
             ';
@@ -2080,6 +2110,7 @@ class Records
             // Ensure safe data
             $_id = htmlspecialchars(strip_tags($id));
             $ppf = htmlspecialchars(strip_tags($pricepurchasedfor));
+            $qb = htmlspecialchars(strip_tags($quantitybought));
 
             $date1 = new DateTime($datepurchased); // Seems this isn't doing timezone conversion and is not accurate
             $dp = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
@@ -2087,6 +2118,7 @@ class Records
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_pricepurchasedfor', $ppf);
             $stmt->bindParam(':_datepurchased', $dp);
+            $stmt->bindParam(':_quantitybought', $qb);
             $stmt->bindParam(':_id', $_id);
 
             // Execute query statement
