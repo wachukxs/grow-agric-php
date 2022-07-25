@@ -27,18 +27,40 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         file_put_contents('php://stderr', print_r($data, TRUE));
 
         if (isset($_GET["farmerid"])) {
-            $result1 = $records->getFarmPerformanceV2Inputs($_GET["farmerid"]);
-            $row1["inputs"] = $result1->fetchAll(PDO::FETCH_ASSOC);
-            
-            // TODO: include the customers from these sales
-            $result2 = $records->getFarmPerformanceV2Sales($_GET["farmerid"]);
-            $row1["sales"] = $result2->fetchAll(PDO::FETCH_ASSOC);
+            $row1;
 
-            $result3 = $records->fetFarmPerformanceV2Mortalities($_GET["farmerid"]);
-            $row1["mortalities"] = $result3->fetchAll(PDO::FETCH_ASSOC);
-            
-            $result4 = $records->fetFarmPerformanceV2IncomeAndExpense($_GET["farmerid"]);
-            $row1["incomeandexpense"] = $result4->fetchAll(PDO::FETCH_ASSOC);
+            if (isset($_GET["duration"])) {
+                $result1 = $records->getFarmPerformanceV2Inputs($_GET["farmerid"], $_GET["duration"]);
+                $row1["inputs"] = $result1->fetchAll(PDO::FETCH_ASSOC);
+                
+                // TODO: include the customers from these sales
+                $result2 = $records->getFarmPerformanceV2Sales($_GET["farmerid"], $_GET["duration"]);
+                $row1["sales"] = $result2->fetchAll(PDO::FETCH_ASSOC);
+    
+                $result3 = $records->fetFarmPerformanceV2Mortalities($_GET["farmerid"], $_GET["duration"]);
+                $row1["mortalities"] = $result3->fetchAll(PDO::FETCH_ASSOC);
+                
+                $result4 = $records->fetFarmPerformanceV2IncomeAndExpense($_GET["farmerid"], $_GET["duration"]);
+                $row1["incomeandexpense"] = $result4->fetchAll(PDO::FETCH_ASSOC);
+
+
+                file_put_contents('php://stderr', print_r('Trying to get farm performance::: ' . $_GET["duration"] . "\n", TRUE));
+
+            } else {
+                $result1 = $records->getFarmPerformanceV2Inputs($_GET["farmerid"]);
+                $row1["inputs"] = $result1->fetchAll(PDO::FETCH_ASSOC);
+                
+                // TODO: include the customers from these sales
+                $result2 = $records->getFarmPerformanceV2Sales($_GET["farmerid"]);
+                $row1["sales"] = $result2->fetchAll(PDO::FETCH_ASSOC);
+    
+                $result3 = $records->fetFarmPerformanceV2Mortalities($_GET["farmerid"]);
+                $row1["mortalities"] = $result3->fetchAll(PDO::FETCH_ASSOC);
+                
+                $result4 = $records->fetFarmPerformanceV2IncomeAndExpense($_GET["farmerid"]);
+                $row1["incomeandexpense"] = $result4->fetchAll(PDO::FETCH_ASSOC);
+        
+            }
             
     
             // get total income & expense

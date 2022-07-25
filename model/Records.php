@@ -2180,70 +2180,122 @@ class Records
         }
     }
 
-    public function getFarmPerformanceV2Inputs($farmerid)
+    public function getFarmPerformanceV2Inputs($farmerid, $monthduration = NULL)
     {
 
         try {
-            $query = "
-                -- type of quantity aggregation
-                -- total quantiry
-                -- total price/amount
-                -- name
-                
-                
-                SELECT 
-                'COUNT' as 'aggregate_type',
-                COUNT(`input_records_medicines`.`id`) as 'total_quantity', 
-                SUM(`input_records_medicines`.`price`) AS 'total_price',
-                'Medicines' as name 
-                FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
-                
-                
-                UNION
-                SELECT 
-                'COUNT' as 'aggregate_type',
-                COUNT(`input_records_labour`.`id`) as 'total_quantity',
-                SUM(`input_records_labour`.`salary`) AS 'total_salary_paid',
-                'Labour' as name  
-                FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
-                
-                
-                
-                UNION
-                SELECT 
-                'SUM' as 'aggregate_type',
-                SUM(`inputs_records_chicken`.`quantity`) as 'total_quantity', 
-                SUM(`inputs_records_chicken`.`price`) as 'total_price',
-                'Chicken' as name  
-                FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
-                
-                
-                
-                
-                UNION
-                SELECT 
-                'COUNT' as 'aggregate_type',
-                COUNT(`input_records_brooding`.`brooding_item_quantity`) as 'times_brooding_done', 
-                SUM(`input_records_brooding`.`amount_spent`) AS 'total_brooding_spent',
-                'Brooding' as name 
-                FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
-                
-                
-                UNION
-                SELECT 
-                'COUNT' as 'aggregate_type',
-                COUNT(`inputs_records_feeds`.`quantity`) as sum7, 
-                SUM(`inputs_records_feeds`.`price`) as 'total_spent_feeds',
-                'Feeds' as name 
-                FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+            $query = "";
+            if ($monthduration) {
+                $query = "SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COALESCE(COUNT(`input_records_medicines`.`id`), 0) as 'total_quantity', 
+                    COALESCE(SUM(`input_records_medicines`.`price`), 0) AS 'total_price',
+                    'Medicines' as name 
+                    FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `input_records_medicines`.`entry_date`
                     
-            ";
-
+                    
+                    UNION
+                    SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COALESCE(COUNT(`input_records_labour`.`id`), 0) as 'total_quantity',
+                    COALESCE(SUM(`input_records_labour`.`salary`), 0) AS 'total_salary_paid',
+                    'Labour' as name  
+                    FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= input_records_labour.entry_date
+                    
+                    
+                    UNION
+                    SELECT 
+                    'SUM' as 'aggregate_type',
+                    COALESCE(SUM(`inputs_records_chicken`.`quantity`), 0) as 'total_quantity', 
+                    COALESCE(SUM(`inputs_records_chicken`.`price`), 0) as 'total_price',
+                    'Chicken' as name  
+                    FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= inputs_records_chicken.entry_date
+                    
+                    UNION
+                    SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COALESCE(COUNT(`input_records_brooding`.`brooding_item_quantity`), 0) as 'times_brooding_done', 
+                    COALESCE(SUM(`input_records_brooding`.`amount_spent`), 0) AS 'total_brooding_spent',
+                    'Brooding' as name 
+                    FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= input_records_brooding.entry_date
+                    
+                    UNION
+                    SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COALESCE(COUNT(`inputs_records_feeds`.`quantity`), 0) as sum7, 
+                    COALESCE(SUM(`inputs_records_feeds`.`price`), 0) as 'total_spent_feeds',
+                    'Feeds' as name 
+                    FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `inputs_records_feeds`.`entry_date`
+                ";
+            } else {
+                $query = "
+                    -- type of quantity aggregation
+                    -- total quantiry
+                    -- total price/amount
+                    -- name
+                    
+                    
+                    SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COUNT(`input_records_medicines`.`id`) as 'total_quantity', 
+                    SUM(`input_records_medicines`.`price`) AS 'total_price',
+                    'Medicines' as name 
+                    FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+                    
+                    
+                    UNION
+                    SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COUNT(`input_records_labour`.`id`) as 'total_quantity',
+                    SUM(`input_records_labour`.`salary`) AS 'total_salary_paid',
+                    'Labour' as name  
+                    FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+                    
+                    
+                    
+                    UNION
+                    SELECT 
+                    'SUM' as 'aggregate_type',
+                    SUM(`inputs_records_chicken`.`quantity`) as 'total_quantity', 
+                    SUM(`inputs_records_chicken`.`price`) as 'total_price',
+                    'Chicken' as name  
+                    FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+                    
+                    
+                    UNION
+                    SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COUNT(`input_records_brooding`.`brooding_item_quantity`) as 'times_brooding_done', 
+                    SUM(`input_records_brooding`.`amount_spent`) AS 'total_brooding_spent',
+                    'Brooding' as name 
+                    FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+                    
+                    
+                    UNION
+                    SELECT 
+                    'COUNT' as 'aggregate_type',
+                    COUNT(`inputs_records_feeds`.`quantity`) as sum7, 
+                    SUM(`inputs_records_feeds`.`price`) as 'total_spent_feeds',
+                    'Feeds' as name 
+                    FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+                        
+                ";
+            }
+            
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
 
-            // Execute query statement
+            // Bing params to query statement
             $query_statement->bindParam(':farmerid', $farmerid);
+
+            if ($monthduration) {
+                $query_statement->bindParam(':duration', $monthduration);
+            }
 
             // Execute query statement
             $query_statement->execute();
@@ -2255,31 +2307,49 @@ class Records
         }
     }
 
-
-    public function getFarmPerformanceV2Sales($farmerid)
+    public function getFarmPerformanceV2Sales($farmerid, $monthduration = NULL)
     {
 
         try {
-            $query = "
-                -- type of quantity aggregation
-                -- total quantiry
-                -- total price/amount
-                -- name
-                
-                
-                SELECT 
-                'SUM' as 'aggregate_type',
-                SUM(`sales_farmer_sales`.`quantity`) as 'total_quantity', 
-                SUM(`sales_farmer_sales`.`price`) AS 'total_price',
-                'Sales' as name 
-                FROM `sales_farmer_sales` WHERE `sales_farmer_sales`.`farmerid` = :farmerid
-            ";
+            $query = "";
+
+            if ($monthduration) {
+                $query = "SELECT 
+                    'SUM' as 'aggregate_type',
+                    COALESCE(SUM(`sales_farmer_sales`.`quantity`), 0) as 'total_quantity', 
+                    COALESCE(SUM(`sales_farmer_sales`.`price`), 0) AS 'total_price',
+                    'Sales' as name 
+                    FROM `sales_farmer_sales` WHERE `sales_farmer_sales`.`farmerid` = :farmerid
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `sales_farmer_sales`.`sale_date` -- why not use entry_date ????
+                ";
+            } else {
+                $query = "
+                    -- type of quantity aggregation
+                    -- total quantiry
+                    -- total price/amount
+                    -- name
+                    
+                    
+                    SELECT 
+                    'SUM' as 'aggregate_type',
+                    COALESCE(SUM(`sales_farmer_sales`.`quantity`), 0) as 'total_quantity', 
+                    COALESCE(SUM(`sales_farmer_sales`.`price`), 0) AS 'total_price',
+                    'Sales' as name 
+                    FROM `sales_farmer_sales` WHERE `sales_farmer_sales`.`farmerid` = :farmerid
+                ";
+            }
+            
+            
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
 
             // Execute query statement
             $query_statement->bindParam(':farmerid', $farmerid);
+
+            if ($monthduration) {
+                $query_statement->bindParam(':duration', $monthduration);
+            }
 
             // Execute query statement
             $query_statement->execute();
@@ -2291,32 +2361,55 @@ class Records
         }
     }
 
-    public function fetFarmPerformanceV2Mortalities($farmerid)
+    public function fetFarmPerformanceV2Mortalities($farmerid, $monthduration = NULL)
     {
 
         try {
-            $query = "SELECT -- this has to be different
-                `input_records_mortalities`.`openingbalance` as 'openingbalance',
-                `input_records_mortalities`.`numberofdeaths` AS 'total_no_deaths',
-                `input_records_mortalities`.`closingbalance` as 'closingbalance',
-                `input_records_mortalities`.`entry_date`,
-                'Mortalities' as name 
-                FROM `input_records_mortalities` WHERE 
-                
-                `input_records_mortalities`.`farmerid` = :farmerid
-                
-                AND 
-                `input_records_mortalities`.`entry_date` >= (now() - INTERVAL 3 month)
-                
-                ORDER BY input_records_mortalities.entry_date ASC
-                LIMIT 1
-            ";
+            $query = "";
+            if ($monthduration) {
+                $query = "SELECT -- this can be optimized
+                    `input_records_mortalities`.`openingbalance` as 'openingbalance',
+                    `input_records_mortalities`.`numberofdeaths` AS 'total_no_deaths',
+                    `input_records_mortalities`.`closingbalance` as 'closingbalance',
+                    `input_records_mortalities`.`entry_date`,
+                    'Mortalities' as name 
+                    FROM `input_records_mortalities` WHERE 
+                    
+                    `input_records_mortalities`.`farmerid` = :farmerid
+                    
+                    AND 
+                    `input_records_mortalities`.`entry_date` >= (now() - INTERVAL :duration month)
+                    
+                    ORDER BY input_records_mortalities.entry_date ASC
+                    LIMIT 1
+                ";
+            } else {
+                $query = "SELECT -- this can be optimized
+                    `input_records_mortalities`.`openingbalance` as 'openingbalance',
+                    `input_records_mortalities`.`numberofdeaths` AS 'total_no_deaths',
+                    `input_records_mortalities`.`closingbalance` as 'closingbalance',
+                    `input_records_mortalities`.`entry_date`,
+                    'Mortalities' as name 
+                    FROM `input_records_mortalities` WHERE 
+                    
+                    `input_records_mortalities`.`farmerid` = :farmerid
+                    
+                    ORDER BY input_records_mortalities.entry_date ASC
+                    LIMIT 1
+                ";
+            }
+            
+            
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
 
             // Execute query statement
             $query_statement->bindParam(':farmerid', $farmerid);
+
+            if ($monthduration) {
+                $query_statement->bindParam(':duration', $monthduration);
+            }
 
             // Execute query statement
             $query_statement->execute();
@@ -2329,28 +2422,51 @@ class Records
         
     }
 
-    public function fetFarmPerformanceV2IncomeAndExpense($farmerid)
+    public function fetFarmPerformanceV2IncomeAndExpense($farmerid, $monthduration = NULL)
     {
 
         try {
-            $query = "SELECT 
-            SUM(`input_records_income_expenses`.`amount`) AS 'total_amount',
+            $query = "";
+
+            if ($monthduration) {
+                $query = "SELECT 
+                    SUM(`input_records_income_expenses`.`amount`) AS 'total_amount',
+                    
+                    
+                    input_records_income_expenses.type,
+                    'Income And Expense' as name  
+                    FROM `input_records_income_expenses` 
+                    WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+                    
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `input_records_income_expenses`.`entry_date` -- why not use entry_date ????
+                    
+                    GROUP BY input_records_income_expenses.type
+                ";
+            } else {
+                $query = "SELECT 
+                    SUM(`input_records_income_expenses`.`amount`) AS 'total_amount',
+                    
+                    
+                    input_records_income_expenses.type,
+                    'Income And Expense' as name  
+                    FROM `input_records_income_expenses` 
+                    WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+                    
+                    GROUP BY input_records_income_expenses.type
+                ";
+            }
             
             
-            input_records_income_expenses.type,
-            'Income And Expense' as name  
-            FROM `input_records_income_expenses` 
-            WHERE `input_records_income_expenses`.`farmerid` = :farmerid
-            
-            GROUP BY input_records_income_expenses.type
-            ";
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
 
             // Execute query statement
             $query_statement->bindParam(':farmerid', $farmerid);
-
+            
+            if ($monthduration) {
+                $query_statement->bindParam(':duration', $monthduration);
+            }
             // Execute query statement
             $query_statement->execute();
 
@@ -2365,6 +2481,8 @@ class Records
     # https://ubiq.co/database-blog/get-last-3-months-sales-data-mysql
 
     # https://ubiq.co/database-blog/how-to-calculate-revenue-in-mysql/
+
+    # https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html
 
     /**
      * unused queries ...
