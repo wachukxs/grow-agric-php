@@ -2242,8 +2242,8 @@ class Records
                     
                     SELECT 
                     'COUNT' as 'aggregate_type',
-                    COUNT(`input_records_medicines`.`id`) as 'total_quantity', 
-                    SUM(`input_records_medicines`.`price`) AS 'total_price',
+                    COALESCE( COUNT(`input_records_medicines`.`id`) , 0) AS 'total_quantity', 
+                    COALESCE( SUM(`input_records_medicines`.`price`) , 0) AS 'total_price',
                     'Medicines' as name 
                     FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
                     
@@ -2251,8 +2251,8 @@ class Records
                     UNION
                     SELECT 
                     'COUNT' as 'aggregate_type',
-                    COUNT(`input_records_labour`.`id`) as 'total_quantity',
-                    SUM(`input_records_labour`.`salary`) AS 'total_salary_paid',
+                    COALESCE( COUNT(`input_records_labour`.`id`) , 0) AS 'total_quantity',
+                    COALESCE( SUM(`input_records_labour`.`salary`) , 0) AS 'total_salary_paid',
                     'Labour' as name  
                     FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
                     
@@ -2261,8 +2261,8 @@ class Records
                     UNION
                     SELECT 
                     'SUM' as 'aggregate_type',
-                    SUM(`inputs_records_chicken`.`quantity`) as 'total_quantity', 
-                    SUM(`inputs_records_chicken`.`price`) as 'total_price',
+                    COALESCE( SUM(`inputs_records_chicken`.`quantity`) , 0) AS 'total_quantity', 
+                    COALESCE( SUM(`inputs_records_chicken`.`price`) , 0) AS 'total_price',
                     'Chicken' as name  
                     FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
                     
@@ -2270,8 +2270,8 @@ class Records
                     UNION
                     SELECT 
                     'COUNT' as 'aggregate_type',
-                    COUNT(`input_records_brooding`.`brooding_item_quantity`) as 'times_brooding_done', 
-                    SUM(`input_records_brooding`.`amount_spent`) AS 'total_brooding_spent',
+                    COALESCE( COUNT(`input_records_brooding`.`brooding_item_quantity`) , 0) AS 'times_brooding_done', 
+                    COALESCE( SUM(`input_records_brooding`.`amount_spent`) , 0) AS 'total_brooding_spent',
                     'Brooding' as name 
                     FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
                     
@@ -2279,8 +2279,8 @@ class Records
                     UNION
                     SELECT 
                     'COUNT' as 'aggregate_type',
-                    COUNT(`inputs_records_feeds`.`quantity`) as sum7, 
-                    SUM(`inputs_records_feeds`.`price`) as 'total_spent_feeds',
+                    COALESCE( COUNT(`inputs_records_feeds`.`quantity`) , 0) AS sum7, 
+                    COALESCE( SUM(`inputs_records_feeds`.`price`) , 0) AS 'total_spent_feeds',
                     'Feeds' as name 
                     FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
                         
