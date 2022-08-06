@@ -11,12 +11,4 @@
     echo  "Welcome to Grow Agric's API!" . "\n" . 'If you can see this, reach us via ' . getenv("GROW_AGRIC_DEV_EMAIL") . ' for now!'; // echo 'If you can see this, reach us via ' . $_ENV["GROW_AGRIC_DEV_EMAIL"] . '!';
 
     // phpinfo();
-
-    echo trim(getenv("WEB_PUSH_PRIVATE_KEY_PEM"), "\"");
-    echo "\n\n";
-    echo trim(getenv("WEB_PUSH_PRIVATE_KEY_PEM"), '"');
-    echo "\n\n";
-    var_dump(trim(getenv("WEB_PUSH_PRIVATE_KEY_PEM"), '"'));
-    echo "\n\n";
-    var_dump(getenv("FARMERS_PROD_BASE_URL"));
 ?>
