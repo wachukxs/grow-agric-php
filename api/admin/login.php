@@ -10,7 +10,7 @@ include_once '../../model/Admin.php';
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-file_put_contents('php://stderr', print_r('Trying to log in farmer' . "\n", TRUE));
+file_put_contents('php://stderr', print_r('Trying to log in admin' . "\n", TRUE));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Instantiate Database to get a connection
@@ -31,8 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ) {
         // try to check their credentials
         $result0 = $admin->getAdminByEmail($data->email);
-        file_put_contents('php://stderr', print_r($result0, TRUE));
-        file_put_contents('php://stderr', print_r(gettype($result0), TRUE));
+        // file_put_contents('php://stderr', print_r($result0, TRUE)); // result0 is a PDOStatement Object (...)
+        // file_put_contents('php://stderr', print_r(gettype($result0), TRUE)); // should be ==> objectArray
 
         // returns an array, $row1 is an array
         $row0 = $result0->fetch(PDO::FETCH_ASSOC);

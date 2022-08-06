@@ -4,6 +4,7 @@
     $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/.."); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
     $dotenv->safeLoad();
 
+    // to do, fix when db throws errors
     class Database {
         // Database parameters
         private $database_host;
@@ -41,8 +42,20 @@
                 $this->database_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 file_put_contents('php://stderr', print_r('Connection successful' . "\n", TRUE));
             } catch (PDOException $e) {
-                file_put_contents('php://stderr', print_r('Connection Error:' . $e->getMessage() . "\n", TRUE));
+
+                if (getenv("CURR_ENV") !== "production") {
+                    file_put_contents('../../logs/api.log', 'db err error: ' . $e . "\n", FILE_APPEND | LOCK_EX);
+            
+                    file_put_contents('../../logs/api.log', 'db err error: ' . $e->getMessage() . "\n", FILE_APPEND | LOCK_EX);
+                }
+
+                file_put_contents('php://stderr', print_r('Connection Error at Line:' . $e->getLine() . "\n", TRUE));
+                
+                file_put_contents('php://stderr', print_r('Connection Error Code:' . $e->getCode() . "\n", TRUE));
+                file_put_contents('php://stderr', print_r('Connection Error Message:' . $e->getMessage() . "\n", TRUE));
             } catch (Throwable $th) {
+
+                file_put_contents('../../logs/api.log', 'Db th error: ' . $th->getMessage() . "\n", FILE_APPEND | LOCK_EX);
                 file_put_contents('php://stderr', print_r('Another Connection Error:' . $th->getMessage() . "\n", TRUE));
                 throw $th;
             }

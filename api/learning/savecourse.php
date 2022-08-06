@@ -28,23 +28,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ) {
     
             
-        // Get the order [details]
+        //
         $result = $farmer->saveCourseForFarmer($data->courseid, $data->farmerid);
         
         // returns an array, $row is an array
         // $row = $result->fetch(PDO::FETCH_ASSOC);
 
-        file_put_contents('php://stderr', print_r('==== ++' . gettype($result), TRUE));
+        file_put_contents('php://stderr', print_r('==== ++ ' . gettype($result), TRUE));
         
         file_put_contents('php://stderr', print_r("\n\n" . $result, TRUE));
-        echo json_encode(
-            array(
-                'message' => 'Good request, no errors',
-                'response' => 'OK',
-                'response_code' => http_response_code(),
-                'save_details' => $result
-            )
-        );
+
+        // we should check the type of $result
+        if (gettype($result) == "string" && is_string($result)) {
+            echo json_encode(
+                array(
+                    'message' => 'Good request, no errors',
+                    'response' => 'OK',
+                    'response_code' => http_response_code(),
+                    'save_details' => $result
+                )
+            );
+        } else { // it must've been boolean
+            echo json_encode(
+                array(
+                    'message' => 'Bad request, we could not save course',
+                    'response' => 'NOT OK',
+                    'response_code' => http_response_code(400),
+                )
+            );
+        }
+        
     
     } else {
         echo json_encode(
@@ -56,5 +69,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
     }
 } else {
-    file_put_contents('php://stderr', print_r('Woow 3', TRUE));
+    file_put_contents('php://stderr', print_r('NOT A POST REQUEST: ' . $_SERVER["REQUEST_METHOD"] . ' method in ' . $_SERVER['SCRIPT_FILENAME'], TRUE));
 }

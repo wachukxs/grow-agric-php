@@ -17,7 +17,7 @@ include_once '../../config/globals/header.php';
 include_once '../../config/Database.php';
 include_once '../../model/Farmer.php';
 include_once '../../model/Admin.php';
-include_once '../../utilities/Emailing.php';
+include_once '../../utilities/ICustom.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
     // Instantiate Database to get a connection

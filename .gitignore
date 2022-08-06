@@ -11,3 +11,7 @@ install-composer.sh
 /logs
 
 *.pdf
+
+public_key.txt
+private_key.pem
+private_key.txt

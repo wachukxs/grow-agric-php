@@ -283,7 +283,8 @@ class Farmer {
             return $query_statement;
         } catch (\Throwable $err) {
             // throw $err;
-            // file_put_contents('../../logs/api.log', 'Farmer.php->getFarmerWithPasswordByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
+            
+            file_put_contents('../../logs/api.log', 'Farmer.php->getFarmerWithPasswordByEmail error: ' . $err->getMessage() . "\n", FILE_APPEND | LOCK_EX);
             file_put_contents('php://stderr', print_r('Farmer.php->getFarmerWithPasswordByEmail error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
@@ -705,6 +706,7 @@ class Farmer {
 
             // Execute query statement
             if ($query_statement->execute()) {
+                // BUG: saved_learnings need to delete the foreign keys and add id column
                 return $this->database_connection->lastInsertId();
                 // return $this.getSingleOrderByID($this->database_connection->lastInsertId());
             } else {

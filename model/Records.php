@@ -2478,6 +2478,64 @@ class Records
         
     }
 
+
+    // Create new chicken input record, an entry
+    public function saveWebPushRequestData($roleid, $role, $webpushdata)
+    {
+        try {
+            $query = 'INSERT INTO webpushnotifications_data 
+                SET
+                farmerid = :_farmerid,
+                subscription_data = :_subscription_data,
+                adminid = :_adminid,
+                fieldagentid = :_fieldagentid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            $_id = htmlspecialchars(strip_tags($roleid));
+            $wpd = htmlspecialchars(strip_tags($webpushdata));
+
+            // Ensure safe data
+            if ($role == GrowAgricRoles::FARMERS) {
+                // Bind parameters to prepared stmt
+                $stmt->bindParam(':_farmerid', $_id);
+                $stmt->bindParam(':_adminid', NULL);
+                $stmt->bindParam(':_fieldagentid', NULL);
+            } else if ($role == GrowAgricRoles::ADMINS) {
+                // Bind parameters to prepared stmt
+                $stmt->bindParam(':_farmerid', NULL);
+                $stmt->bindParam(':_adminid', $_id);
+                $stmt->bindParam(':_fieldagentid', NULL);
+            } else if ($role == GrowAgricRoles::FIELDAGENTS) {
+                // Bind parameters to prepared stmt
+                $stmt->bindParam(':_farmerid', NULL);
+                $stmt->bindParam(':_adminid', NULL);
+                $stmt->bindParam(':_fieldagentid', $_id);
+            } else {
+                // TODO: we need to improve this
+                return false; // Bad data provided...
+            }
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_subscription_data', $wpd);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+                $last_insert_id = $this->database_connection->lastInsertId();
+                return $last_insert_id;
+
+                // return true;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in saveWebPushRequestData(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     # https://ubiq.co/database-blog/get-last-3-months-sales-data-mysql
 
     # https://ubiq.co/database-blog/how-to-calculate-revenue-in-mysql/

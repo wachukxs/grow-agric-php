@@ -9,4 +9,10 @@ class Emailing {
     const WILDCARD = "WILDCARD"; // ??
 }
 
+class GrowAgricRoles {
+    const ADMINS = "ADMINS";
+    const FIELDAGENTS = "FIELDAGENTS";
+    const FARMERS = "FARMERS";
+}
+
 ?>

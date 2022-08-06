@@ -7,7 +7,7 @@ include_once '../../../config/globals/header.php';
 include_once '../../../config/Database.php';
 include_once '../../../model/Admin.php';
 
-include_once '../../../utilities/Emailing.php';
+include_once '../../../utilities/ICustom.php';
 
 // Instantiate Database to get a connection
 $database_connection = new Database();
