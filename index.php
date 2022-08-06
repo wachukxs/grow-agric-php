@@ -12,9 +12,11 @@
 
     // phpinfo();
 
-    echo getenv("WEB_PUSH_PRIVATE_KEY_PEM");
+    echo trim(getenv("WEB_PUSH_PRIVATE_KEY_PEM"), "\"");
     echo "\n\n";
-    var_dump(getenv("WEB_PUSH_PRIVATE_KEY_PEM"));
+    echo trim(getenv("WEB_PUSH_PRIVATE_KEY_PEM"), '"');
+    echo "\n\n";
+    var_dump(trim(getenv("WEB_PUSH_PRIVATE_KEY_PEM"), '"'));
     echo "\n\n";
     var_dump(getenv("FARMERS_PROD_BASE_URL"));
 ?>
