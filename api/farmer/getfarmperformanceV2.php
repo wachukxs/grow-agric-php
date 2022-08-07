@@ -59,8 +59,48 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 
                 $result4 = $records->fetFarmPerformanceV2IncomeAndExpense($_GET["farmerid"]);
                 $row1["incomeandexpense"] = $result4->fetchAll(PDO::FETCH_ASSOC);
-        
+
+
             }
+
+            // extra data lifted from api/records/getallrecords.php [bad programing :)]
+            $extra_chart_result;
+
+            $sales_result = $records->getAllFarmerSalesInputRecords($_GET["farmerid"]);
+            $extra_chart_result["sale_records"] = $sales_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $diseases_result = $records->getAllFarmerDiseasesInputRecords($_GET["farmerid"]);
+            $extra_chart_result["disease_records"] = $diseases_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $mortality_result = $records->getAllFarmerMortalitiesInputRecords($_GET["farmerid"]);
+            $extra_chart_result["mortality_records"] = $mortality_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $brooding_result = $records->getAllFarmerBroodingInputRecords($_GET["farmerid"]);
+            $extra_chart_result["brooding_records"] = $brooding_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $chicken_result = $records->getAllChickenInputRecords($_GET["farmerid"]);
+            $extra_chart_result["chicken_inputs"] = $chicken_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $feeds_result = $records->getAllFeedsInputRecords($_GET["farmerid"]);
+            $extra_chart_result["feeds_inputs"] = $feeds_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $labour_result = $records->getAllFarmerLabourRecords($_GET["farmerid"]);
+            $extra_chart_result["labour_records"] = $labour_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $medicine_result = $records->getAllFarmerMedicineInputRecords($_GET["farmerid"]);
+            $extra_chart_result["medicine_records"] = $medicine_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $income_expense_result = $records->getAllFarmerOtherIncomeOrExpenseInputRecords($_GET["farmerid"]);
+            $extra_chart_result["income_expense_records"] = $income_expense_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $customers_result = $records->getAllFarmerCustomers($_GET["farmerid"]);
+            $extra_chart_result["customer_records"] = $customers_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $employees_result = $records->getAllFarmerEmployees($_GET["farmerid"]);
+            $extra_chart_result["employee_records"] = $employees_result->fetchAll(PDO::FETCH_ASSOC);
+
+            $row1["extra_data"] = $extra_chart_result;
+            // end of extra data
             
     
             // get total income & expense

@@ -19,6 +19,7 @@ $endpoint = 'https://fcm.googleapis.com/fcm/send/abcdef...'; // Chrome
 
 $auth = [
     'VAPID' => [
+        // TODO: replace our mail with get env
         'subject' => 'mailto:hello@growagric.com', // can be a mailto: or your website address
         'publicKey' => getenv("WEB_PUSH_PUBLIC_KEY"), // (recommended) uncompressed public key P-256 encoded in Base64-URL
         'privateKey' => getenv("WEB_PUSH_PRIVATE_KEY"), // (recommended) in fact the secret multiplier of the private key encoded in Base64-URL
