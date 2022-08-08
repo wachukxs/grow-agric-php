@@ -527,6 +527,35 @@ class Records
         }
     }
 
+    public function getAllChickenInputRecordsForChartData($farmerid, $range = NULL)
+    {
+
+        try {
+            $query = "SELECT date_format(`inputs_records_chicken`.`purchase_date`,'%b') AS 'month', SUM(`inputs_records_chicken`.`price`) AS 'price', SUM(`inputs_records_chicken`.`quantity`) AS 'quantity'
+
+            FROM `inputs_records_chicken`
+                            WHERE
+                            farmerid = :_farmerid
+                            
+                            GROUP BY date_format(`inputs_records_chicken`.`purchase_date`,'%b')";
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllChickenInputRecords(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
 
     // Create new feeds input record, an entry
     public function createFeedsInputRecord($farmid, $feed_supplier, $other_feed_supplier, $feed_type, $notes, $price, $purchase_date, $quantity, $farmerid, $documents)
@@ -600,14 +629,16 @@ class Records
     }
 
 
-    public function getAllFeedsInputRecords($farmerid)
+    public function getAllFeedsInputRecordsForChartData($farmerid, $range = NULL)
     {
 
         try {
-            $query = 'SELECT * FROM inputs_records_feeds
-                WHERE
-                farmerid = :_farmerid
-            ';
+            $query = "SELECT date_format(`inputs_records_feeds`.`purchase_date`,'%b') AS 'purchase_date'
+            , SUM(`inputs_records_feeds`.`quantity`) AS 'quantity'
+            , SUM(`inputs_records_feeds`.`price`) AS 'price' 
+            FROM `inputs_records_feeds` 
+            WHERE `inputs_records_feeds`.`farmerid` = :_farmerid 
+            GROUP BY date_format(`inputs_records_feeds`.`purchase_date`,'%b')";
 
             $stmt = $this->database_connection->prepare($query);
 
@@ -834,6 +865,31 @@ class Records
         }
     }
 
+    public function getAllFarmerLabourRecordsForChartData($farmerid, $range = NULL)
+    {
+        try {
+            $query = "SELECT date_format(`input_records_labour`.`payment_date`,'%b') AS 'payment_date'
+            , SUM(`input_records_labour`.`salary`) AS 'salary' 
+            FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :_farmerid 
+            GROUP BY date_format(`input_records_labour`.`payment_date`,'%b')";
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllFarmerLabourRecords(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     // Create new administered medicine, an entry
     public function addFarmerMedicineInputRecord($medicine_type, $medicine_supplier, $type, $vet_name, $purchase_date, $notes, $price, $farmid, $farmerid, $documents)
     {
@@ -933,6 +989,35 @@ class Records
     }
 
 
+    public function getAllFarmerMedicineInputRecordsForChartData($farmerid, $range = NULL)
+    {
+        try {
+            $query = "SELECT date_format(`input_records_medicines`.`purchase_date`,'%b') AS 'purchase_date', SUM(`input_records_medicines`.`price`) AS 'price'
+
+            FROM `input_records_medicines`
+                           WHERE
+                           `input_records_medicines`.`farmerid` = :_farmerid
+                           
+                           GROUP BY date_format(`input_records_medicines`.`purchase_date`,'%b')";
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllFarmerMedicineInputRecords(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+
     // Create new brooding, an entry
     public function addFarmerBroodingInputRecord($amount_spent, $brooding_date, $brooding_item_quantity, $brooding_item, $notes, $farmid, $farmerid, $chickenhouseid, $other_brooding_item)
     {
@@ -1002,6 +1087,35 @@ class Records
                 WHERE
                 farmerid = :_farmerid
             ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllFarmerBroodingInputRecords(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function getAllFarmerBroodingInputRecordsForChartData($farmerid, $range = NULL)
+    {
+
+        try {
+            $query = "SELECT date_format(`input_records_brooding`.`brooding_date`,'%b') AS 'month', SUM(`input_records_brooding`.`amount_spent`) AS 'amount_spent', SUM(`input_records_brooding`.`brooding_item_quantity`) AS 'brooding_item_quantity'
+
+            FROM `input_records_brooding`
+                            WHERE
+                            `input_records_brooding`.`farmerid` = :_farmerid
+                            
+                            GROUP BY date_format(`input_records_brooding`.`brooding_date`,'%b')";
 
             $stmt = $this->database_connection->prepare($query);
 
@@ -1161,6 +1275,32 @@ class Records
                         WHERE
                         `sales_farmer_sales`.farmerid = :_farmerid
             ';
+
+        $stmt = $this->database_connection->prepare($query);
+
+        // Ensure safe data
+        $fi = htmlspecialchars(strip_tags($farmerid));
+
+        // Bind parameters to prepared stmt
+        $stmt->bindParam(':_farmerid', $fi);
+
+        $r = $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function getAllFarmerSalesInputRecordsForChartData($farmerid, $range = NULL)
+    {
+
+        $query = "SELECT date_format(`sales_farmer_sales`.`sale_date`,'%b') AS 'month', SUM(`sales_farmer_sales`.`price`) AS 'price', SUM(`sales_farmer_sales`.`quantity`) AS 'quantity'
+                    FROM `sales_farmer_sales`
+                    WHERE
+                    -- `sales_farmer_sales`.`sale_date` > now() - INTERVAL 3 MONTH
+                    -- or
+                    DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= `sales_farmer_sales`.`sale_date`
+                    AND
+                    `sales_farmer_sales`.`farmerid` = :_farmerid
+                    GROUP BY date_format(`sales_farmer_sales`.`sale_date`,'%b')";
 
         $stmt = $this->database_connection->prepare($query);
 

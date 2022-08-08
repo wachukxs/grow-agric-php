@@ -63,39 +63,44 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
             }
 
-            // extra data lifted from api/records/getallrecords.php [bad programing :)]
+            // extra data
             $extra_chart_result;
 
-            $sales_result = $records->getAllFarmerSalesInputRecords($_GET["farmerid"]);
+            $sales_result = $records->getAllFarmerSalesInputRecordsForChartData($_GET["farmerid"]);
             $extra_chart_result["sale_records"] = $sales_result->fetchAll(PDO::FETCH_ASSOC);
 
+            // unused
             $diseases_result = $records->getAllFarmerDiseasesInputRecords($_GET["farmerid"]);
             $extra_chart_result["disease_records"] = $diseases_result->fetchAll(PDO::FETCH_ASSOC);
 
+            // unused
             $mortality_result = $records->getAllFarmerMortalitiesInputRecords($_GET["farmerid"]);
             $extra_chart_result["mortality_records"] = $mortality_result->fetchAll(PDO::FETCH_ASSOC);
 
-            $brooding_result = $records->getAllFarmerBroodingInputRecords($_GET["farmerid"]);
+            $brooding_result = $records->getAllFarmerBroodingInputRecordsForChartData($_GET["farmerid"]);
             $extra_chart_result["brooding_records"] = $brooding_result->fetchAll(PDO::FETCH_ASSOC);
 
-            $chicken_result = $records->getAllChickenInputRecords($_GET["farmerid"]);
+            $chicken_result = $records->getAllChickenInputRecordsForChartData($_GET["farmerid"]);
             $extra_chart_result["chicken_inputs"] = $chicken_result->fetchAll(PDO::FETCH_ASSOC);
 
-            $feeds_result = $records->getAllFeedsInputRecords($_GET["farmerid"]);
+            $feeds_result = $records->getAllFeedsInputRecordsForChartData($_GET["farmerid"]);
             $extra_chart_result["feeds_inputs"] = $feeds_result->fetchAll(PDO::FETCH_ASSOC);
 
-            $labour_result = $records->getAllFarmerLabourRecords($_GET["farmerid"]);
+            $labour_result = $records->getAllFarmerLabourRecordsForChartData($_GET["farmerid"]);
             $extra_chart_result["labour_records"] = $labour_result->fetchAll(PDO::FETCH_ASSOC);
 
-            $medicine_result = $records->getAllFarmerMedicineInputRecords($_GET["farmerid"]);
+            $medicine_result = $records->getAllFarmerMedicineInputRecordsForChartData($_GET["farmerid"]);
             $extra_chart_result["medicine_records"] = $medicine_result->fetchAll(PDO::FETCH_ASSOC);
 
+            // unused
             $income_expense_result = $records->getAllFarmerOtherIncomeOrExpenseInputRecords($_GET["farmerid"]);
             $extra_chart_result["income_expense_records"] = $income_expense_result->fetchAll(PDO::FETCH_ASSOC);
 
+            // unused
             $customers_result = $records->getAllFarmerCustomers($_GET["farmerid"]);
             $extra_chart_result["customer_records"] = $customers_result->fetchAll(PDO::FETCH_ASSOC);
 
+            // unused
             $employees_result = $records->getAllFarmerEmployees($_GET["farmerid"]);
             $extra_chart_result["employee_records"] = $employees_result->fetchAll(PDO::FETCH_ASSOC);
 
