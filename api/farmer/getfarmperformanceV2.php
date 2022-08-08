@@ -64,6 +64,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             }
 
             // extra data
+            /**
+             * 
+             * TODO: if/when using unused query functions, don't forget to add date filtering to queries
+             * 
+             * the $range for the *ForChartData functions isn't necessary as filtering is done on the front end
+             * 
+             */
             $extra_chart_result;
 
             $sales_result = $records->getAllFarmerSalesInputRecordsForChartData($_GET["farmerid"]);

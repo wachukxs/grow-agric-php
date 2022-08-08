@@ -535,6 +535,8 @@ class Records
 
             FROM `inputs_records_chicken`
                             WHERE
+                            YEAR(CURDATE()) <= YEAR(`inputs_records_chicken`.`purchase_date`)
+                            AND
                             farmerid = :_farmerid
                             
                             GROUP BY date_format(`inputs_records_chicken`.`purchase_date`,'%b')";
@@ -637,7 +639,8 @@ class Records
             , SUM(`inputs_records_feeds`.`quantity`) AS 'quantity'
             , SUM(`inputs_records_feeds`.`price`) AS 'price' 
             FROM `inputs_records_feeds` 
-            WHERE `inputs_records_feeds`.`farmerid` = :_farmerid 
+            WHERE YEAR(CURDATE()) <= YEAR(`inputs_records_feeds`.`purchase_date`)
+            AND `inputs_records_feeds`.`farmerid` = :_farmerid 
             GROUP BY date_format(`inputs_records_feeds`.`purchase_date`,'%b')";
 
             $stmt = $this->database_connection->prepare($query);
@@ -870,7 +873,9 @@ class Records
         try {
             $query = "SELECT date_format(`input_records_labour`.`payment_date`,'%b') AS 'payment_date'
             , SUM(`input_records_labour`.`salary`) AS 'salary' 
-            FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :_farmerid 
+            FROM `input_records_labour` 
+            WHERE YEAR(CURDATE()) <= YEAR(`input_records_labour`.`payment_date`)
+            AND `input_records_labour`.`farmerid` = :_farmerid 
             GROUP BY date_format(`input_records_labour`.`payment_date`,'%b')";
 
             $stmt = $this->database_connection->prepare($query);
@@ -996,7 +1001,8 @@ class Records
 
             FROM `input_records_medicines`
                            WHERE
-                           `input_records_medicines`.`farmerid` = :_farmerid
+                           YEAR(CURDATE()) <= YEAR(`input_records_medicines`.`purchase_date`)
+                           AND `input_records_medicines`.`farmerid` = :_farmerid
                            
                            GROUP BY date_format(`input_records_medicines`.`purchase_date`,'%b')";
 
@@ -1112,8 +1118,8 @@ class Records
             $query = "SELECT date_format(`input_records_brooding`.`brooding_date`,'%b') AS 'month', SUM(`input_records_brooding`.`amount_spent`) AS 'amount_spent', SUM(`input_records_brooding`.`brooding_item_quantity`) AS 'brooding_item_quantity'
 
             FROM `input_records_brooding`
-                            WHERE
-                            `input_records_brooding`.`farmerid` = :_farmerid
+                            WHERE YEAR(CURDATE()) <= YEAR(`input_records_brooding`.`brooding_date`)
+                            AND `input_records_brooding`.`farmerid` = :_farmerid
                             
                             GROUP BY date_format(`input_records_brooding`.`brooding_date`,'%b')";
 
@@ -1295,9 +1301,10 @@ class Records
         $query = "SELECT date_format(`sales_farmer_sales`.`sale_date`,'%b') AS 'month', SUM(`sales_farmer_sales`.`price`) AS 'price', SUM(`sales_farmer_sales`.`quantity`) AS 'quantity'
                     FROM `sales_farmer_sales`
                     WHERE
+                    YEAR(CURDATE()) <= YEAR(`sales_farmer_sales`.`sale_date`)
                     -- `sales_farmer_sales`.`sale_date` > now() - INTERVAL 3 MONTH
                     -- or
-                    DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= `sales_farmer_sales`.`sale_date`
+                    -- DATE_SUB(CURDATE(), INTERVAL 3 MONTH) <= `sales_farmer_sales`.`sale_date`
                     AND
                     `sales_farmer_sales`.`farmerid` = :_farmerid
                     GROUP BY date_format(`sales_farmer_sales`.`sale_date`,'%b')";
