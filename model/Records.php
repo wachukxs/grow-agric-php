@@ -2339,7 +2339,7 @@ class Records
                     COALESCE(SUM(`input_records_medicines`.`price`), 0) AS 'total_price',
                     'Medicines' as name 
                     FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
-                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `input_records_medicines`.`entry_date`
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `input_records_medicines`.`purchase_date`
                     
                     
                     UNION
@@ -2349,7 +2349,7 @@ class Records
                     COALESCE(SUM(`input_records_labour`.`salary`), 0) AS 'total_salary_paid',
                     'Labour' as name  
                     FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
-                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= input_records_labour.entry_date
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= input_records_labour.payment_date
                     
                     
                     UNION
@@ -2359,7 +2359,7 @@ class Records
                     COALESCE(SUM(`inputs_records_chicken`.`price`), 0) as 'total_price',
                     'Chicken' as name  
                     FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
-                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= inputs_records_chicken.entry_date
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= inputs_records_chicken.purchase_date
                     
                     UNION
                     SELECT 
@@ -2368,7 +2368,7 @@ class Records
                     COALESCE(SUM(`input_records_brooding`.`amount_spent`), 0) AS 'total_brooding_spent',
                     'Brooding' as name 
                     FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
-                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= input_records_brooding.entry_date
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `input_records_brooding`.`brooding_date`
                     
                     UNION
                     SELECT 
@@ -2377,7 +2377,7 @@ class Records
                     COALESCE(SUM(`inputs_records_feeds`.`price`), 0) as 'total_spent_feeds',
                     'Feeds' as name 
                     FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
-                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `inputs_records_feeds`.`entry_date`
+                    AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `inputs_records_feeds`.`purchase_date`
                 ";
             } else {
                 $query = "
@@ -2393,7 +2393,7 @@ class Records
                     COALESCE( SUM(`input_records_medicines`.`price`) , 0) AS 'total_price',
                     'Medicines' as name 
                     FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
-                    
+                    AND YEAR(CURDATE()) <= YEAR(`input_records_medicines`.`purchase_date`)
                     
                     UNION
                     SELECT 
@@ -2402,7 +2402,7 @@ class Records
                     COALESCE( SUM(`input_records_labour`.`salary`) , 0) AS 'total_salary_paid',
                     'Labour' as name  
                     FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
-                    
+                    AND YEAR(CURDATE()) <= YEAR(`input_records_labour`.`payment_date`)
                     
                     
                     UNION
@@ -2412,7 +2412,7 @@ class Records
                     COALESCE( SUM(`inputs_records_chicken`.`price`) , 0) AS 'total_price',
                     'Chicken' as name  
                     FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
-                    
+                    AND YEAR(CURDATE()) <= YEAR(`inputs_records_chicken`.`purchase_date`)
                     
                     UNION
                     SELECT 
@@ -2421,6 +2421,7 @@ class Records
                     COALESCE( SUM(`input_records_brooding`.`amount_spent`) , 0) AS 'total_brooding_spent',
                     'Brooding' as name 
                     FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+                    AND YEAR(CURDATE()) <= YEAR(`input_records_brooding`.`brooding_date`)
                     
                     
                     UNION
@@ -2430,6 +2431,7 @@ class Records
                     COALESCE( SUM(`inputs_records_feeds`.`price`) , 0) AS 'total_spent_feeds',
                     'Feeds' as name 
                     FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+                    AND YEAR(CURDATE()) <= YEAR(`inputs_records_feeds`.`purchase_date`)
                         
                 ";
             }
