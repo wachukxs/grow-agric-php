@@ -1,5 +1,7 @@
 <?php
 
+include_once __DIR__ . '/../utilities/ICustom.php';
+
 class Records
 {
     // DB stuff

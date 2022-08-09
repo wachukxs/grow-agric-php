@@ -10,7 +10,7 @@ include_once '../../model/Farmer.php';
 include_once '../../model/Farm.php';
 include_once '../../model/Admin.php';
 
-include_once '../../utilities/ICustom.php';
+include_once '../../utilities/ICustom.php'; // re-dundant
 
 // get data
 $data = json_decode(file_get_contents('php://input'));
