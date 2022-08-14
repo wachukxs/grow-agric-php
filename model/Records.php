@@ -2704,7 +2704,8 @@ class Records
 
             return $stmt;
         } catch (\Throwable $err) {
-            //throw $err;
+            file_put_contents('php://stderr', print_r('Records.php->checkIfPushNotificationDataSaved error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
         }
     }
 
