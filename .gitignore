@@ -15,3 +15,5 @@ install-composer.sh
 public_key.txt
 private_key.pem
 private_key.txt
+
+test.*

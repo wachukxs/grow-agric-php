@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
         file_put_contents('php://stderr', print_r('==== ++ ' . gettype($_r) . "\n\n" , TRUE));
         
-        file_put_contents('php://stderr', print_r($_r, TRUE));
+        // file_put_contents('php://stderr', print_r($_r, TRUE));
 
         if (is_array($_r) && count($_r) > 0) {
             echo json_encode(
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     'message' => 'Good request, we have push data for farmer',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
-                    'results' => $_r, // will remove
+                    // 'results' => $_r, // will remove
                 )
             );
         } else {

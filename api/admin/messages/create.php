@@ -9,6 +9,8 @@ include_once '../../../config/Database.php';
 include_once '../../../model/Admin.php';
 include_once '../../../model/Farmer.php';
 
+include_once '../../../utilities/WebPushNotifications.php';
+
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
 
@@ -77,6 +79,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // we should only send if the message was from admin, and if they haven't been sent an email in 2 days
                 
                 $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
+
+                sendNewMessageNotification($farmerRow['id']);
             } else {
                 file_put_contents('php://stderr', "\nwho sent the message:::: " . $data->_from . " well not adminnn\n" . "\n", FILE_APPEND | LOCK_EX);
             }

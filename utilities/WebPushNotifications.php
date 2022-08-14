@@ -54,6 +54,7 @@ $webPush->setReuseVAPIDHeaders(true);
 
 function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
 {
+    global $webPush; // use $webPush decleared outside fun
     // get farmer details [push data]
     $result =  $GLOBALS['records']->getFarmerPushNotificationData($farmerid);
         
@@ -62,20 +63,32 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
     if (is_array($_r) && count($_r) > 0) {
         // send message
 
+        $_farmerwebpushdata = json_decode($_r[0]);
         // create subscription
         $subscription = Subscription::create([
-            "endpoint" => "https://fcm.google.com/...",
-            "contentEncoding" => "aesgcm",
-            "authToken" => "<auth token from JavaScript PushSubscription object>",
+            "endpoint" => $_farmerwebpushdata->endpoint,
+            // "contentEncoding" => "aesgcm", // not complusory || depends
+            // "authToken" => $__r['keys']['auth'],
             "keys" => [
-                "auth" => "<auth token from JavaScript PushSubscription object>",
-                "p256dh" => "<p256dh token from JavaScript PushSubscription object>"
+                "auth" => $_farmerwebpushdata['keys']['auth'],
+                "p256dh" => $_farmerwebpushdata['keys']['p256dh']
             ]
         ]);
 
+        // create payload
+        $_payload["message"] = "Hello there!";
 
 
-        $_webpushdata = json_decode($_r[0]);
+        /**
+         * send one notification and flush directly
+         * @var MessageSentReport $report
+         */
+        $report = $webPush->sendOneNotification(
+            $subscription,
+            json_encode($_payload) // optional (defaults null)
+        );
+
+
     } else {
         // do nothing??
     }
