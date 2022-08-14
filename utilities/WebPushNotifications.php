@@ -68,23 +68,23 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
         if (is_array($_r) && count($_r) > 0) {
             // send message
 
-            $_farmerwebpushdata = $_r[0];
+            $_farmerdata = $_r[0];
 
             file_put_contents('php://stderr', "\nwho web push:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
-            file_put_contents('php://stderr', print_r($_farmerwebpushdata, TRUE) , FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', print_r($_farmerdata, TRUE) , FILE_APPEND | LOCK_EX);
             file_put_contents('php://stderr', "\n" . "\n", FILE_APPEND | LOCK_EX);
             file_put_contents('php://stderr', "so what is endpoint??\n" . "\n", FILE_APPEND | LOCK_EX);
 
-            file_put_contents('php://stderr', print_r($_farmerwebpushdata['endpoint'], TRUE) , FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', print_r($_farmerdata->subscription_data->endpoint, TRUE) , FILE_APPEND | LOCK_EX);
 
             // create subscription
             $subscription = Subscription::create([
-                "endpoint" => $_farmerwebpushdata['endpoint'],
+                "endpoint" => $_farmerdata->subscription_data->endpoint,
                 // "contentEncoding" => "aesgcm", // not complusory || depends
                 // "authToken" => $__r['keys']['auth'],
                 "keys" => [
-                    "auth" => $_farmerwebpushdata->keys->auth,
-                    "p256dh" => $_farmerwebpushdata->keys->p256dh
+                    "auth" => $_farmerdata->subscription_data->keys->auth,
+                    "p256dh" => $_farmerdata->subscription_data->keys->p256dh
                 ]
             ]);
 
