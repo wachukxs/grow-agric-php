@@ -32,6 +32,8 @@ class CleanWebPushData {
     {
         if ($this->subscription_data) {
             $this->subscription_data = htmlspecialchars_decode($this->subscription_data, ENT_QUOTES);
+            // then decode
+            $this->subscription_data = json_decode($this->subscription_data);
         }
     }
 }
@@ -63,7 +65,7 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
         if (is_array($_r) && count($_r) > 0) {
             // send message
 
-            $_farmerwebpushdata = json_decode($_r[0]);
+            $_farmerwebpushdata = $_r[0];
 
             file_put_contents('php://stderr', "\nwho web push:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
             file_put_contents('php://stderr', $_farmerwebpushdata , FILE_APPEND | LOCK_EX);
@@ -107,6 +109,9 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
         }
     } catch (\Throwable $err) {
         file_put_contents('php://stderr', "\nWebPushNotifications.php->sendNewMessageNotification() ERR: " . $err->getMessage() . "\n" . "\n", FILE_APPEND | LOCK_EX);
+        file_put_contents('php://stderr', print_r('Connection Error at Line:' . $err->getLine() . "\n", TRUE));
+                
+        file_put_contents('php://stderr', print_r('Connection Error Code:' . $err->getCode() . "\n", TRUE));
 
         return false;
     }
