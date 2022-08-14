@@ -31,4 +31,5 @@ if (isset($origin) && in_array($origin, $allowed_domains)) {
 header('Access-Control-Allow-Headers: *');
 header('Content-Type: application/json');
 header('Content-Control-Allow-Methods: POST, GET');
+header('Cache-Control: max-age=300'); // 300 = 3 minutes
 header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With');

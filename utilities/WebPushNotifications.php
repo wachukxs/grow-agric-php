@@ -125,6 +125,7 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
             } else {
                 file_put_contents('php://stderr', print_r("Message failed to sent for subscription {$endpoint}: {$report->getReason()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
 
+                file_put_contents('php://stderr', print_r("\nhttp response: {$report->getResponse()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
             }
 
 
