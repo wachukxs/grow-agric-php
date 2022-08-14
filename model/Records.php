@@ -2644,6 +2644,7 @@ class Records
 
             $stmt = $this->database_connection->prepare($query);
 
+            $_null = NULL;
             $_id = htmlspecialchars(strip_tags($roleid));
             $wpd = htmlspecialchars(strip_tags($webpushdata));
 
@@ -2652,18 +2653,19 @@ class Records
             if ($role == GrowAgricRoles::FARMERS) {
                 // Bind parameters to prepared stmt
                 $stmt->bindParam(':_farmerid', $_id);
-                $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
-                $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
+                $stmt->bindParam(':_adminid', $_null);
+                $stmt->bindParam(':_adminid', $_null);
             } else if ($role == GrowAgricRoles::ADMINS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
+                $stmt->bindParam(':_adminid', $_null);
                 $stmt->bindParam(':_adminid', $_id);
-                $stmt->bindValue(':_adminid', null, PDO::PARAM_NULL);
+                $stmt->bindParam(':_adminid', $_null);
             } else if ($role == GrowAgricRoles::FIELDAGENTS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
-                $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
+                $stmt->bindParam(':_adminid', $_null);
+                $stmt->bindParam(':_adminid', $_null);
                 $stmt->bindParam(':_fieldagentid', $_id);
+                
             } else {
                 // TODO: we need to improve this
                 return false; // Bad data provided...
