@@ -86,7 +86,26 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
             ]);
 
             // create payload
-            $_payload["message"] = "Hello there!";
+            $_payload["notification"] = array();
+            $_payload["notification"]["title"] = "New Message";
+            $_payload["notification"]["body"] = "Admin just sent you a message";
+            $_payload["notification"]["icon"] = "assets/grow-agric-logo-square.png";
+            $_payload["notification"]["vibrate"] = [100, 50, 100];
+            
+            // "notification": {
+            //     "title": "Angular News",
+            //     "body": "Newsletter Available!",
+            //     "icon": "assets/main-page-logo-small-hat.png",
+            //     "vibrate": [100, 50, 100],
+            //     "data": {
+            //         "dateOfArrival": Date.now(),
+            //         "primaryKey": 1
+            //     },
+            //     "actions": [{
+            //         "action": "explore",
+            //         "title": "Go to the site"
+            //     }]
+            // }
 
 
             /**
