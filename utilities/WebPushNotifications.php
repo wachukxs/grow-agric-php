@@ -63,7 +63,7 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
 
         $_r = $result->fetchAll(PDO::FETCH_CLASS, "CleanWebPushData");
         file_put_contents('php://stderr', "\nwho rrrrrr:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
-        file_put_contents('php://stderr', $_r , FILE_APPEND | LOCK_EX);
+        file_put_contents('php://stderr', print_r($_r) , FILE_APPEND | LOCK_EX);
         
         if (is_array($_r) && count($_r) > 0) {
             // send message
@@ -71,7 +71,7 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
             $_farmerwebpushdata = $_r[0];
 
             file_put_contents('php://stderr', "\nwho web push:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
-            file_put_contents('php://stderr', $_farmerwebpushdata , FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', print_r($_farmerwebpushdata) , FILE_APPEND | LOCK_EX);
             file_put_contents('php://stderr', "\n" . "\n", FILE_APPEND | LOCK_EX);
 
             // create subscription
