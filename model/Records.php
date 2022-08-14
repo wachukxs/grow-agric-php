@@ -2691,6 +2691,10 @@ class Records
             }
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('ERROR in saveWebPushRequestData(): ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Error at Line:' . $err->getLine() . "\n", TRUE));
+                
+            file_put_contents('php://stderr', print_r('Error Code:' . $err->getCode() . "\n", TRUE));
+
             return false;
         }
     }
