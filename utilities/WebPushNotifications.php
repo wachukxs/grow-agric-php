@@ -93,6 +93,14 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
                 json_encode($_payload) // optional (defaults null)
             );
 
+            $endpoint = $report->getRequest()->getUri()->__toString();
+
+            if ($report->isSuccess()) {
+                echo "[v] Message sent successfully for subscription {$endpoint}.";
+            } else {
+                echo "[x] Message failed to sent for subscription {$endpoint}: {$report->getReason()}";
+            }
+
 
         } else {
             // do nothing??
