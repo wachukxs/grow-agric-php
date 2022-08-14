@@ -104,9 +104,11 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
             $endpoint = $report->getRequest()->getUri()->__toString();
 
             if ($report->isSuccess()) {
-                echo "[v] Message sent successfully for subscription {$endpoint}.";
+                file_put_contents('php://stderr', print_r("Message sent successfully for subscription {$endpoint}." . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+
             } else {
-                echo "[x] Message failed to sent for subscription {$endpoint}: {$report->getReason()}";
+                file_put_contents('php://stderr', print_r("Message failed to sent for subscription {$endpoint}: {$report->getReason()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+
             }
 
 
