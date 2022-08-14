@@ -2656,7 +2656,7 @@ class Records
                 // Bind parameters to prepared stmt
                 $stmt->bindParam(':_farmerid', $_id);
                 $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
-                $stmt->bindValue('::_fieldagentid', null, PDO::PARAM_INT);
+                $stmt->bindValue(':_fieldagentid', null, PDO::PARAM_INT);
             } else if ($role == GrowAgricRoles::ADMINS) {
                 // Bind parameters to prepared stmt
                 $stmt->bindValue(':_farmerid', null, PDO::PARAM_INT);
