@@ -70,12 +70,9 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
 
             $_farmerdata = $_r[0];
 
-            file_put_contents('php://stderr', "\nwho web push:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
-            file_put_contents('php://stderr', print_r($_farmerdata, TRUE) , FILE_APPEND | LOCK_EX);
-            file_put_contents('php://stderr', "\n" . "\n", FILE_APPEND | LOCK_EX);
-            file_put_contents('php://stderr', "so what is endpoint??\n" . "\n", FILE_APPEND | LOCK_EX);
-
-            file_put_contents('php://stderr', print_r($_farmerdata->subscription_data->endpoint, TRUE) , FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', "\nsending web push:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', "\n\n", FILE_APPEND | LOCK_EX);
+            // file_put_contents('php://stderr', "so what is endpoint??\n" . "\n", FILE_APPEND | LOCK_EX);
 
             // create subscription
             $subscription = Subscription::create([

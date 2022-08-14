@@ -73,10 +73,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // if it is sent by admin
             if (strpos($data->_from, 'growagric.com')) {
                 file_put_contents('php://stderr', "\nwho sent the message:::: " . $data->_from . "\n" . "\n", FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', "\nmessage to:::: " . $farmerRow['id'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
                 // we should only send if the message was from admin, and if they haven't been sent an email in 2 days
-                
-                $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
+                // don't send for the mean time.
+                // $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
 
                 sendNewMessageNotification($farmerRow['id']);
             } else {
