@@ -2644,7 +2644,6 @@ class Records
 
             $stmt = $this->database_connection->prepare($query);
 
-            $_null = NULL;
             $_id = htmlspecialchars(strip_tags($roleid));
             $wpd = htmlspecialchars(strip_tags($webpushdata));
 
@@ -2655,20 +2654,18 @@ class Records
             // also https://www.php.net/manual/en/pdostatement.bindvalue.php#90625 and https://stackoverflow.com/a/1391801/9259701
             if ($role == GrowAgricRoles::FARMERS) {
                 // Bind parameters to prepared stmt
-                file_put_contents('php://stderr', print_r('should bind for farmer: ' . "\n", TRUE));
-            
                 $stmt->bindParam(':_farmerid', $_id);
-                $stmt->bindParam(':_adminid', $_null);
-                $stmt->bindParam(':_adminid', $_null);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
+                $stmt->bindValue('::_fieldagentid', null, PDO::PARAM_INT);
             } else if ($role == GrowAgricRoles::ADMINS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindParam(':_adminid', $_null);
+                $stmt->bindValue(':_farmerid', null, PDO::PARAM_INT);
                 $stmt->bindParam(':_adminid', $_id);
-                $stmt->bindParam(':_adminid', $_null);
+                $stmt->bindValue(':_fieldagentid', null, PDO::PARAM_INT);
             } else if ($role == GrowAgricRoles::FIELDAGENTS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindParam(':_adminid', $_null);
-                $stmt->bindParam(':_adminid', $_null);
+                $stmt->bindValue(':_farmerid', null, PDO::PARAM_INT);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_INT);
                 $stmt->bindParam(':_fieldagentid', $_id);
                 
             } else {
@@ -2691,9 +2688,9 @@ class Records
             }
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('ERROR in saveWebPushRequestData(): ' . $err->getMessage() . "\n", TRUE));
-            file_put_contents('php://stderr', print_r('Error at Line:' . $err->getLine() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Connection Error at Line:' . $err->getLine() . "\n", TRUE));
                 
-            file_put_contents('php://stderr', print_r('Error Code:' . $err->getCode() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Connection Error Code:' . $err->getCode() . "\n", TRUE));
 
             return false;
         }
