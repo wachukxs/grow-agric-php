@@ -106,6 +106,8 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
             // do nothing??
         }
     } catch (\Throwable $err) {
+        file_put_contents('php://stderr', "\nWebPushNotifications.php->sendNewMessageNotification() ERR: " . $err->getMessage() . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
         return false;
     }
     
