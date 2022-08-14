@@ -36,8 +36,6 @@ class CleanWebPushData {
     }
 }
 
-$endpoint = 'https://fcm.googleapis.com/fcm/send/abcdef...'; // Chrome
-
 $auth = [
     'VAPID' => [
         // TODO: replace our mail with get env
@@ -54,43 +52,53 @@ $webPush->setReuseVAPIDHeaders(true);
 
 function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
 {
-    global $webPush; // use $webPush decleared outside fun
-    // get farmer details [push data]
-    $result =  $GLOBALS['records']->getFarmerPushNotificationData($farmerid);
-        
-    $_r = $result->fetchAll(PDO::FETCH_CLASS, "CleanWebPushData");
+    // try-catch block so we don't break execution
+    try {
+        global $webPush; // use $webPush decleared outside fun
+        // get farmer details [push data]
+        $result =  $GLOBALS['records']->getFarmerPushNotificationData($farmerid);
 
-    if (is_array($_r) && count($_r) > 0) {
-        // send message
+        $_r = $result->fetchAll(PDO::FETCH_CLASS, "CleanWebPushData");
 
-        $_farmerwebpushdata = json_decode($_r[0]);
-        // create subscription
-        $subscription = Subscription::create([
-            "endpoint" => $_farmerwebpushdata->endpoint,
-            // "contentEncoding" => "aesgcm", // not complusory || depends
-            // "authToken" => $__r['keys']['auth'],
-            "keys" => [
-                "auth" => $_farmerwebpushdata['keys']['auth'],
-                "p256dh" => $_farmerwebpushdata['keys']['p256dh']
-            ]
-        ]);
+        if (is_array($_r) && count($_r) > 0) {
+            // send message
 
-        // create payload
-        $_payload["message"] = "Hello there!";
+            $_farmerwebpushdata = json_decode($_r[0]);
 
+            file_put_contents('php://stderr', "\nwho web push:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', $_farmerwebpushdata , FILE_APPEND | LOCK_EX);
+            file_put_contents('php://stderr', "\n" . "\n", FILE_APPEND | LOCK_EX);
 
-        /**
-         * send one notification and flush directly
-         * @var MessageSentReport $report
-         */
-        $report = $webPush->sendOneNotification(
-            $subscription,
-            json_encode($_payload) // optional (defaults null)
-        );
+            // create subscription
+            $subscription = Subscription::create([
+                "endpoint" => $_farmerwebpushdata->endpoint,
+                // "contentEncoding" => "aesgcm", // not complusory || depends
+                // "authToken" => $__r['keys']['auth'],
+                "keys" => [
+                    "auth" => $_farmerwebpushdata['keys']['auth'],
+                    "p256dh" => $_farmerwebpushdata['keys']['p256dh']
+                ]
+            ]);
+
+            // create payload
+            $_payload["message"] = "Hello there!";
 
 
-    } else {
-        // do nothing??
+            /**
+             * send one notification and flush directly
+             * @var MessageSentReport $report
+             */
+            $report = $webPush->sendOneNotification(
+                $subscription,
+                json_encode($_payload) // optional (defaults null)
+            );
+
+
+        } else {
+            // do nothing??
+        }
+    } catch (\Throwable $err) {
+        return false;
     }
     
 
