@@ -1,7 +1,7 @@
 <?php
 // Resources
-include_once '../config/Database.php';
-include_once '../model/Records.php';
+include_once __DIR__ . "/../config/Database.php";
+include_once __DIR__ . "/../model/Records.php";
 
 
 require __DIR__ . "/../vendor/autoload.php"; // https://stackoverflow.com/a/44623787/9259701
