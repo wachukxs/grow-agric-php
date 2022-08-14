@@ -73,12 +73,12 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
 
             // create subscription
             $subscription = Subscription::create([
-                "endpoint" => $_farmerwebpushdata['endpoint'],
+                "endpoint" => $_farmerwebpushdata->endpoint,
                 // "contentEncoding" => "aesgcm", // not complusory || depends
                 // "authToken" => $__r['keys']['auth'],
                 "keys" => [
-                    "auth" => $_farmerwebpushdata['keys']['auth'],
-                    "p256dh" => $_farmerwebpushdata['keys']['p256dh']
+                    "auth" => $_farmerwebpushdata->keys->auth,
+                    "p256dh" => $_farmerwebpushdata->keys->p256dh
                 ]
             ]);
 
