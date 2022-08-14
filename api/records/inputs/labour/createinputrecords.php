@@ -67,11 +67,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     
     } else {
+        http_response_code(400);
+
         echo json_encode(
             array(
                 'message' => 'Bad data provided',
                 'response' => 'NOT OK',
-                'response_code' => http_response_code(400)
+                'response_code' => http_response_code()
             )
         );
     }

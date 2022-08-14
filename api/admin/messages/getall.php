@@ -28,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $row = array();
         $result1;
 
+        // farmerid is also set
         if (isset($_GET["farmeremail"])) { // for farmers
 
             // unused ... depreciated

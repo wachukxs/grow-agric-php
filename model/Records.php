@@ -2687,6 +2687,27 @@ class Records
         }
     }
 
+    public function checkIfPushNotificationDataSaved($farmerid)
+    {
+        try {
+            $query = "SELECT * FROM `webpushnotifications_data` WHERE `webpushnotifications_data`.`farmerid` = :farmerid";
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            //throw $err;
+        }
+    }
+
     # https://ubiq.co/database-blog/get-last-3-months-sales-data-mysql
 
     # https://ubiq.co/database-blog/how-to-calculate-revenue-in-mysql/

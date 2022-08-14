@@ -49,22 +49,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 )
             );
         } else { // it must've been boolean
+            http_response_code(400);
+
             echo json_encode(
                 array(
                     'message' => 'Bad request, we could not save course',
                     'response' => 'NOT OK',
-                    'response_code' => http_response_code(400),
+                    'response_code' => http_response_code(),
                 )
             );
         }
         
     
     } else {
+        http_response_code(400);
+
         echo json_encode(
             array(
                 'message' => 'Bad data provided',
                 'response' => 'NOT OK',
-                'response_code' => http_response_code(400)
+                'response_code' => http_response_code()
             )
         );
     }

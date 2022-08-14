@@ -77,11 +77,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
         if (is_bool($result1)) {
             file_put_contents('php://stderr', print_r('Failed to log in farmer, Probably DB error' . "\n", TRUE));
 
+            http_response_code(400);
+
             echo json_encode(
                 array(
                     'message' => 'It\'s US, not You.',
                     'response' => 'NOT OK',
-                    'response_code' => http_response_code(400)
+                    'response_code' => http_response_code()
                 )
             );
         } else {
@@ -175,11 +177,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
 
         file_put_contents('php://stderr', print_r('Trying to log in farmer, Bad data provided' . "\n", TRUE));
 
+        http_response_code(400);
+
         echo json_encode(
             array(
                 'message' => 'Bad data provided',
                 'response' => 'NOT OK',
-                'response_code' => http_response_code(400)
+                'response_code' => http_response_code()
             )
         );
     }

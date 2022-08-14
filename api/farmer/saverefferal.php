@@ -61,11 +61,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
 
         file_put_contents('php://stderr', print_r('Trying to save farmer refferal, Bad data provided' . "\n", TRUE));
 
+        http_response_code(400);
+
         echo json_encode(
             array(
                 'message' => 'Bad data provided',
                 'response' => 'NOT OK',
-                'response_code' => http_response_code(400)
+                'response_code' => http_response_code()
             )
         );
     }
