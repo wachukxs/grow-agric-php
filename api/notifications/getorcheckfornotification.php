@@ -18,6 +18,17 @@ $records = new Records($a_database_connection);
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
+// will remove
+class CleanWebPushData {
+
+    public function __construct()
+    {
+        if ($this->subscription_data) {
+            $this->subscription_data = htmlspecialchars_decode($this->subscription_data, ENT_QUOTES);
+        }
+    }
+}
+
 // we need to add more data points for if the farmer has other device
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (
@@ -25,10 +36,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         &&
         !empty($_GET["farmerid"])
     ) {
-        $result = $records->checkIfPushNotificationDataSaved($_GET["farmerid"]);
+        $result = $records->getFarmerPushNotificationData($_GET["farmerid"]);
         
-        
-        $_r = $result->fetchAll(PDO::FETCH_GROUP);
+        // will remove
+        $_r = $result->fetchAll(PDO::FETCH_CLASS, "CleanWebPushData"); // PDO::FETCH_GROUP
 
 
         file_put_contents('php://stderr', print_r('==== ++ ' . gettype($_r) . "\n\n" , TRUE));
@@ -41,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     'message' => 'Good request, we have push data for farmer',
                     'response' => 'OK',
                     'response_code' => http_response_code(),
+                    'results' => $_r, // will remove
                 )
             );
         } else {

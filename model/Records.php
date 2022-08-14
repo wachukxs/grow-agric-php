@@ -2696,7 +2696,10 @@ class Records
         }
     }
 
-    public function checkIfPushNotificationDataSaved($farmerid)
+    /**
+     * we should change this so it can get for any role, (we'll provide role, and roleid)
+     */
+    public function getFarmerPushNotificationData($farmerid)
     {
         try {
             $query = "SELECT * FROM `webpushnotifications_data` WHERE `webpushnotifications_data`.`farmerid` = :farmerid";
@@ -2713,7 +2716,7 @@ class Records
 
             return $stmt;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('Records.php->checkIfPushNotificationDataSaved error: ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('Records.php->getFarmerPushNotificationData error: ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }

@@ -1,11 +1,21 @@
 <?php
+// Resources
+include_once '../config/Database.php';
+include_once '../model/Records.php';
+
 
 require __DIR__ . "/../vendor/autoload.php"; // https://stackoverflow.com/a/44623787/9259701
 
 $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/.."); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
 $dotenv->safeLoad();
 
+// Instantiate Database to get a connection
+$database_connection = new Database();
+$a_database_connection = $database_connection->connect();
 
+// Instantiate Records object
+// https://www.geeksforgeeks.org/how-to-declare-a-global-variable-in-php
+$records = new Records($a_database_connection);
 
 # Sources:
 # https://github.com/web-push-libs/web-push-php
@@ -14,6 +24,17 @@ $dotenv->safeLoad();
 
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
+
+
+class CleanWebPushData {
+
+    public function __construct()
+    {
+        if ($this->subscription_data) {
+            $this->subscription_data = htmlspecialchars_decode($this->subscription_data, ENT_QUOTES);
+        }
+    }
+}
 
 $endpoint = 'https://fcm.googleapis.com/fcm/send/abcdef...'; // Chrome
 
@@ -30,3 +51,34 @@ $auth = [
 
 $webPush = new WebPush($auth);
 $webPush->setReuseVAPIDHeaders(true);
+
+function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
+{
+    // get farmer details [push data]
+    $result =  $GLOBALS['records']->getFarmerPushNotificationData($farmerid);
+        
+    $_r = $result->fetchAll(PDO::FETCH_CLASS, "CleanWebPushData");
+
+    if (is_array($_r) && count($_r) > 0) {
+        // send message
+
+        // create subscription
+        $subscription = Subscription::create([
+            "endpoint" => "https://fcm.google.com/...",
+            "contentEncoding" => "aesgcm",
+            "authToken" => "<auth token from JavaScript PushSubscription object>",
+            "keys" => [
+                "auth" => "<auth token from JavaScript PushSubscription object>",
+                "p256dh" => "<p256dh token from JavaScript PushSubscription object>"
+            ]
+        ]);
+
+
+
+        $_webpushdata = json_decode($_r[0]);
+    } else {
+        // do nothing??
+    }
+    
+
+}
