@@ -2648,20 +2648,21 @@ class Records
             $wpd = htmlspecialchars(strip_tags($webpushdata));
 
             // Ensure safe data
+            // also https://www.php.net/manual/en/pdostatement.bindvalue.php#90625
             if ($role == GrowAgricRoles::FARMERS) {
                 // Bind parameters to prepared stmt
                 $stmt->bindParam(':_farmerid', $_id);
-                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
-                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_NULL);
             } else if ($role == GrowAgricRoles::ADMINS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_NULL);
                 $stmt->bindParam(':_adminid', $_id);
-                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_NULL);
             } else if ($role == GrowAgricRoles::FIELDAGENTS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
-                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', null, PDO::PARAM_NULL);
                 $stmt->bindParam(':_fieldagentid', $_id);
             } else {
                 // TODO: we need to improve this
