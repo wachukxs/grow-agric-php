@@ -57,11 +57,14 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
     // try-catch block so we don't break execution
     try {
         global $webPush; // use $webPush decleared outside fun
+        global $records;
         // get farmer details [push data]
-        $result =  $GLOBALS['records']->getFarmerPushNotificationData($farmerid);
+        $result =  $records->getFarmerPushNotificationData($farmerid);
 
         $_r = $result->fetchAll(PDO::FETCH_CLASS, "CleanWebPushData");
-
+        file_put_contents('php://stderr', "\nwho rrrrrr:::: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
+        file_put_contents('php://stderr', $_r , FILE_APPEND | LOCK_EX);
+        
         if (is_array($_r) && count($_r) > 0) {
             // send message
 
