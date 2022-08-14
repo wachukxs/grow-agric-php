@@ -2651,17 +2651,17 @@ class Records
             if ($role == GrowAgricRoles::FARMERS) {
                 // Bind parameters to prepared stmt
                 $stmt->bindParam(':_farmerid', $_id);
-                $stmt->bindParam(':_adminid', NULL);
-                $stmt->bindParam(':_fieldagentid', NULL);
+                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
             } else if ($role == GrowAgricRoles::ADMINS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindParam(':_farmerid', NULL);
+                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
                 $stmt->bindParam(':_adminid', $_id);
-                $stmt->bindParam(':_fieldagentid', NULL);
+                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
             } else if ($role == GrowAgricRoles::FIELDAGENTS) {
                 // Bind parameters to prepared stmt
-                $stmt->bindParam(':_farmerid', NULL);
-                $stmt->bindParam(':_adminid', NULL);
+                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
+                $stmt->bindValue(':_adminid', NULL, PDO::PARAM_NULL);
                 $stmt->bindParam(':_fieldagentid', $_id);
             } else {
                 // TODO: we need to improve this
