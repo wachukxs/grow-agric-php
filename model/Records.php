@@ -2649,12 +2649,14 @@ class Records
             $wpd = htmlspecialchars(strip_tags($webpushdata));
 
             file_put_contents('php://stderr', print_r('what is roleee: ' . $role . "\n", TRUE));
-            file_put_contents('php://stderr', print_r('is roleee farmer: ' . $role == GrowAgricRoles::FARMERS . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('is roleee farmer: ' . ($role == GrowAgricRoles::FARMERS) . "\n", TRUE));
             
             // Ensure safe data
             // also https://www.php.net/manual/en/pdostatement.bindvalue.php#90625 and https://stackoverflow.com/a/1391801/9259701
             if ($role == GrowAgricRoles::FARMERS) {
                 // Bind parameters to prepared stmt
+                file_put_contents('php://stderr', print_r('should bind for farmer: ' . "\n", TRUE));
+            
                 $stmt->bindParam(':_farmerid', $_id);
                 $stmt->bindParam(':_adminid', $_null);
                 $stmt->bindParam(':_adminid', $_null);
