@@ -114,18 +114,24 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
              */
             $report = $webPush->sendOneNotification(
                 $subscription,
-                json_encode($_payload) // optional (defaults null)
+                json_encode($_payload), // optional (defaults null)
+                [
+                    'TTL' => 5000,
+                    'topic' => 'new_message',
+                ]
             );
 
             $endpoint = $report->getRequest()->getUri()->__toString();
 
             if ($report->isSuccess()) {
-                file_put_contents('php://stderr', print_r("Message sent successfully for subscription {$endpoint}." . "\n", TRUE) , FILE_APPEND | LOCK_EX);
-
+                // file_put_contents('php://stderr', print_r("Push Notification Message sent successfully for subscription {$endpoint}." . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', print_r("Push Notification Message sent successfully for subscription" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
             } else {
-                file_put_contents('php://stderr', print_r("Message failed to sent for subscription {$endpoint}: {$report->getReason()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', print_r("Push Notification Message Message failed to sent for subscription {$endpoint}, farmer id {$farmerid}: {$report->getReason()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
 
-                file_put_contents('php://stderr', print_r("\nhttp response: {$report->getResponse()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', print_r("\nPush http response: {$report->getResponse()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', print_r("\nis Push sub expired: {$report->isSubscriptionExpired()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', print_r("\nPush http response: {$report->getResponse()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
             }
 
 
