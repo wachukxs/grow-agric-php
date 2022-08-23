@@ -7,6 +7,17 @@ include_once '../../config/globals/header.php';
 include_once '../../config/Database.php';
 include_once '../../model/Admin.php';
 
+class FieldAgentsss {
+    
+    public function __construct()
+    {
+        if ($this->assignedsubcounties) {
+            // removed special chars from the string
+            $this->assignedsubcounties = explode(",", $this->assignedsubcounties);
+        }
+    }
+}
+
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
@@ -64,6 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $result6 = $admin->getAllModules();
                 $row["modules"] = $result6->fetchAll(PDO::FETCH_ASSOC);
+
+                $result7 = $admin->getAllFieldAgents();
+                $row["fieldagents"] = $result7->fetchAll(PDO::FETCH_CLASS, "FieldAgentsss");
         
                 http_response_code();
 

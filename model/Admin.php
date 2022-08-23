@@ -982,9 +982,31 @@ class Admin
         }
     }
 
+    public function getAllFieldAgents()
+    {
+        try {
+            $query = 'SELECT *, "" AS password
+            
+
+            FROM `fieldagents`';
+
+            // Prepare statement
+            $query_statement = $this->database_connection->prepare($query);
+
+            // Execute query statement
+            $query_statement->execute();
+
+            return $query_statement;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('Admin.php->getAllFieldAgents error: ' . $err->getMessage() . "\n", TRUE));
+            return $err;
+        }
+    }
+
     public function getAllFieldAgentFarmVisits()
     {
         try {
+            // todo: prefix every farmer details as farmer*, same with fieldagent ... but make sure it's in sync with front end
             $query = 'SELECT
 
             -- fieldagents_farm_visits details
