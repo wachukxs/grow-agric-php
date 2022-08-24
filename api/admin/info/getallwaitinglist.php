@@ -23,7 +23,7 @@ class WaitListing {
             // removed special chars from the string
             $this->farmeditems = htmlspecialchars_decode($this->farmeditems, ENT_QUOTES);
 
-            // convert the stringed json to json
+            // convert the stringed string to json
             $this->farmeditems = json_decode($this->farmeditems, true);
 
             // filter out the farmeditems not farmed

@@ -1984,7 +1984,7 @@ class Records
 
                 file_put_contents('php://stderr', print_r("\n\n" . 'see this in converint(): ' . serialize($otherfarmedanimals) . "\n", TRUE));
 
-                $ofa = htmlspecialchars(serialize($otherfarmedanimals));
+                $ofa = htmlspecialchars($otherfarmedanimals); // was htmlspecialchars(serialize($otherfarmedanimals)) ... we shouldn't serialize [https://www.php.net/manual/en/function.serialize.php#107717]
             }
 
             // Bind parameters to prepared stmt

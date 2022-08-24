@@ -8,6 +8,27 @@ include_once '../../../config/globals/header.php';
 include_once '../../../config/Database.php';
 include_once '../../../model/Admin.php';
 
+class FarmVisitsss {
+    
+    public function __construct()
+    {
+        if ($this->otherfarmedanimals) {            
+            
+            // $this->otherfarmedanimals = unserialize($this->otherfarmedanimals);
+
+            // removed special chars from the string
+            $this->otherfarmedanimals = htmlspecialchars_decode($this->otherfarmedanimals, ENT_QUOTES);
+
+            // convert the stringed string to json
+            $this->otherfarmedanimals = json_decode($this->otherfarmedanimals, true);
+
+
+            // removed special chars from the string
+            // $this->otherfarmedanimals = explode(",", $this->otherfarmedanimals);
+        }
+    }
+}
+
 // Instantiate Database to get a connection
 $database_connection = new Database();
 $a_database_connection = $database_connection->connect();
@@ -23,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $row = array();
 
         $result1 = $admin->getAllFieldAgentFarmVisits();
-        $row["farm_visits"] = $result1->fetchAll(PDO::FETCH_ASSOC);
+        $row["farm_visits"] = $result1->fetchAll(PDO::FETCH_CLASS, "FarmVisitsss");
 
         // $row["wait_list"]["farmeditems"] = htmlspecialchars_decode($row["wait_list"]["farmeditems"]);
         
