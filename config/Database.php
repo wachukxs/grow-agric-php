@@ -44,9 +44,9 @@
             } catch (PDOException $e) {
 
                 if (getenv("CURR_ENV") !== "production") {
-                    file_put_contents('../../logs/api.log', 'db err error: ' . $e . "\n", FILE_APPEND | LOCK_EX);
+                    file_put_contents('php://stderr', 'db err error: ' . $e . "\n", TRUE);
             
-                    file_put_contents('../../logs/api.log', 'db err error: ' . $e->getMessage() . "\n", FILE_APPEND | LOCK_EX);
+                    file_put_contents('php://stderr', 'db err error: ' . $e->getMessage() . "\n", TRUE);
                 }
 
                 file_put_contents('php://stderr', print_r('Connection Error at Line:' . $e->getLine() . "\n", TRUE));
@@ -55,7 +55,7 @@
                 file_put_contents('php://stderr', print_r('Connection Error Message:' . $e->getMessage() . "\n", TRUE));
             } catch (Throwable $th) {
 
-                file_put_contents('../../logs/api.log', 'Db th error: ' . $th->getMessage() . "\n", FILE_APPEND | LOCK_EX);
+                // file_put_contents('../../logs/api.log', 'Db th error: ' . $th->getMessage() . "\n", FILE_APPEND | LOCK_EX);
                 file_put_contents('php://stderr', print_r('Another Connection Error:' . $th->getMessage() . "\n", TRUE));
                 throw $th;
             }
