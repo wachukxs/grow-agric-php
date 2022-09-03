@@ -582,6 +582,20 @@ class Admin
             $query = 'SELECT finance_applications.*, finance_application_statuses.status, farmers.`firstname`, farmers.`lastname`, farmers.`middlename`, 
             farmers.`email`, farmers.`phonenumber`, farmers.`timejoined`, farmers.`highesteducationallevel`, 
             farmers.`maritalstatus`, farmers.`age`, farmers.`yearsofexperience`
+
+            ,farms.farmcountylocation
+            ,farms.farmsubcountylocation
+            ,farms.farmwardlocation
+            ,farms.yearsfarming
+            ,farms.numberofemployees
+            ,farms.haveinsurance
+            ,farms.insurer
+            ,farms.farmeditems
+            ,farms.otherfarmeditems
+            ,farms.challengesfaced
+            ,farms.otherchallengesfaced
+            
+            
             FROM finance_applications 
             RIGHT JOIN -- not LEFT, cause we want only fin applications that got their status inserted by the triggers
             finance_application_statuses 
