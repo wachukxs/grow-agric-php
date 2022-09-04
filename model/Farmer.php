@@ -294,19 +294,6 @@ class Farmer {
     // getSingleFarmerByID
     public function getSingleFarmerByID($id)
     {
-        // Create query
-        // $query = 'SELECT ' .
-        // 'farmer.name, ' .
-        // 'farmer.price, ' .
-        // 'farmer.`image`, ' .
-        // 'farmer.price * orders.quantity AS total, ' .
-        // 'orders.time as time_of_order, ' .
-        // 'orders.address, ' .
-        // 'orders.customer_name, ' .
-        // 'orders.quantity ' .
-        // 'FROM farmers ' .
-        // 'RIGHT OUTER JOIN orders ON farmer.id = orders.id_of_food ' .
-        // 'WHERE farmers.id = ?';
         $query = 'SELECT * FROM ' . $this->table . ' WHERE id = ?';
 
         // Prepare statement

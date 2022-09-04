@@ -115,7 +115,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             // end of extra data
             
     
-            // get total income & expense
+            // get total income & expense, other spend and revenue
+            $allmoney_result = $records->getAllMonthlySpendAndIncomeInCurrentYear($_GET["farmerid"]);
+            $row1["chart_v2"] = $allmoney_result;
     
             echo json_encode($row1);
         } else {

@@ -2586,7 +2586,7 @@ class Records
                     
                     input_records_income_expenses.type,
                     'Income And Expense' as name  
-                    FROM `input_records_income_expenses` 
+                    FROM `input_records_income_expenses`
                     WHERE `input_records_income_expenses`.`farmerid` = :farmerid
                     
                     AND DATE_SUB(CURDATE(), INTERVAL :duration MONTH) <= `input_records_income_expenses`.`entry_date` -- why not use entry_date ????
@@ -2720,6 +2720,130 @@ class Records
             return false;
         }
     }
+
+    public function getAllMonthlySpendAndIncomeInCurrentYear($farmerid)
+    {
+        try {
+            $query = 'SELECT 
+
+            COALESCE(SUM(sfs.`price` * sfs.`quantity`), 0) AS "TotalSales",
+             
+            COALESCE(SUM(irl.`salary`), 0) AS "TotalSalariesPaid",
+         
+         COALESCE(
+         SUM(CASE
+            WHEN irie.type = "Income" THEN irie.amount
+            ELSE 0
+          END)
+        ,0)  AS "TotalIncome",
+          
+          
+           COALESCE(
+           SUM(CASE
+            WHEN irie.type = "Expense" THEN irie.amount
+            ELSE 0
+          END)
+        ,0) AS "TotalExpense",
+          
+          
+          COALESCE(SUM(irm.price), 0) AS "TotalMedicineCost",
+          
+          COALESCE(SUM(irb.amount_spent), 0) AS "TotalBroodingCost",
+          
+          COALESCE(SUM(irf.quantity * irf.price), 0) AS "TotalFeedsCost",
+          
+          COALESCE(SUM(irc.quantity * irc.price), 0) AS "TotalChickenCost",
+         
+         DATE_ADD(MAKEDATE(YEAR(CURDATE()), 1), INTERVAL (_mnths._MONTH_INDEX - 1) MONTH) AS "FirstDayOfMonth",
+         
+         date_format(DATE_ADD(MAKEDATE(YEAR(CURDATE()), 1), INTERVAL (_mnths._MONTH_INDEX - 1) MONTH),"%b") AS "Month"
+         
+        , _mnths._MONTH_INDEX
+                    FROM
+                    (
+                              SELECT 1 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 2 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 3 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 4 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 5 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 6 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 7 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 8 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 9 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 10 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 11 AS _MONTH_INDEX, :_farmerid AS _FID
+                               UNION SELECT 12 AS _MONTH_INDEX, :_farmerid AS _FID
+                    ) as _mnths
+                    
+                    LEFT JOIN `input_records_labour` irl
+                    ON _mnths._FID = irl.`farmerid`
+                    AND
+                    _mnths._MONTH_INDEX = MONTH(irl.`payment_date`)
+                    
+                    LEFT JOIN `sales_farmer_sales` sfs
+                    ON _mnths._FID = sfs.`farmerid`
+                    AND _mnths._MONTH_INDEX = MONTH(sfs.`sale_date`)
+                    
+                    LEFT JOIN `input_records_income_expenses` irie
+                    ON _mnths._FID = irie.`farmerid`
+                    AND _mnths._MONTH_INDEX = MONTH(irie.entry_date)
+                    
+                    
+                    LEFT JOIN `input_records_medicines` irm
+                    ON _mnths._FID = irm.`farmerid`
+                    AND _mnths._MONTH_INDEX = MONTH(irm.purchase_date)
+                    
+                    
+                    LEFT JOIN `input_records_brooding` irb
+                    ON _mnths._FID = irb.`farmerid`
+                    AND _mnths._MONTH_INDEX = MONTH(irb.brooding_date)
+                    
+                    LEFT JOIN `inputs_records_feeds` irf
+                    ON _mnths._FID = irf.`farmerid`
+                    AND _mnths._MONTH_INDEX = MONTH(irf.purchase_date)
+                    
+                    LEFT JOIN `inputs_records_chicken` irc
+                    ON _mnths._FID = irc.`farmerid`
+                    AND _mnths._MONTH_INDEX = MONTH(irc.purchase_date)
+                    
+                    
+                    
+                    
+                    
+                    GROUP BY _mnths._MONTH_INDEX
+                    
+                    ORDER BY _mnths._MONTH_INDEX
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fid);
+
+            $r = $stmt->execute();
+
+            if ($r) {
+
+                file_put_contents('php://stderr', print_r('Just successfully ran getAllMonthlySpendAndIncomeInCurrentYear(): ' . "\n", TRUE));
+                return $stmt;
+            } else {
+                return false;
+            }
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllMonthlySpendAndIncomeInCurrentYear(): ' . $err->getMessage() . "\n", TRUE));
+
+            file_put_contents('php://stderr', print_r('Connection Error at Line:' . $err->getLine() . "\n", TRUE));
+                
+            file_put_contents('php://stderr', print_r('Connection Error Code:' . $err->getCode() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    # helpful queries:
+    # https://learnsql.com/cookbook/how-to-group-by-year-in-sql/
 
     # https://ubiq.co/database-blog/get-last-3-months-sales-data-mysql
 

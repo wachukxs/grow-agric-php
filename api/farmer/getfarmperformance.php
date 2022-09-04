@@ -77,6 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $row1["totalinputscost"] = $result15->fetch(PDO::FETCH_ASSOC);
     
             // get total income & expense
+
+            $allmoney_result = $records->getAllMonthlySpendAndIncomeInCurrentYear($_GET["farmerid"]);
+            $row1["chart_v2"] = $allmoney_result->fetchAll(PDO::FETCH_ASSOC);
     
             echo json_encode($row1);
         } else {
