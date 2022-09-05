@@ -22,7 +22,7 @@ $data = json_decode(file_get_contents('php://input'));
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // echo log tracing => look into loggin in php
     file_put_contents('php://stderr', print_r( (isset($value->id) ? 'Trying to update farm with id: ' . $data->id : 'Tying to create new farm') . "\n\n", TRUE));
-    file_put_contents('php://stderr', print_r($data, TRUE));
+    // file_put_contents('php://stderr', print_r($data, TRUE));
 
     try {
 
@@ -33,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $result;
                 if (isset($value->id) && !empty($value->id)) { // this if block should come before the for loop
                     // Update the farm [details]
-                    file_put_contents('php://stderr', print_r("\n\nUpdate the farm [details] " . " " . "\n\n", TRUE));
-                    file_put_contents('php://stderr', print_r($value, TRUE));
+                    file_put_contents('php://stderr', print_r("\n\nUpdating the farm [details] " . " " . "\n\n", TRUE));
+                    // file_put_contents('php://stderr', print_r($value, TRUE));
                     $result = $farm->updateFarmByID($value->challengesfaced, $value->farmwardlocation, $value->farmsubcountylocation, $value->farmcountylocation, $value->farmeditems, $value->haveinsurance, $value->insurer, $value->numberofemployees, $value->otherchallengesfaced, $value->otherfarmeditems, $value->yearsfarming, $value->id);
 
                     // chickenhouses

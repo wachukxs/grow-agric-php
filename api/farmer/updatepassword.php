@@ -84,7 +84,7 @@ if (isset($data->password, $data->farmerid, $data->request_id)
 } else { // if bad or empty data was provided
     file_put_contents('php://stderr', print_r('Bad data provided' . "\n", TRUE));
     // header("HTTP/1.0 400 Bad Request"); // http_response_code(501); // this line casues errors (basically setting http headers) even when there isn't any. How can we send appropriate http status codes so the front end get them.
-    file_put_contents('php://stderr', print_r('Sending ' . http_response_code() . "\n", TRUE));
+    file_put_contents('php://stderr', print_r('Sending http status code ' . http_response_code() . "\n", TRUE));
     echo json_encode(
         array(
             'message' => 'Bad data provided',

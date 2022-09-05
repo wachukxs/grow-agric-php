@@ -10,8 +10,6 @@ include_once '../../model/Admin.php';
 // get data
 $data = json_decode(file_get_contents('php://input'));
 
-file_put_contents('php://stderr', print_r('Trying to log in farmer' . "\n", TRUE));
-
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     // Instantiate Database to get a connection
 

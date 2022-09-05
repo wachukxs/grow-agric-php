@@ -44,10 +44,10 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
     !empty($data->id)
 ) { // if good data was provided
     try {
-        file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->id . "\n", TRUE));
+        // file_put_contents('php://stderr', print_r('farmer data is ' . $data->lastname . '|' . $data->firstname . '|' . $data->email . '|' . $data->phonenumber . '|' . $data->age . '|' . $data->maritalstatus . '|' . $data->highesteducationallevel . '|' . $data->id . "\n", TRUE));
 
         // Update the farmer [details]
-        file_put_contents('php://stderr', print_r('Good data was provided' . "\n", TRUE));
+        file_put_contents('php://stderr', print_r('Good data was provided for farmerupdatedetails1.php' . "\n", TRUE));
         $result = $farmer->updateFarmerProfile1ByID($data->firstname, $data->lastname, $data->email, $data->phonenumber, $data->age, $data->maritalstatus, $data->highesteducationallevel, $data->yearsofexperience, $data->id);
         if ($result) { // check that $result is an int
             // Get the farmer [details]
@@ -123,7 +123,7 @@ if (isset($data->lastname, $data->firstname, $data->email, $data->phonenumber, $
 } else { // if bad or empty data was provided
     file_put_contents('php://stderr', print_r('Bad data provided' . "\n", TRUE));
     // header("HTTP/1.0 400 Bad Request"); // http_response_code(501); // this line casues errors (basically setting http headers) even when there isn't any. How can we send appropriate http status codes so the front end get them.
-    file_put_contents('php://stderr', print_r('Sending ' . http_response_code() . "\n", TRUE));
+    file_put_contents('php://stderr', print_r('Sending https status code ' . http_response_code() . "\n", TRUE));
     echo json_encode(
         array(
             'message' => 'Bad data provided',

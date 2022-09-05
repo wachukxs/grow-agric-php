@@ -71,8 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
         // try to check their credentials
         
         $result1 = $farmer->getFarmerWithPasswordByEmail($data->email);
-        file_put_contents('php://stderr', print_r($result1, TRUE));
-        file_put_contents('php://stderr', print_r(gettype($result1), TRUE));
+        // file_put_contents('php://stderr', print_r($result1, TRUE));
+        // file_put_contents('php://stderr', print_r(gettype($result1), TRUE));
 
         if (is_bool($result1)) {
             file_put_contents('php://stderr', print_r('Failed to log in farmer, Probably DB error' . "\n", TRUE));
@@ -175,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
         
     } else { // if bad or empty data was provided
 
-        file_put_contents('php://stderr', print_r('Trying to log in farmer, Bad data provided' . "\n", TRUE));
+        file_put_contents('php://stderr', print_r('failed Trying to log in farmer, Bad data provided' . "\n", TRUE));
 
         http_response_code(400);
 

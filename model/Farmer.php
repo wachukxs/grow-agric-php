@@ -271,9 +271,6 @@ class Farmer {
 
             $e = htmlspecialchars(strip_tags($_email));
 
-            file_put_contents('php://stderr', print_r('Farmer.php->getFarmerWithPasswordByEmail fetching ...: ' . "\n", TRUE));
-            // file_put_contents('../../logs/api.log', 'Farmer.php->getFarmerWithPasswordByEmail fetching ...: ' . "\n", FILE_APPEND | LOCK_EX);
-
             // Execute query statement
             $query_statement->bindParam(':_email', $e);
 
