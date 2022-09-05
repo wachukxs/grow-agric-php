@@ -1002,7 +1002,11 @@ class Admin
             $query = 'SELECT *, "" AS password
             
 
-            FROM `fieldagents`';
+            FROM `fieldagents`
+
+            WHERE (fieldagents.email NOT LIKE "%test%" OR fieldagents.email NOT LIKE "%testuser%")
+            
+            ';
 
             // Prepare statement
             $query_statement = $this->database_connection->prepare($query);
@@ -1086,7 +1090,7 @@ class Admin
             
             WHERE farms.`deleted` = false
 
-            AND (fieldagents.email NOT LIKE "%test%"" OR fieldagents.email NOT LIKE "%testuser%"")
+            AND (fieldagents.email NOT LIKE "%test%" OR fieldagents.email NOT LIKE "%testuser%")
 
             ORDER BY `fieldagents_farm_visits`.`dateofvisit` DESC
             ';
