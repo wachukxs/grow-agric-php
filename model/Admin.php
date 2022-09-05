@@ -1085,6 +1085,8 @@ class Admin
             ON fieldagents_farm_visits.farmid = farms.id
             
             WHERE farms.`deleted` = false
+
+            ORDER BY `fieldagents_farm_visits`.`dateofvisit` DESC
             ';
 
 
