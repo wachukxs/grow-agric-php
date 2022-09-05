@@ -1086,6 +1086,8 @@ class Admin
             
             WHERE farms.`deleted` = false
 
+            AND (fieldagents.email NOT LIKE "%test%"" OR fieldagents.email NOT LIKE "%testuser%"")
+
             ORDER BY `fieldagents_farm_visits`.`dateofvisit` DESC
             ';
 

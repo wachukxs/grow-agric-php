@@ -134,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     $item['the_message'] = htmlspecialchars_decode($item['the_message'], ENT_QUOTES); // let's not see terrible special chars
                     $_n[$_key]['messages'][$item['subject']]['msgs'][$key] = $item;
 
-                    file_put_contents('php://stderr', "-whyyyyyy are we not seeing this " . $item['_to'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
+                    // file_put_contents('php://stderr', "-whyyyyyy are we not seeing this " . $item['_to'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
                     if (($item['message_seen_by_recipient'] == false || $item['time_read'] == NULL) && stripos($item['_to'], "@growagric.com")) { // and _to fields does have @growagric
                         $_n[$_key]['no_of_unreads'] = $_n[$_key]['no_of_unreads'] + 1;
