@@ -295,21 +295,21 @@ class Records
 
     public function totalRecordsOfFarmers($farmerid)
     {
-        $totalPerTable = "SELECT COUNT(*) as 'sum', 'mortalities' as name FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
+        $totalPerTable = "SELECT COUNT(*) as 'sum', 'Mortalities' as name FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
                     UNION
-                    SELECT COUNT(*) as sum1, 'medicines' as name FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
+                    SELECT COUNT(*) as sum1, 'Medicines' as name FROM `input_records_medicines` WHERE `input_records_medicines`.`farmerid` = :farmerid
                     UNION
-                    SELECT COUNT(*) as sum2, 'labour' as name  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
+                    SELECT COUNT(*) as sum2, 'Employees' as name  FROM `input_records_labour` WHERE `input_records_labour`.`farmerid` = :farmerid
                     UNION
-                    SELECT COUNT(*) as sum3, 'income and expenses' as name  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
+                    SELECT COUNT(*) as sum3, 'Income and Expenses' as name  FROM `input_records_income_expenses` WHERE `input_records_income_expenses`.`farmerid` = :farmerid
                     UNION
-                    SELECT COUNT(*) as sum4, 'chicken' as name  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
+                    SELECT COUNT(*) as sum4, 'Chicken' as name  FROM `inputs_records_chicken` WHERE `inputs_records_chicken`.`farmerid` = :farmerid
                     UNION
-                    SELECT COUNT(*) as sum5, 'diseases' as name FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
+                    SELECT COUNT(*) as sum5, 'Diseases' as name FROM `input_records_diseases` WHERE `input_records_diseases`.`farmerid` = :farmerid
                     UNION
-                    SELECT COUNT(*) as sum6, 'brooding' as name FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
+                    SELECT COUNT(*) as sum6, 'Brooding' as name FROM `input_records_brooding` WHERE `input_records_brooding`.`farmerid` = :farmerid
                     UNION
-                    SELECT COUNT(*) as sum7, 'feeds' as name FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
+                    SELECT COUNT(*) as sum7, 'Feeds' as name FROM `inputs_records_feeds` WHERE `inputs_records_feeds`.`farmerid` = :farmerid
                     ";
 
 
