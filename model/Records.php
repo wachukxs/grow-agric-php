@@ -175,7 +175,11 @@ class Records
 
     public function getMinDateOfRecords($farmerid)
     {
-        $earliestDate = 'SELECT MIN(entry_date0) AS "mindate" FROM
+        $earliestDate = 'SELECT MIN(entry_date0) AS "MinDate",
+
+EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
+            DATE_FORMAT(MIN(entry_date0), "%b") AS "Month",
+            EXTRACT(YEAR FROM MIN(entry_date0)) AS "Year" FROM
         (
             SELECT MIN(`entry_date`) as entry_date0 FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
               UNION
@@ -329,7 +333,7 @@ class Records
 
     public function getAllSalesTotalByFarmer($farmerid)
     {
-        $query = "SELECT SUM(`sales_farmer_sales`.`price`) AS 'sum'
+        $query = "SELECT SUM(`sales_farmer_sales`.`price` * `sales_farmer_sales`.`quantity`) AS 'sum'
         FROM `sales_farmer_sales`
         WHERE `sales_farmer_sales`.`farmerid` = :farmerid
         ";
@@ -399,7 +403,11 @@ class Records
 
     public function getMaxDateOfRecord($farmerid)
     {
-        $lastestDate = 'SELECT MAX(entry_date0) AS "maxdate" FROM
+        $lastestDate = 'SELECT MAX(entry_date0) AS "MaxDate", 
+            EXTRACT(MONTH FROM MAX(entry_date0)) AS "MonthIndex",
+            DATE_FORMAT(MAX(entry_date0), "%b") AS "Month",
+            EXTRACT(YEAR FROM MAX(entry_date0)) AS "Year"
+        FROM
         (
             SELECT MAX(`entry_date`) as entry_date0 FROM `input_records_mortalities` WHERE `input_records_mortalities`.`farmerid` = :farmerid
               UNION
@@ -1432,12 +1440,12 @@ class Records
                 
                 UNION
                 
-                SELECT SUM(`inputs_records_feeds`.`price`) AS totalfeedsamount FROM `inputs_records_feeds`
+                SELECT SUM(`inputs_records_feeds`.`quantity` * `inputs_records_feeds`.`price`) AS totalfeedsamount FROM `inputs_records_feeds`
                 WHERE `inputs_records_feeds`.`farmerid` = :_farmerid
                 
                 UNION
                 
-                SELECT SUM(`inputs_records_chicken`.`price`) AS totalchickenprice FROM `inputs_records_chicken`
+                SELECT SUM(`inputs_records_chicken`.`quantity` * `inputs_records_chicken`.`price`) AS totalchickenprice FROM `inputs_records_chicken`
                 WHERE `inputs_records_chicken`.`farmerid` = :_farmerid
                 ) AS sums
             ';
@@ -2839,6 +2847,252 @@ class Records
                 
             file_put_contents('php://stderr', print_r('Connection Error Code:' . $err->getCode() . "\n", TRUE));
             return false;
+        }
+    }
+
+    public function getAllSalesGrouped($farmerid)
+    {
+        try {
+            $query = 'SELECT
+            EXTRACT(MONTH FROM sfs.sale_date) AS "MonthIndex",
+            DATE_FORMAT(sfs.sale_date,"%b") AS "Month",
+            EXTRACT(YEAR FROM sfs.sale_date) AS "Year",
+            COALESCE(SUM(sfs.`price` * sfs.`quantity`), 0) AS "TotalSales",
+            SUM(sfs.price) AS "TotalPrice",
+            SUM(sfs.quantity) AS "TotalQuantity"
+            
+          FROM `sales_farmer_sales` sfs
+          WHERE sfs.farmerid = :farmerid
+          GROUP BY EXTRACT(YEAR FROM sfs.sale_date), DATE_FORMAT(sfs.sale_date, "%b"), EXTRACT(MONTH FROM sfs.sale_date)
+          
+          ORDER BY EXTRACT(YEAR FROM sfs.sale_date), EXTRACT(MONTH FROM sfs.sale_date)
+          ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            
+        }
+    }
+
+    public function getAllLabourEmployeeGrouped($farmerid)
+    {
+        try {
+            $query = 'SELECT
+            EXTRACT(MONTH FROM irl.payment_date) AS "MonthIndex",
+            DATE_FORMAT(irl.payment_date, "%b") AS "Month",
+            EXTRACT(YEAR FROM irl.payment_date) AS "Year",
+              COALESCE(SUM(irl.`salary`), 0) AS "TotalSalariesPaid"
+          
+        FROM `input_records_labour` irl
+        WHERE irl.farmerid = :farmerid
+        GROUP BY EXTRACT(YEAR FROM irl.payment_date), date_format(irl.payment_date, "%b"), EXTRACT(MONTH FROM irl.payment_date)
+        
+        ORDER BY EXTRACT(YEAR FROM irl.payment_date), EXTRACT(MONTH FROM irl.payment_date)';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            
+        }
+    }
+
+
+
+
+    public function getAllIncomeExpenseGrouped($farmerid)
+    {
+        try {
+            $query = 'SELECT
+            EXTRACT(MONTH FROM irie.entry_date) AS "MonthIndex",
+            DATE_FORMAT(irie.entry_date, "%b") AS "Month",
+            EXTRACT(YEAR FROM irie.entry_date) AS "Year",
+            
+              COALESCE(
+                 SUM(CASE
+                    WHEN irie.type = "Income" THEN irie.amount
+                    ELSE 0
+                  END)
+                ,0)  AS "TotalIncome",
+                  
+                  
+                   COALESCE(
+                   SUM(CASE
+                    WHEN irie.type = "Expense" THEN irie.amount
+                    ELSE 0
+                  END)
+                ,0) AS "TotalExpense"
+          
+        FROM `input_records_income_expenses` irie
+        WHERE irie.farmerid = :farmerid
+        GROUP BY EXTRACT(YEAR FROM irie.entry_date), date_format(irie.entry_date, "%b"), EXTRACT(MONTH FROM irie.entry_date)
+        
+        ORDER BY EXTRACT(YEAR FROM irie.entry_date), EXTRACT(MONTH FROM irie.entry_date)';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            
+        }
+    }
+
+
+
+    public function getAllMedicineGrouped($farmerid)
+    {
+        try {
+            $query = 'SELECT
+            EXTRACT(MONTH FROM irm.purchase_date) AS "MonthIndex",
+            DATE_FORMAT(irm.purchase_date, "%b") AS "Month",
+            EXTRACT(YEAR FROM irm.purchase_date) AS "Year",
+            
+            COALESCE(SUM(irm.price), 0) AS "TotalMedicineCost"
+          
+        FROM `input_records_medicines` irm
+        WHERE irm.farmerid = :farmerid
+        GROUP BY EXTRACT(YEAR FROM irm.purchase_date), date_format(irm.purchase_date, "%b"), EXTRACT(MONTH FROM irm.purchase_date)
+        
+        ORDER BY EXTRACT(YEAR FROM irm.purchase_date), EXTRACT(MONTH FROM irm.purchase_date)';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            
+        }
+    }
+
+
+    public function getAllBroodingGrouped($farmerid)
+    {
+        try {
+            $query = 'SELECT
+            EXTRACT(MONTH FROM irb.brooding_date) AS "MonthIndex",
+            DATE_FORMAT(irb.brooding_date, "%b") AS "Month",
+            EXTRACT(YEAR FROM irb.brooding_date) AS "Year",
+            
+            COALESCE(SUM(irb.amount_spent), 0) AS "TotalBroodingCost"
+          
+        FROM `input_records_brooding` irb
+        WHERE irb.farmerid = :farmerid
+        GROUP BY EXTRACT(YEAR FROM irb.brooding_date), date_format(irb.brooding_date, "%b"), EXTRACT(MONTH FROM irb.brooding_date)
+        
+        ORDER BY EXTRACT(YEAR FROM irb.brooding_date), EXTRACT(MONTH FROM irb.brooding_date)';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            
+        }
+    }
+
+
+    public function getAllFeedsGrouped($farmerid)
+    {
+        try {
+            $query = 'SELECT
+            EXTRACT(MONTH FROM irf.purchase_date) AS "MonthIndex",
+            DATE_FORMAT(irf.purchase_date, "%b") AS "Month",
+            EXTRACT(YEAR FROM irf.purchase_date) AS "Year",
+            
+            COALESCE(SUM(irf.quantity * irf.price), 0) AS "TotalFeedsCost"
+          
+        FROM `inputs_records_feeds` irf
+        WHERE irf.farmerid = :farmerid
+        GROUP BY EXTRACT(YEAR FROM irf.purchase_date), date_format(irf.purchase_date, "%b"), EXTRACT(MONTH FROM irf.purchase_date)
+        
+        ORDER BY EXTRACT(YEAR FROM irf.purchase_date), EXTRACT(MONTH FROM irf.purchase_date)';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            
+        }
+    }
+
+
+    public function getAllChickenGrouped($farmerid)
+    {
+        try {
+            $query = 'SELECT
+            EXTRACT(MONTH FROM irc.purchase_date) AS "MonthIndex",
+            DATE_FORMAT(irc.purchase_date, "%b") AS "Month",
+            EXTRACT(YEAR FROM irc.purchase_date) AS "Year",
+            
+            COALESCE(SUM(irc.quantity * irc.price), 0) AS "TotalChickenCost"
+          
+        FROM `inputs_records_chicken` irc
+        WHERE irc.farmerid = :farmerid
+        GROUP BY EXTRACT(YEAR FROM irc.purchase_date), date_format(irc.purchase_date, "%b"), EXTRACT(MONTH FROM irc.purchase_date)
+        
+        ORDER BY EXTRACT(YEAR FROM irc.purchase_date), EXTRACT(MONTH FROM irc.purchase_date)';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            
         }
     }
 

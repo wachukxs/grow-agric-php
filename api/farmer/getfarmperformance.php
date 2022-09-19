@@ -80,6 +80,17 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
             $allmoney_result = $records->getAllMonthlySpendAndIncomeInCurrentYear($_GET["farmerid"]);
             $row1["chart_v2"] = $allmoney_result->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+            // getting more
+            $row1["chart_v3"]["sale"] = $records->getAllSalesGrouped($_GET["farmerid"])->fetchAll(PDO::FETCH_ASSOC);
+            $row1["chart_v3"]["labour"] = $records->getAllLabourEmployeeGrouped($_GET["farmerid"])->fetchAll(PDO::FETCH_ASSOC);
+            $row1["chart_v3"]["income_expense"] = $records->getAllIncomeExpenseGrouped($_GET["farmerid"])->fetchAll(PDO::FETCH_ASSOC);
+            $row1["chart_v3"]["medicine"] = $records->getAllMedicineGrouped($_GET["farmerid"])->fetchAll(PDO::FETCH_ASSOC);
+            $row1["chart_v3"]["brooding"] = $records->getAllBroodingGrouped($_GET["farmerid"])->fetchAll(PDO::FETCH_ASSOC);
+            $row1["chart_v3"]["feeds"] = $records->getAllFeedsGrouped($_GET["farmerid"])->fetchAll(PDO::FETCH_ASSOC);
+            $row1["chart_v3"]["chicken"] = $records->getAllChickenGrouped($_GET["farmerid"])->fetchAll(PDO::FETCH_ASSOC);
     
             echo json_encode($row1);
         } else {
