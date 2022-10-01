@@ -345,56 +345,75 @@ try {
 
         //Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
+        //Server settings
+        // uncomment to see email report/output
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;                      //Enable or disable verbose debug output
+        $mail->Debugoutput = function ($str, $level) {
+            file_put_contents('php://stderr', print_r("\n\n" . $str . "\n", TRUE));
+        };
+        $mail->isSMTP();                                            //Send using SMTP
+        $mail->Host       = getenv("OUR_EMAIL_REGION");   //Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+        $mail->Username   = getenv("OUR_EMAIL");                     //SMTP username
+        $mail->Password   = getenv("OUR_EMAIL_PASSWORD");            //SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+        $mail->Port       = getenv("OUR_EMAIL_PORT");               //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+        // $mail->addAddress('ellen@example.com');               //Name is optional
+        $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
+        // $mail->addCC('cc@example.com');
+        $mail->addBCC(getenv("GROW_AGRIC_DEV_EMAIL"));
+      
+        //Recipients
+        $mail->setFrom(getenv("OUR_EMAIL"), 'Mailer');
+        //Content
+        $mail->isHTML(true); //Set email format to HTML
+        // -- how do we know what subject to set, and set it dynamically??
+        $mail->Subject = 'Add Farm Records';
+    
         for ($i = 0; $i < count($farmers_with_no_records); $i++) {
             # send mail
-            //Server settings
-            // uncomment to see email report/output
-            $mail->SMTPDebug = SMTP::DEBUG_OFF;                      //Enable or disable verbose debug output
-            $mail->Debugoutput = function ($str, $level) {
-                file_put_contents('php://stderr', print_r("\n\n" . $str . "\n", TRUE));
-            };
-            $mail->isSMTP();                                            //Send using SMTP
-            $mail->Host       = getenv("OUR_EMAIL_REGION");   //Set the SMTP server to send through
-            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-            $mail->Username   = getenv("OUR_EMAIL");                     //SMTP username
-            $mail->Password   = getenv("OUR_EMAIL_PASSWORD");            //SMTP password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-            $mail->Port       = getenv("OUR_EMAIL_PORT");               //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-
-            //Recipients
-            $mail->setFrom(getenv("OUR_EMAIL"), 'Mailer');
-            $mail->addAddress($farmers_with_no_records[$i]['email'], $farmers_with_no_records[$i]['firstname']);     //Add a recipient [in test mode, send to getenv("TEST_EMAIL")]
-            // $mail->addAddress('ellen@example.com');               //Name is optional
-            $mail->addReplyTo(getenv("OUR_EMAIL"), 'GrowAgric Inc');
-            // $mail->addCC('cc@example.com');
-            $mail->addBCC(getenv("GROW_AGRIC_DEV_EMAIL"));
-
+            
+            try {
+                $mail->addAddress($farmers_with_no_records[$i]['email'], $farmers_with_no_records[$i]['firstname']);     //Add a recipient [in test mode, send to getenv("TEST_EMAIL")]
+            } catch (\Throwable $th) {
+                file_put_contents('php://stderr', print_r('Invalid address skipped (in nofarmerrecoredsemails.php): ' . $farmers_with_incomplete_profiles[$i]['email'] . "\n", TRUE));
+                continue;
+            }
             //Attachments
             //$mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
             //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
 
-            //Content
-            $mail->isHTML(true);                                  //Set email format to HTML
-            // -- how do we know what subject to set, and set it dynamically??
-            $mail->Subject = 'Add Farm Records';
+         
             $mail->Body = _getEmailTemplateHTML($farmers_with_no_records[$i]['firstname'], InnerEmailing::NO_FARM_RECORDS); // 'This is the HTML message body <b>in bold!</b>';
             // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
             // not put farmer emails
             file_put_contents('php://stderr', print_r('sending email for ' . $farmers_with_no_records[$i]['firstname'] . " with email " . $farmers_with_no_records[$i]['email'] . "\n", TRUE));
 
-            if (getenv("CURR_ENV") == "production" && $mail->send()) { // 
-                // save into the db that it has been sent
-                _saveFarmerEmailReminder($farmers_with_no_records[$i]['farmerid'], "NO_FARM_RECORDS");
-
-                $output_info["farmers"][$farmers_with_no_records[$i]['email']] = "SENT";
-                file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
-            } else {
-                $output_info["farmers"][$farmers_with_no_records[$i]['email']] = "NOT_SENT";
-                file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
+            try {
+                if (getenv("CURR_ENV") == "production" && $mail->send()) { // 
+                    // save into the db that it has been sent
+                    _saveFarmerEmailReminder($farmers_with_no_records[$i]['farmerid'], "NO_FARM_RECORDS");
+    
+                    $output_info["farmers"][$farmers_with_no_records[$i]['email']] = "SENT";
+                    file_put_contents('php://stderr', print_r('SEnt THe MaiL ' . "\n", TRUE));
+                } else {
+                    $output_info["farmers"][$farmers_with_no_records[$i]['email']] = "NOT_SENT";
+                    file_put_contents('php://stderr', print_r('did not SEnd THe MaiL ' . "\n", TRUE));
+                }
+            } catch (\Throwable $th) {
+                //Reset the connection to abort sending this message
+                //The loop will continue trying to send to the rest of the list
+                file_put_contents('php://stderr', print_r('Mailer Error (' . htmlspecialchars($farmers_with_no_records[$i]['email']) . ') ' . $mail->ErrorInfo . "\n", TRUE));
+                $mail->getSMTPInstance()->reset();
             }
 
-            file_put_contents('php://stderr', print_r("\n\n\n" . "\n\n\n", TRUE));
+            file_put_contents('php://stderr', print_r("\n\n\n", TRUE));
+
+            //Clear all addresses and attachments for the next iteration
+            $mail->clearAddresses();
+            $mail->clearAttachments();
 
         }
 
