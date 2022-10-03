@@ -471,7 +471,7 @@ class Admin
                     AND farms.deleted = false
                 ) AS no_finance_applications,
                 
-                (SELECT COUNT(*) FROM farms) AS no_farms,
+                (SELECT COUNT(*) FROM farms WHERE deleted = false) AS no_farms,
                 
                 (SELECT COUNT(*) FROM waiting_list) AS no_waiting_list';
 
