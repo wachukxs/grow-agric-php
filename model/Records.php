@@ -640,6 +640,32 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
         }
     }
 
+    public function getAllFeedsInputRecords($farmerid)
+    {
+
+        try {
+            $query = 'SELECT * FROM `inputs_records_feeds`
+                WHERE
+                farmerid = :_farmerid
+            ';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmerid));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_farmerid', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $err) {
+            file_put_contents('php://stderr', print_r('ERROR in getAllFeedsInputRecords(): ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
 
     public function getAllFeedsInputRecordsForChartData($farmerid, $range = NULL)
     {
@@ -665,7 +691,7 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
 
             return $stmt;
         } catch (\Throwable $err) {
-            file_put_contents('php://stderr', print_r('ERROR in getAllFeedsInputRecords(): ' . $err->getMessage() . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('ERROR in getAllFeedsInputRecordsForChartData(): ' . $err->getMessage() . "\n", TRUE));
             return false;
         }
     }
