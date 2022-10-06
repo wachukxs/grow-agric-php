@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     try {
 
         $row = array();
-        $result1;
+        $result1 = null;
 
         // farmerid is also set
         if (isset($_GET["farmeremail"])) { // for farmers
@@ -174,10 +174,28 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $row["no_messages"] = $result0->fetchAll(PDO::FETCH_ASSOC);
         }
 
+
+
+        // file_put_contents('php://stderr', print_r($result1, TRUE) , FILE_APPEND | LOCK_EX);
+
+        // file_put_contents('php://stderr', print_r($row, TRUE) , FILE_APPEND | LOCK_EX);
+
+
+
         if ($result1) {
-            http_response_code();
+            file_put_contents('php://stderr', "done getting all messages: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
+            // file_put_contents('php://stderr', print_r($row, TRUE) , FILE_APPEND | LOCK_EX);
+            
+
+            // file_put_contents('../../../logs/api.log', 'Putting in .log file' . "\n", FILE_APPEND | LOCK_EX);
+            // file_put_contents('../../../logs/api.log', print_r($row, TRUE), FILE_APPEND | LOCK_EX);
+            
+            http_response_code(200);
             echo json_encode($row);
         } else { // if error occured
+            file_put_contents('php://stderr', "NOOOOOTTT done getting all messages: " . "\n" . "\n", FILE_APPEND | LOCK_EX);
+
+            http_response_code();
             echo json_encode([]);
         }
         
