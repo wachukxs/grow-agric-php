@@ -60,14 +60,15 @@ class Finance
         $chickscost,
         $feedscost,
         $broodingcost,
-        $dateneeded, $medicinesandvaccinescost, // no longer connected
+        $dateneeded,
+        $medicinesandvaccinescost,
         $projectedsales
     ) {
 
         try {
             // Create query
 
-            $query = 'INSERT INTO ' . $this->table . '
+            $query = 'INSERT INTO `finance_applications`
                 SET
                 farmerid = :farmerid, 
                 farmid = :farmid,
@@ -87,7 +88,13 @@ class Finance
                 dateneeded = :dateneeded,
                 medicinesandvaccinescost = :medicinesandvaccinescost,
                 projectedsales = :projectedsales
-            ';
+            '; 
+
+            // ,
+            // created_on = :created_on,
+            // id = :id
+            
+            // NOW() or UNIX_TIMESTAMP() // https://stackoverflow.com/a/14849994/9259701
 
             // Prepare statement
             $stmt = $this->database_connection->prepare($query);
@@ -112,6 +119,8 @@ class Finance
 
             $date1 = new DateTime($dateneeded);
             $dn = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+            file_put_contents('php://stderr', print_r( "dn is $dn", TRUE));
             
             $ps = htmlspecialchars(strip_tags(str_replace(',', '', $projectedsales)));
 
@@ -125,8 +134,17 @@ class Finance
             $stmt->bindParam(':numberofstaff', $nos);
             $stmt->bindParam(':preferredchickssupplier', $pcs);
             $stmt->bindParam(':preferredfeedsssupplier', $pfs);
-            $stmt->bindParam(':otherpreferredchickssupplier', $opcs);
-            $stmt->bindParam(':otherpreferredfeedsssupplier', $opfs);
+            if ($opcs) {
+                $stmt->bindParam(':otherpreferredchickssupplier', $opcs);
+            } else {
+                $stmt->bindValue(':otherpreferredchickssupplier', NULL);
+            }
+            if ($opfs) {
+                $stmt->bindParam(':otherpreferredfeedsssupplier', $opfs);
+            } else {
+                $stmt->bindValue(':otherpreferredfeedsssupplier', NULL);
+            }
+            
             $stmt->bindParam(':howmuchrequired', $hmr);
             $stmt->bindParam(':chickscost', $cc);
             $stmt->bindParam(':feedscost', $fc);
@@ -136,6 +154,17 @@ class Finance
             $stmt->bindParam(':dateneeded', $dn);
             $stmt->bindParam(':projectedsales', $ps);
 
+            // $_idd = 2242; $rrr = NULL;
+            // $stmt->bindParam(':created_on', $rrr);
+            // $stmt->bindParam(':id', $_idd);
+
+
+
+
+            // file_put_contents('php://stderr', print_r( $stmt->queryString, TRUE));
+            // file_put_contents('php://stderr', print_r( $stmt->debugDumpParams(), TRUE));
+            
+
             // Execute query statement
             if ($stmt->execute()) {
                 return $this->database_connection->lastInsertId();
@@ -144,19 +173,24 @@ class Finance
                 return false;
             }
         } catch (\Throwable $err) {
+
+            file_put_contents('php://stderr', print_r( "ERRRRRSSS" . "\n\n\n", TRUE));
+
+            file_put_contents('php://stderr', print_r( $err, TRUE));
             
             file_put_contents('php://stderr', print_r('ERROR Trying to do finance registration for farmer: ' . $err->getMessage() . "\n", TRUE));
             return $err;// ->getMessage();
         }
     }
 
-    public function updateFinanceRegistrationStatus($lastupdateby, $status, $finance_application_id) {
+    public function updateFinanceRegistrationStatus($lastupdateby, $status, $finance_application_id, $reason) {
         try {
             // Create query
             $query = 'UPDATE finance_application_statuses 
                 SET 
                 lastupdateby = :lastupdateby,
-                status = :status
+                status = :status,
+                reason = :reason
                 WHERE
                 finance_application_id = :finance_application_id
             ';
@@ -168,11 +202,13 @@ class Finance
             $lub = htmlspecialchars(strip_tags($lastupdateby));
             $s = htmlspecialchars(strip_tags($status));
             $faid = htmlspecialchars(strip_tags($finance_application_id));
+            $r = htmlspecialchars(strip_tags($reason));
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':lastupdateby', $lub);
             $stmt->bindParam(':status', $s);
             $stmt->bindParam(':finance_application_id', $faid);
+            $stmt->bindParam(':reason', $r);
 
             // Execute query statement
             if ($stmt->execute()) {
