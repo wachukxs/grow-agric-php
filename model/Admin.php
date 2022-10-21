@@ -578,8 +578,7 @@ class Admin
     public function getAllFinanceApplications()
     {
         try {
-            // adding farmer profile to query, -------- !!!!!!!!
-            $query = 'SELECT finance_applications.*, finance_application_statuses.status, farmers.`firstname`, farmers.`lastname`, farmers.`middlename`, 
+            $query = 'SELECT finance_applications.*, finance_application_statuses.status, finance_application_statuses.reason, farmers.`firstname`, farmers.`lastname`, farmers.`middlename`, 
             farmers.`email`, farmers.`phonenumber`, farmers.`timejoined`, farmers.`highesteducationallevel`, 
             farmers.`maritalstatus`, farmers.`age`, farmers.`yearsofexperience`
 
