@@ -203,7 +203,7 @@ class Finance
             $s = htmlspecialchars(strip_tags($status));
             $faid = htmlspecialchars(strip_tags($finance_application_id));
 
-            if ($reason) {
+            if (isset($reason) && !empty($reason)) {
                 $r = htmlspecialchars(strip_tags($reason));
                 $stmt->bindParam(':reason', $r);
             } else {

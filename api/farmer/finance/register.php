@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'message' => 'Badd request, there are errors',
                 'response' => 'NOT OK',
                 'response_code' => http_response_code(),
-                'order_details' => $data
+                'finance_details' => $data
             )
         );
     }

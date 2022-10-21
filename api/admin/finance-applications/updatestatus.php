@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ($data->status == "DECLINED" && isset($data->reason) && !empty($data->reason))
             )
         ) {
-            $result = $finance->updateFinanceRegistrationStatus($data->lastupdateby, $data->status, $data->finance_application_id, $data->reason = NULL);
+            $result = $finance->updateFinanceRegistrationStatus($data->lastupdateby, $data->status, $data->finance_application_id, $data->reason);
 
             if ($result) {
                 $result1 = $finance->selectSingleFinanceRegistrationStatusByID($data->finance_application_id);
