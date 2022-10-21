@@ -202,13 +202,20 @@ class Finance
             $lub = htmlspecialchars(strip_tags($lastupdateby));
             $s = htmlspecialchars(strip_tags($status));
             $faid = htmlspecialchars(strip_tags($finance_application_id));
-            $r = htmlspecialchars(strip_tags($reason));
+
+            if ($reason) {
+                $r = htmlspecialchars(strip_tags($reason));
+                $stmt->bindParam(':reason', $r);
+            } else {
+                $stmt->bindValue(':reason', NULL);
+            }
+            
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':lastupdateby', $lub);
             $stmt->bindParam(':status', $s);
             $stmt->bindParam(':finance_application_id', $faid);
-            $stmt->bindParam(':reason', $r);
+            
 
             // Execute query statement
             if ($stmt->execute()) {
