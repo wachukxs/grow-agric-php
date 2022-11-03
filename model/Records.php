@@ -1830,7 +1830,9 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
             finance_applications.`farmerid`, 
             finance_applications.`farmid`, 
             finance_applications.`id`, 
-            finance_applications.created_on, 
+            finance_applications.created_on,
+            finance_application_statuses.lastupdate,
+            finance_application_statuses.finance_application_id, 
             finance_application_statuses.status 
             FROM 
             `finance_applications` 
@@ -3118,6 +3120,62 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
 
             return $stmt;
         } catch (\Throwable $err) {
+            
+        }
+    }
+
+    public function checkForUnseenFinanceApplicationUpdates($farmeremail)
+    {
+        try {
+            $query = 'SELECT COUNT(*) AS total 
+            FROM `finance_application_statuses`
+            LEFT JOIN `finance_applications`
+            ON `finance_application_statuses`.`finance_application_id` = `finance_applications`.`id`
+            LEFT JOIN `farmers`
+            ON `finance_applications`.`farmerid` = `farmers`.`id`
+            WHERE 
+            `farmers`.`email` = :farmeremail
+            AND `finance_application_statuses`.`seen_by_farmer` = false
+            AND `finance_application_statuses`.`seen_by_farmer` IS NULL
+            AND `finance_application_statuses`.`lastupdate` > "2022-11-01"';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmeremail));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmeremail', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $th) {
+            
+        }
+    }
+
+    public function getNumberOfUnreadMessages($farmeremail)
+    {
+        try {
+            $query = 'SELECT COUNT(*) AS total FROM `messages` 
+            WHERE 
+            `messages`._to = :farmeremail
+            AND `messages`.`message_seen_by_recipient` = false
+            AND `messages`.`time_read` IS NULL';
+
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $fi = htmlspecialchars(strip_tags($farmeremail));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':farmeremail', $fi);
+
+            $r = $stmt->execute();
+
+            return $stmt;
+        } catch (\Throwable $th) {
             
         }
     }

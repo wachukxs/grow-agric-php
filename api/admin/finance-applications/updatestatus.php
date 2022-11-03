@@ -40,6 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ($data->status == "DECLINED" && isset($data->reason) && !empty($data->reason))
             )
         ) {
+            // tiny or hot fix:
+            if ($data->status == "APPROVED") {
+                $data->reason == NULL;
+            }
+            
             $result = $finance->updateFinanceRegistrationStatus($data->lastupdateby, $data->status, $data->finance_application_id, $data->reason);
 
             if ($result) {
