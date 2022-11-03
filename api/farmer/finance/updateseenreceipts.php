@@ -21,19 +21,19 @@ file_put_contents('php://stderr', print_r('Trying to create and send message' . 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (
-        isset($data->farmerid, $data->timeread, $data->subject)
+        isset($data->farmerid, $data->timeread, $data->financeapplicationid)
         &&
         !empty($data->farmerid)
         &&
         !empty($data->timeread)
         &&
-        !empty($data->subject)
+        !empty($data->financeapplicationid)
     ) {
 
-        // try to check their credentials
-        $result = $farmer->updateReadReceipts($data->subject, $data->farmerid, $data->timeread);
+        $result = $farmer->updateFinanceApplicationSeenReceipts($data->financeapplicationid, $data->farmerid, $data->timeread);
 
         file_put_contents('php://stderr', print_r("\n\n" . "EOHHHHH $result" . "\n", TRUE));
+
 
         if ($result) {
             echo json_encode(
@@ -55,7 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 )
             );
         }
-
         
         
     } else {

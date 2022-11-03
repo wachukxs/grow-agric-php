@@ -811,6 +811,96 @@ class Farmer {
 
     }
 
+    public function updateReadReceipts($subject, $farmerid, $timeread)
+    {
+        try {
+            // Create query
+            $query = 'UPDATE messages 
+                SET 
+                message_seen_by_recipient = true,
+                time_read = :_time_read
+                WHERE
+                message_seen_by_recipient = false
+                AND
+                time_read IS NULL
+                AND
+                subject = :_subject
+                AND
+                farmerid = :_farmerid
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $s = htmlspecialchars(strip_tags($subject));
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            $date1 = new DateTime($timeread); // Seems this isn't doing timezone conversion and is not accurate
+            $tr = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':_time_read', $tr);
+            $stmt->bindParam(':_subject', $s);
+            $stmt->bindParam(':_farmerid', $fid);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed message receipts read update query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute message receipts read update query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Admin.php->updateReadReceipts error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
+    public function updateFinanceApplicationSeenReceipts($financeapplicationid, $farmerid, $timeread)
+    {
+        try {
+            // Create query
+            $query = 'UPDATE `finance_application_statuses`
+            SET
+            
+            `finance_application_statuses`.`seen_by_farmer` = true,
+            `finance_application_statuses`.`time_seen_by_farmer` = CURRENT_TIMESTAMP()
+            WHERE
+            `finance_application_statuses`.`finance_application_id` = :fin_app_id
+            ';
+
+            // Prepare statement
+            $stmt = $this->database_connection->prepare($query);
+
+            // Ensure safe data
+            $faid = htmlspecialchars(strip_tags($financeapplicationid));
+            $fid = htmlspecialchars(strip_tags($farmerid));
+
+            // DELIBRATE TODO: maybe use the $timeread
+            $date1 = new DateTime($timeread); // Seems this isn't doing timezone conversion and is not accurate
+            $tr = htmlspecialchars(strip_tags($date1->format('Y-m-d H:i:s')));
+
+            // Bind parameters to prepared stmt
+            $stmt->bindParam(':fin_app_id', $faid);
+
+            // Execute query statement
+            if ($stmt->execute()) {
+                file_put_contents('php://stderr', print_r('Executed updateFinanceApplicationSeenReceipts() query' . "\n", TRUE));
+                return true;
+            } else {
+                file_put_contents('php://stderr', print_r('Failed to Execute updateFinanceApplicationSeenReceipts() query' . "\n", TRUE));
+                return false;
+            }
+        } catch (\Throwable $err) {
+            // throw $err; $err->getMessage()
+            file_put_contents('php://stderr', print_r('Farmer.php->updateReadReceipts error: ' . $err->getMessage() . "\n", TRUE));
+            return false;
+        }
+    }
+
     public function createdResetPasswordRequest()
     {
         

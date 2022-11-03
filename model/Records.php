@@ -1833,7 +1833,8 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
             finance_applications.created_on,
             finance_application_statuses.lastupdate,
             finance_application_statuses.finance_application_id, 
-            finance_application_statuses.status 
+            finance_application_statuses.status,
+            finance_application_statuses.seen_by_farmer
             FROM 
             `finance_applications` 
             LEFT JOIN 
@@ -3136,7 +3137,7 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
             WHERE 
             `farmers`.`email` = :farmeremail
             AND `finance_application_statuses`.`seen_by_farmer` = false
-            AND `finance_application_statuses`.`seen_by_farmer` IS NULL
+            AND `finance_application_statuses`.`time_seen_by_farmer` IS NULL
             AND `finance_application_statuses`.`lastupdate` > "2022-11-01"';
 
             $stmt = $this->database_connection->prepare($query);

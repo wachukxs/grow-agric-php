@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ) {
             // tiny or hot fix:
             if ($data->status == "APPROVED") {
-                $data->reason == NULL;
+                $data->reason = NULL;
             }
             
             $result = $finance->updateFinanceRegistrationStatus($data->lastupdateby, $data->status, $data->finance_application_id, $data->reason);
