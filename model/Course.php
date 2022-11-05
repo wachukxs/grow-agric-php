@@ -442,13 +442,13 @@ class Course {
     public function getSingleCourseByCourseID($courseid, $farmerid)
     {
         try {
-            // Create query
+            // Create query, LIMIT 1 is like a hot fix?
             $query = 'SELECT lc.`mediatype`,lc.`name`,lc.`description`,lc.`id`,lc.`url`,lc.`moduleid`, MAX(li.end) AS last_time,
             (
-                        SELECT currentpage FROM learning_info WHERE learning_info.end = MAX(li.end)
+                        SELECT currentpage FROM learning_info WHERE learning_info.end = MAX(li.end) LIMIT 1
                     ) AS last_page,
                     (
-                        SELECT totalpages FROM learning_info WHERE learning_info.end = MAX(li.end)
+                        SELECT totalpages FROM learning_info WHERE learning_info.end = MAX(li.end) LIMIT 1
                     ) AS total_pages
             
             FROM learning_courses lc

@@ -1862,7 +1862,7 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
             return $query_statement;
         } catch (\Throwable $err) {
             file_put_contents('php://stderr', print_r('ERROR in getAllFarmerFinanceApplicationStatusByFarmerID(): ' . $err->getMessage() . "\n", TRUE));
-            return $err->getMessage();
+            return false;
         }
     }
 
@@ -3152,7 +3152,7 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
 
             return $stmt;
         } catch (\Throwable $th) {
-            
+            return false;
         }
     }
 
