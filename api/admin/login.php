@@ -6,6 +6,7 @@ include_once '../../config/globals/header.php';
 // Resources
 include_once '../../config/Database.php';
 include_once '../../model/Admin.php';
+include_once '../../utilities/Helpers.php';
 
 class FieldAgentsss {
     
@@ -65,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $row["finance_applications"] = $result2->fetchAll(PDO::FETCH_ASSOC);
 
                 $result3 = $admin->getAllFarms();
-                $row["farms"] = $result3->fetchAll(PDO::FETCH_ASSOC);
+                $row["farms"] = $result3->fetchAll(PDO::FETCH_CLASS, "Farmm");
 
                 $result4 = $admin->getAllFarmers();
                 $row["farmers"] = $result4->fetchAll(PDO::FETCH_ASSOC);
