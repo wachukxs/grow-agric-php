@@ -2684,7 +2684,8 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
 
             $_id = htmlspecialchars(strip_tags($roleid));
             $wpd = htmlspecialchars(strip_tags($webpushdata));
-            $upab = htmlspecialchars(strip_tags($userplatformandbrowser));
+            // using urldecode, because this is a get request, and the url will/might be encoded.
+            $upab = urldecode(htmlspecialchars(strip_tags($userplatformandbrowser)));
 
             file_put_contents('php://stderr', print_r('what is roleee: ' . $role . "\n", TRUE));
             file_put_contents('php://stderr', print_r('is roleee farmer?: ' . ($role == GrowAgricRoles::FARMERS) . "\n", TRUE));
@@ -2739,24 +2740,21 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
     /**
      * we should change this so it can get for any role, (we'll provide role, and roleid)
      */
-    public function getFarmerPushNotificationData($farmerid, $userplatformandbrowser = NULL)
+    public function getFarmerPushNotificationData($farmerid)
     {
         try {
             $query = "SELECT * FROM `webpushnotifications_data` 
             WHERE `webpushnotifications_data`.`farmerid` = :farmerid
-            AND `webpushnotifications_data`.`userplatformandbrowser` = :userplatformandbrowser
             ";
 
             $stmt = $this->database_connection->prepare($query);
 
             // Ensure safe data
             $fi = htmlspecialchars(strip_tags($farmerid));
-            // using urldecode, because this is a get request, and the url will/might be encoded.
-            $upab = urldecode(htmlspecialchars(strip_tags($userplatformandbrowser)));
+            
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':farmerid', $fi);
-            $stmt->bindParam(':userplatformandbrowser', $upab);
 
             $r = $stmt->execute();
 
