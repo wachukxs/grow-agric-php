@@ -29,7 +29,7 @@ if (isset($origin) && in_array($origin, $allowed_domains)) {
     file_put_contents('php://stderr', print_r('Invalid CORS access for ' . $origin . ". Trying fallback\n", TRUE));
     header('Access-Control-Allow-Origin: *'); // Should disable access
 }
-// header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: *'); // doesn't work when withCredentials is set to true.
 header('Access-Control-Allow-Headers: Content-Type, x-requested-with, timeout, Referer, User-Agent, Accept');
 header('Content-Type: application/json');
 // header('Content-Type: application/text');

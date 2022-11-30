@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
 
                 // will complete later
-                // sendNewMessageNotification($farmerRow['id']);
+                sendNewMessageNotification($farmerRow['id']);
             } else {
                 file_put_contents('php://stderr', "\nwho sent the message:::: " . $data->_from . " well not adminnn\n" . "\n", FILE_APPEND | LOCK_EX);
             }
