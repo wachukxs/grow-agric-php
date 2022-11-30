@@ -123,9 +123,10 @@ function sendNewMessageNotification($farmerid, $from = NULL, $message = NULL)
                 // file_put_contents('php://stderr', print_r("Push Notification Message sent successfully for subscription {$endpoint}." . "\n", TRUE) , FILE_APPEND | LOCK_EX);
                 file_put_contents('php://stderr', print_r("Push Notification Message sent successfully for subscription" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
             } else {
-                file_put_contents('php://stderr', print_r("Push Notification Message Message failed to sent for subscription {$endpoint}, farmer id {$farmerid}: {$report->getReason()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+                file_put_contents('php://stderr', print_r("Push Notification Message Message failed to sent for subscription, farmer id {$farmerid}: {$report->getReason()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
 
-                file_put_contents('php://stderr', print_r("\nPush http response: {$report->getResponse()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
+                // duplicate
+                // file_put_contents('php://stderr', print_r("\nPush http response: {$report->getResponse()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
                 file_put_contents('php://stderr', print_r("\nis Push sub expired: {$report->isSubscriptionExpired()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
                 file_put_contents('php://stderr', print_r("\nPush http response: {$report->getResponse()}" . "\n", TRUE) , FILE_APPEND | LOCK_EX);
             }
