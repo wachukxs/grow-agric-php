@@ -13,9 +13,6 @@ include_once '../../model/Course.php';
 $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-        // Instantiate Database to get a connection
-        $database_connection = new Database();
-        $a_database_connection = $database_connection->connect();
     
         // Instantiate new Records object
         $records = new Records($a_database_connection);

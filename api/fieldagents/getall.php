@@ -11,10 +11,6 @@ include_once '../../model/Farm.php';
 
 include_once '../../model/FieldAgents.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
-
 // Instantiate Records object
 $records = new Records($a_database_connection);
 $farmer = new Farmer($a_database_connection);

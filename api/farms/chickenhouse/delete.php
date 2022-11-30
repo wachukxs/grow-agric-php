@@ -8,9 +8,7 @@ include_once '../../../config/globals/header.php';
 include_once '../../../config/Database.php';
 include_once '../../../model/Farm.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+
 
 // Instantiate new farm object
 $farm = new Farm($a_database_connection);

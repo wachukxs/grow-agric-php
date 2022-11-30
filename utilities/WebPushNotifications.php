@@ -9,10 +9,6 @@ require __DIR__ . "/../vendor/autoload.php"; // https://stackoverflow.com/a/4462
 $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/.."); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
 $dotenv->safeLoad();
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
-
 // Instantiate Records object
 // https://www.geeksforgeeks.org/how-to-declare-a-global-variable-in-php
 $records = new Records($a_database_connection);

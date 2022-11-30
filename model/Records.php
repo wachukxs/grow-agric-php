@@ -2668,7 +2668,7 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
 
 
     // Create new chicken input record, an entry
-    public function saveWebPushRequestData($roleid, $role, $webpushdata)
+    public function saveWebPushRequestData($roleid, $role, $webpushdata, $userplatformandbrowser = NULL)
     {
         try {
             $query = 'INSERT INTO webpushnotifications_data 
@@ -2676,16 +2676,18 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
                 farmerid = :_farmerid,
                 subscription_data = :_subscription_data,
                 adminid = :_adminid,
-                fieldagentid = :_fieldagentid
+                fieldagentid = :_fieldagentid,
+                userplatformandbrowser = :_userplatformandbrowser
             ';
 
             $stmt = $this->database_connection->prepare($query);
 
             $_id = htmlspecialchars(strip_tags($roleid));
             $wpd = htmlspecialchars(strip_tags($webpushdata));
+            $upab = htmlspecialchars(strip_tags($userplatformandbrowser));
 
             file_put_contents('php://stderr', print_r('what is roleee: ' . $role . "\n", TRUE));
-            file_put_contents('php://stderr', print_r('is roleee farmer: ' . ($role == GrowAgricRoles::FARMERS) . "\n", TRUE));
+            file_put_contents('php://stderr', print_r('is roleee farmer?: ' . ($role == GrowAgricRoles::FARMERS) . "\n", TRUE));
             
             // Ensure safe data
             // also https://www.php.net/manual/en/pdostatement.bindvalue.php#90625 and https://stackoverflow.com/a/1391801/9259701
@@ -2712,6 +2714,7 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':_subscription_data', $wpd);
+            $stmt->bindParam(':_userplatformandbrowser', $upab);
 
             $r = $stmt->execute();
 
@@ -2736,18 +2739,24 @@ EXTRACT(MONTH FROM MIN(entry_date0)) AS "MonthIndex",
     /**
      * we should change this so it can get for any role, (we'll provide role, and roleid)
      */
-    public function getFarmerPushNotificationData($farmerid)
+    public function getFarmerPushNotificationData($farmerid, $userplatformandbrowser = NULL)
     {
         try {
-            $query = "SELECT * FROM `webpushnotifications_data` WHERE `webpushnotifications_data`.`farmerid` = :farmerid";
+            $query = "SELECT * FROM `webpushnotifications_data` 
+            WHERE `webpushnotifications_data`.`farmerid` = :farmerid
+            AND `webpushnotifications_data`.`userplatformandbrowser` = :userplatformandbrowser
+            ";
 
             $stmt = $this->database_connection->prepare($query);
 
             // Ensure safe data
             $fi = htmlspecialchars(strip_tags($farmerid));
+            // using urldecode, because this is a get request, and the url will/might be encoded.
+            $upab = urldecode(htmlspecialchars(strip_tags($userplatformandbrowser)));
 
             // Bind parameters to prepared stmt
             $stmt->bindParam(':farmerid', $fi);
+            $stmt->bindParam(':userplatformandbrowser', $upab);
 
             $r = $stmt->execute();
 

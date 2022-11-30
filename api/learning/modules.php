@@ -10,9 +10,7 @@ include_once '../../model/Module.php';
 include_once '../../model/Course.php';
 include_once '../../model/Farmer.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+
 
 // Instantiate food delivery Farmer object
 $module = new Module($a_database_connection);

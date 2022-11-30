@@ -8,9 +8,7 @@ include_once '../../model/Farmer.php';
 include_once '../../utilities/ICustom.php';
 include_once '../../model/Admin.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+
 
 // Instantiate farmer object
 $farmer = new Farmer($a_database_connection);

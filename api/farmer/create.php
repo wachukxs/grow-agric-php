@@ -20,9 +20,6 @@ include_once '../../model/Admin.php';
 include_once '../../utilities/ICustom.php'; // re-dundant
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
-    // Instantiate Database to get a connection
-    $database_connection = new Database();
-    $a_database_connection = $database_connection->connect();
 
     // Instantiate new farmer n admin object
     $farmer = new Farmer($a_database_connection);

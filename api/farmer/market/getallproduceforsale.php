@@ -38,9 +38,7 @@ class CleanQuotes {
     }
 }
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+
 
 // Instantiate green homes orders object
 $records = new Records($a_database_connection);

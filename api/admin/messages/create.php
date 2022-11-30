@@ -3,6 +3,7 @@
 // Headers
 // https://stackoverflow.com/a/17098221
 include_once '../../../config/globals/header.php';
+include_once '../../../utilities/Auth.php';
 
 // Resources
 include_once '../../../config/Database.php';
@@ -10,9 +11,6 @@ include_once '../../../model/Admin.php';
 include_once '../../../model/Farmer.php';
 
 include_once '../../../utilities/WebPushNotifications.php';
-
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
 
 // Instantiate new farmer object
 $admin = new Admin($a_database_connection);

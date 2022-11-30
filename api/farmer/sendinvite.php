@@ -16,9 +16,6 @@ include_once '../../utilities/ICustom.php'; // re-dundant
 $data = json_decode(file_get_contents('php://input'));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Instantiate Database to get a connection
-        $database_connection = new Database();
-        $a_database_connection = $database_connection->connect();
     
         // Instantiate new farmer object
         $admin = new Admin($a_database_connection);

@@ -4,15 +4,12 @@
 // Headers
 // https://stackoverflow.com/a/17098221
 include_once '../../../config/globals/header.php';
+include_once '../../../utilities/Auth.php';
 
 // Resources
 include_once '../../../config/Database.php';
 include_once '../../../model/Admin.php';
 include_once '../../../model/Finance.php';
-
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
 
 // Instantiate Admin n Finance object
 $admin = new Admin($a_database_connection);

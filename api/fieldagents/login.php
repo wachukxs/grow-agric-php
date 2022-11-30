@@ -12,10 +12,6 @@ include_once '../../model/Farm.php';
 
 include_once '../../model/FieldAgents.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
-
 // Instantiate Records object
 $records = new Records($a_database_connection);
 $farmer = new Farmer($a_database_connection);
@@ -61,6 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $row1["assignedsubcounties"] = explode(',', $row1["assignedsubcounties"]);
         
                         file_put_contents('php://stderr', print_r($row1, TRUE));
+
+                        $_SESSION['email'] = $data->email;
         
                         echo json_encode(
                             array(

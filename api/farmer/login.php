@@ -14,10 +14,7 @@ include_once '../../utilities/Helpers.php';
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
-    // Instantiate Database to get a connection
-    $database_connection = new Database();
-    $a_database_connection = $database_connection->connect();
-
+    
     // Instantiate new farmer object
     $farmer = new Farmer($a_database_connection);
 
@@ -119,6 +116,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight r
 
                     $farmer_details_arr["unreadMessages"] = $row8;
                     $farmer_details_arr["unseenFinanceApplicationUpdates"] = $row9;
+
+                    $_SESSION["email"] = $data->email;
+
+                    file_put_contents('php://stderr', "just logged in...session email should be set to: " . $_SESSION["email"], FILE_APPEND | LOCK_EX);
+
+                    file_put_contents('php://stderr', $_SESSION, FILE_APPEND | LOCK_EX);
 
                     echo json_encode(
                         array(

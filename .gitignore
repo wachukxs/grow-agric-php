@@ -18,5 +18,8 @@ private_key.txt
 
 test.*
 
+*.zip
+*.sh
+
 growagric.png
 growagric.svg

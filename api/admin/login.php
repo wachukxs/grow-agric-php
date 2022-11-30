@@ -25,10 +25,6 @@ $data = json_decode(file_get_contents('php://input'));
 file_put_contents('php://stderr', print_r('Trying to log in admin' . "\n", TRUE));
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Instantiate Database to get a connection
-
-    $database_connection = new Database();
-    $a_database_connection = $database_connection->connect();
 
     // Instantiate new farmer object
     $admin = new Admin($a_database_connection);
@@ -79,6 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $result7 = $admin->getAllFieldAgents();
                 $row["fieldagents"] = $result7->fetchAll(PDO::FETCH_CLASS, "FieldAgentsss");
+
+                $_SESSION['email'] = $data->email;
         
                 http_response_code();
 

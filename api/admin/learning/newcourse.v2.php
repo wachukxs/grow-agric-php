@@ -11,9 +11,7 @@ $dotenv->safeLoad();
 include_once '../../../config/Database.php';
 include_once '../../../model/Admin.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+
 
 // Instantiate new farmer object
 $admin = new Admin($a_database_connection);

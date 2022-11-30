@@ -4,7 +4,7 @@
     $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/.."); // https://github.com/vlucas/phpdotenv#putenv-and-getenv
     $dotenv->safeLoad();
 
-    // to do, fix when db throws errors
+    // TODO: fix when db throws errors
     class Database {
         // Database parameters
         private $database_host;
@@ -64,4 +64,7 @@
             
         }
     }
-?>
+
+    // Instantiate Database to get a connection
+    $database_connection = new Database();
+    $a_database_connection = $database_connection->connect();

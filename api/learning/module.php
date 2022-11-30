@@ -8,9 +8,7 @@ include_once '../../config/Database.php';
 include_once '../../model/Module.php';
 include_once '../../model/Course.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+
 
 // Instantiate Module and Course object
 $module = new Module($a_database_connection);

@@ -8,9 +8,7 @@ include_once '../../config/globals/header.php';
 include_once '../../config/Database.php';
 include_once '../../model/Records.php';
 
-// Instantiate Database to get a connection
-$database_connection = new Database();
-$a_database_connection = $database_connection->connect();
+
 
 // Instantiate Farmer object
 $records = new Records($a_database_connection);
@@ -35,8 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         isset($_GET["farmerid"])
         &&
         !empty($_GET["farmerid"])
+        // we should later check for userplatformandbrowser
     ) {
-        $result = $records->getFarmerPushNotificationData($_GET["farmerid"]);
+        $result = $records->getFarmerPushNotificationData($_GET["farmerid"], $_GET["userplatformandbrowser"]);
         
         // will remove
         $_r = $result->fetchAll(PDO::FETCH_CLASS, "CleanWebPushData"); // PDO::FETCH_GROUP

@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 // Headers
 // https://stackoverflow.com/a/17098221
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : NULL;
@@ -28,8 +30,12 @@ if (isset($origin) && in_array($origin, $allowed_domains)) {
     header('Access-Control-Allow-Origin: *'); // Should disable access
 }
 // header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: *');
+header('Access-Control-Allow-Headers: Content-Type, x-requested-with');
 header('Content-Type: application/json');
-header('Content-Control-Allow-Methods: POST, GET');
-header('Cache-Control: max-age=300'); // 300 = 3 minutes
-header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With');
+// header('Content-Type: application/text');
+header('Content-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Credentials: true');
+// why do we want only 3 mins?
+// header('Cache-Control: max-age=300'); // 300 = 3 minutes
+// duplicate header
+header('Content-Control-Allow-Headers: Content-Control-Allow-Methods, User-Agent, Content-Type, Content-Control-Allow-Headers, Authorization, X-Requested-With, *');

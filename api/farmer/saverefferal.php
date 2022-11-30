@@ -10,9 +10,6 @@ include_once '../../model/Farmer.php';
 include_once '../../model/Records.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") { // hot fix for handling pre-flight request
-    // Instantiate Database to get a connection
-    $database_connection = new Database();
-    $a_database_connection = $database_connection->connect();
 
     // Instantiate new farmer object
     $farmer = new Farmer($a_database_connection);

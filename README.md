@@ -7,6 +7,9 @@ Watch me build great stuff.
 * Login a farmer.
 * A whole lot more ...
 
+### Good to know.
+* The private_key.pem, private_key.txt, and public_key.txt are for push notifications.
+
 
 ## TODOs
 * we should send an email for people that joined waiting list
