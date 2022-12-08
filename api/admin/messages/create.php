@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 file_put_contents('php://stderr', "\nwho sent the message:::: " . $data->_from . "\n" . "\n", FILE_APPEND | LOCK_EX);
                 file_put_contents('php://stderr', "\nmessage to:::: " . $farmerRow['id'] . "\n" . "\n", FILE_APPEND | LOCK_EX);
 
-                // we should only send if the message was from admin, and if they haven't been sent an email in 2 days
+                // we should only send if the message was from admin, and if they haven't been sent an email in 6 hours
                 // don't send for the mean time.
                 $admin->sendMail($farmerRow['firstname'], Emailing::NEW_MESSAGE_UPDATE, $farmerRow['email']);
 
